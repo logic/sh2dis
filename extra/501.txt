@@ -1,0 +1,15 @@
+0111nnnniiiiiiii ADD #imm,Rn
+0011nnnnmmmm1100 ADD Rm,Rn
+0011nnnnmmmm1110 ADDC Rm,Rn
+0011nnnnmmmm1111 ADDV Rm,Rn
+11001001iiiiiiii AND #imm,R0
+0010nnnnmmmm1001 AND Rm,Rn
+11001101iiiiiiii AND.B #imm,@(R0,GBR)
+10001011dddddddd BF label
+10001111dddddddd BF/S label
+1010dddddddddddd BRA label
+0000mmmm00100011 BRAF Rm
+1011dddddddddddd BSR label
+0000mmmm00000011 BSRF Rm
+10001001dddddddd BT label
+10001101dddddddd BT/S label

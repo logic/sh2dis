@@ -1,0 +1,11 @@
+0110nnnnmmmm1000 SWAP.B Rm,Rn
+0110nnnnmmmm1001 SWAP.W Rm,Rn
+0100nnnn00011011 TAS.B @Rn
+11000011iiiiiiii TRAPA #imm
+11001000iiiiiiii TST #imm,R0
+0010nnnnmmmm1000 TST Rm,Rn
+11001100iiiiiiii TST.B #imm,@(R0,GBR)
+11001010iiiiiiii XOR #imm,R0
+0010nnnnmmmm1010 XOR Rm,Rn
+11001110iiiiiiii XOR.B #imm,@(R0,GBR)
+0010nnnnmmmm1101 XTRCT Rm,Rn
