@@ -5,11 +5,8 @@
 TODO:
 - Byte, Long, and Word fields should do their own data conversion, rather
   than the caller doing the struct work.
-- fix reference bug in disassemble()
 - make some sort of note with the code about both resolved and unresolved
   branch targets.
-- DataField.get_label() should be smart enough to infer the common idiom
-  "label+1".
 """
 
 
@@ -38,6 +35,9 @@ class DataField(segment.SegmentData):
 
     def get_label(self):
         if self.label is None and len(self.references) > 0:
+            val, meta = self.model.get_location(self.location - 1)
+            if meta is not None and meta.label is not None:
+                return '%s+%d:' % (meta.label, self.location-meta.location)
             return 'unk_%X:' % self.location
         if self.label is not None:
             return self.label + ':'
@@ -217,9 +217,6 @@ def track_registers(opcode, args, location, registers, model):
                 if args['disp'] is not None:
                     target = args['target']
                     val, meta = model.get_location(target)
-                    # TODO: BUG! If the location is set to a word,
-                    # but we're only grabbing a byte here, we'll
-                    # get the wrong value in the register!
                     if meta is None:
                         if opcode['cmd'][-2:] == '.l' or opcode['cmd'] == 'mova':
                             extra = struct.unpack('>L', model.get_phys(target, 4))[0]
