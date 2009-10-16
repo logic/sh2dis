@@ -93,12 +93,10 @@ def main(argv):
         elif not code and isinstance(meta, sh2.CodeField):
             code = True
             print '         !', '-' * 60
-        print '%08X' % i,
-        if meta is not None:
-            countdown = meta.width - 1
-            print meta
-        else:
-            print '                 .byte 0x%02X' % ord(value)
+        if meta is None:
+            meta = sh2.ByteField(location=i, model=model, extra=ord(value))
+        countdown = meta.width - 1
+        print '%08X' % i, meta
 
 if __name__ == '__main__':
     main(sys.argv[1:])
