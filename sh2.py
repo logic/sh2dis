@@ -71,7 +71,10 @@ class LongField(DataField):
         try:
             meta = self.model.get_location(self.extra)
             if meta is None:
-                value = ord(self.model.get_phys(self.extra, 1))
+                try:
+                    value = ord(self.model.get_phys(self.extra, 1))
+                except segment.SegmentError:
+                    value = 0
                 self.model.set_location(ByteField(location=self.extra,extra=value,model=self.model))
                 meta = self.model.get_location(self.extra)
                 meta.references.append(self.location)
