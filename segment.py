@@ -41,11 +41,9 @@ class Segment:
 
     def get_location(self, location):
         meta = self.__get_relative_location(location)
-        if meta is None:
-            return self.get_phys(location, 1), None
         if type(meta) is int:
             return self.get_location(location+meta)
-        return self.get_phys(location, meta.width), meta
+        return meta
 
     def set_location(self, value):
         comments = [ ]
@@ -75,7 +73,7 @@ class Segment:
             self.space[rel_loc + i] = -i
 
     def unset_location(self, location):
-        value, meta = self.get_location(location)
+        meta = self.get_location(location)
         if meta is not None:
             rel_loc = location - self.start
             for i in range(rel_loc, rel_loc + meta.width):

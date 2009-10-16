@@ -35,7 +35,7 @@ class DataField(segment.SegmentData):
 
     def get_label(self):
         if self.label is None and len(self.references) > 0:
-            val, meta = self.model.get_location(self.location - 1)
+            meta = self.model.get_location(self.location - 1)
             if meta is not None and meta.label is not None:
                 return '%s+%d:' % (meta.label, self.location-meta.location)
             return 'unk_%X:' % self.location
@@ -69,10 +69,11 @@ class LongField(DataField):
 
         # Make us a reference if we refer to a legitimate address.
         try:
-            value, meta = self.model.get_location(self.extra)
+            meta = self.model.get_location(self.extra)
             if meta is None:
-                self.model.set_location(ByteField(location=self.extra,extra=ord(value),model=self.model))
-                value, meta = self.model.get_location(self.extra)
+                value = ord(self.model.get_phys(self.extra, 1))
+                self.model.set_location(ByteField(location=self.extra,extra=value,model=self.model))
+                meta = self.model.get_location(self.extra)
                 meta.references.append(self.location)
         except segment.SegmentError:
             pass
@@ -80,18 +81,18 @@ class LongField(DataField):
     def __str__(self):
         name = self.__class__.__name__.lower().replace('field', '')
         try:
-            value, meta = self.model.get_location(self.extra)
+            meta = self.model.get_location(self.extra)
             if meta is not None:
                 if meta.get_label() != '':
-                    value = meta.get_label()[:-1]
+                    text = meta.get_label()[:-1]
                 else:
                     raise segment.SegmentError
             else:
                 raise segment.SegmentError
         except segment.SegmentError:
-            value = '0x%%0%dX' % (self.width * 2)
-            value = value % self.extra
-        return '%-16s .%s %s' % (self.get_label(), name, value)
+            text = '0x%%0%dX' % (self.width * 2)
+            text = text % self.extra
+        return '%-16s .%s %s' % (self.get_label(), name, text)
 
 
 class CodeField(DataField):
@@ -102,7 +103,7 @@ class CodeField(DataField):
 
     def __str__(self):
         if 'label' in self.extra['text']:
-            value, meta = self.model.get_location(self.extra['args']['target'])
+            meta = self.model.get_location(self.extra['args']['target'])
             if meta is not None:
                 target = meta.get_label()
             else:
@@ -216,20 +217,19 @@ def track_registers(opcode, args, location, registers, model):
                     return
                 if args['disp'] is not None:
                     target = args['target']
-                    val, meta = model.get_location(target)
+                    meta = model.get_location(target)
                     if meta is None:
                         if opcode['cmd'][-2:] == '.l' or opcode['cmd'] == 'mova':
                             extra = struct.unpack('>L', model.get_phys(target, 4))[0]
                             meta = LongField(location=target, model=model, extra=extra)
                             model.set_location(meta)
-                            val, meta = model.get_location(target)
                         elif opcode['cmd'][-2:] == '.w':
                             extra = struct.unpack('>H', model.get_phys(target, 2))[0]
                             meta = WordField(location=target, model=model, extra=extra)
                             model.set_location(meta)
-                            val, meta = model.get_location(target)
                         else:
-                            meta = ByteField(location=target,model=model, extra=ord(val))
+                            extra = ord(model.get_phys(target, 1))
+                            meta = ByteField(location=target,model=model, extra=extra)
                             model.set_location(meta)
                     if location not in meta.references:
                         meta.references.append(location)
@@ -255,13 +255,13 @@ def disassemble(location, model):
         branch_countdown = 0
 
         # Quick check to make sure we haven't already processed this location.
-        value, meta = model.get_location(location)
+        meta = model.get_location(location)
         if isinstance(meta, CodeField):
             continue
 
         while not branching or branch_countdown >= 0:
             try:
-                bytes, orig = model.get_location(location)
+                orig = model.get_location(location)
                 bytes = model.get_phys(location, 2)
             except segment.SegmentError:
                 break

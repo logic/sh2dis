@@ -39,22 +39,22 @@ def setup_vectors(model):
         model.set_location(sh2.LongField(location=i, extra=value, model=model, label=label))
 
     for addr, name in proc.registers.items():
-        value, meta = model.get_location(addr)
+        meta = model.get_location(addr)
         if meta is None:
             meta = sh2.ByteField(location=addr, extra=0, model=model)
         meta.label = name
         model.set_location(meta)
 
     # Name a few common vector items.
-    value,meta = model.get_location(0)
-    value,meta = model.get_location(meta.extra)
+    meta = model.get_location(0)
+    meta = model.get_location(meta.extra)
     meta.label = 'init'
-    value,meta = model.get_location(4)
-    value,meta = model.get_location(meta.extra)
+    meta = model.get_location(4)
+    meta = model.get_location(meta.extra)
     if meta is not None:
         meta.label = 'sp'
-    value,meta = model.get_location(0x10)
-    value,meta = model.get_location(meta.extra)
+    meta = model.get_location(0x10)
+    meta = model.get_location(meta.extra)
     meta.label = 'reset'
 
 def disassemble_vectors(model):
@@ -63,7 +63,7 @@ def disassemble_vectors(model):
         if i == 0x4 or i == 0x12:
             # Skip stack point addresses.
             continue
-        content, meta = model.get_location(i)
+        meta = model.get_location(i)
         sh2.disassemble(meta.extra, model)
 
 def main(argv):
@@ -86,7 +86,7 @@ def main(argv):
         if countdown > 0:
             countdown -= 1
             continue
-        value, meta = model.get_location(i)
+        meta = model.get_location(i)
         if code and not isinstance(meta, sh2.CodeField):
             code = False
             print '         !', '-' * 60
@@ -94,7 +94,8 @@ def main(argv):
             code = True
             print '         !', '-' * 60
         if meta is None:
-            meta = sh2.ByteField(location=i, model=model, extra=ord(value))
+            value = ord(model.get_phys(i, 1))
+            meta = sh2.ByteField(location=i, model=model, extra=value)
         countdown = meta.width - 1
         print '%08X' % i, meta
 
