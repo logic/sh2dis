@@ -5,8 +5,14 @@ TODO:
 - Output any labelled or referenced memory addresses as .equ directives.
 """
 
+
 import getopt, os.path, struct, sys
 import segment, sh2, sh7052, sh7055
+
+
+class ROMError(StandardError):
+    pass
+
 
 def get_segments(phys):
     """Determine if this is an Evo VIII (7052) or IX (7055) ROM."""
@@ -19,13 +25,15 @@ def get_segments(phys):
             ('RAM', 0xFFFF8000, 0x3000, None),
             ('REG', 0xFFFFE400, 0x1460, None),
         )
-    # SH/7055F
-    proc = sh7055
-    return (
-        ('ROM', 0x0, len(phys), phys),
-        ('RAM', 0xFFFF6000, 0x8000, None),
-        ('REG', 0xFFFFE400, 0x1460, None),
-    )
+    elif len(phys) == 0x80000:
+        # SH/7055F
+        proc = sh7055
+        return (
+            ('ROM', 0x0, len(phys), phys),
+            ('RAM', 0xFFFF6000, 0x8000, None),
+            ('REG', 0xFFFFE400, 0x1460, None),
+        )
+    raise ROMError, 'invalid or unrecognized ROM'
 
 def setup_vectors(model):
     """Pre-define the vector table."""
