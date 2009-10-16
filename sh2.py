@@ -33,11 +33,12 @@ class DataField(segment.SegmentData):
     def __str__(self):
         """A GAS-compatible string representation for this data type."""
         name = self.__class__.__name__.lower().replace('field', '')
-        return '{0:16} .{1} 0x{2:0{3}x}'.format(self.get_label(), name, self.extra, self.width)
+        val = '%-16s .%s 0x%%0%dX' % (self.get_label(), name, (self.width * 2))
+        return val % self.extra
 
     def get_label(self):
         if self.label is None and len(self.references) > 0:
-            return 'unk_{0:X}:'.format(self.location)
+            return 'unk_%X:' % self.location
         if self.label is not None:
             return self.label + ':'
         return ''
@@ -84,12 +85,13 @@ class LongField(DataField):
                 if meta.get_label() != '':
                     value = meta.get_label()[:-1]
                 else:
-                    value = '0x{0:0{1}x}'.format(self.extra, self.width)
+                    raise segment.SegmentError
             else:
-                value = '0x{0:0{1}x}'.format(self.extra, self.width)
+                raise segment.SegmentError
         except segment.SegmentError:
-            value = '0x{0:0{1}x}'.format(self.extra, self.width)
-        return '{0:16} .{1} {2}'.format(self.get_label(), name, value)
+            value = '0x%%0%dX' % (self.width * 2)
+            value = value % self.extra
+        return '%-16s .%s %s' % (self.get_label(), name, value)
 
 
 class CodeField(DataField):
@@ -104,16 +106,16 @@ class CodeField(DataField):
             if meta is not None:
                 target = meta.get_label()
             else:
-                target = 'sub_{0:X}'.format(self.extra['args']['target'])
+                target = 'sub_%X' % self.extra['args']['target']
             text = self.extra['text'].replace('label', target)
         else:
             text = self.extra['text']
         label = self.label + ':' if self.label is not None else ''
-        return '{0:16} {1}'.format(self.get_label(), text)
+        return '%-16s %s' % (self.get_label(), text)
 
     def get_label(self):
         if self.label is None and len(self.references) > 0:
-            return 'sub_{0:X}:'.format(self.location)
+            return 'sub_%X:' % self.location
         if self.label is not None:
             return self.label + ':'
         return ''
@@ -126,7 +128,7 @@ class NullField(segment.SegmentData):
         segment.SegmentData.__init__(self, *args, **kwargs)
 
     def __str__(self):
-        return '.org 0x{0:8x}'.format(self.location + self.width)
+        return '.org %#X' % (self.location + self.width)
 
 
 class AssemblyError(StandardError):
@@ -220,20 +222,18 @@ def track_registers(opcode, args, location, registers, model):
                     # get the wrong value in the register!
                     if meta is None:
                         if opcode['cmd'][-2:] == '.l' or opcode['cmd'] == 'mova':
-                            val = LongField(location=target,model=model)
-                            model.set_location(val)
+                            extra = struct.unpack('>L', model.get_phys(target, 4))[0]
+                            meta = LongField(location=target, model=model, extra=extra)
+                            model.set_location(meta)
                             val, meta = model.get_location(target)
-                            meta.extra = struct.unpack('>L', val)[0]
                         elif opcode['cmd'][-2:] == '.w':
-                            val = WordField(location=target,model=model)
-                            model.set_location(val)
+                            extra = struct.unpack('>H', model.get_phys(target, 2))[0]
+                            meta = WordField(location=target, model=model, extra=extra)
+                            model.set_location(meta)
                             val, meta = model.get_location(target)
-                            meta.extra = struct.unpack('>H', val)[0]
                         else:
-                            val = ByteField(location=target,model=model)
-                            model.set_location(val)
-                            val, meta = model.get_location(target)
-                            meta.extra = struct.unpack('>B', val)[0]
+                            meta = ByteField(location=target,model=model, extra=ord(val))
+                            model.set_location(meta)
                     if location not in meta.references:
                         meta.references.append(location)
                     registers[n] = meta.extra
@@ -280,12 +280,12 @@ def disassemble(location, model):
                     work_queue.append((registers[args['m']], location))
                 # TODO: Make some kind of note about unresolved branches.
                 #else:
-                #    print 'unresolved branch at 0x{0:x}'.format(location)
+                #    print 'unresolved branch at 0x%x' % location
             if opcode['cmd'] in label_branchers:
                 work_queue.append((args['target'], location))
 
             extra = {
-                'text': ' '.join((opcode['cmd'], opcode['args'].format(**args))),
+                'text': ' '.join((opcode['cmd'], opcode['args'] % args)),
                 'opcode': opcode,
                 'args': args,
             }

@@ -72,7 +72,7 @@ def main(argv):
         sys.exit(1)
     romname = argv[0]
     if not os.path.isfile(romname):
-        print 'No such file: {0}'.format(romname)
+        print 'No such file:', romname
         sys.exit(1)
     phys = open(romname).read()
     model = segment.MemoryModel(get_segments(phys))
@@ -93,11 +93,12 @@ def main(argv):
         elif not code and isinstance(meta, sh2.CodeField):
             code = True
             print '         !', '-' * 60
+        print '%08X' % i,
         if meta is not None:
             countdown = meta.width - 1
-            print '{0:08X} {1}'.format(i, meta)
+            print meta
         else:
-            print '{0:08X} {1:16} .byte 0x{2:02X}'.format(i, '', ord(value))
+            print '                 .byte 0x%02X' % ord(value)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

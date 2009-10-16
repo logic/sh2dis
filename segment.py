@@ -30,7 +30,7 @@ class Segment:
     def __get_relative_location(self, location):
         relative_location = location - self.start
         if relative_location < 0 or relative_location > self.length:
-            raise SegmentError, 'invalid segment location 0x{0:x}'.format(location)
+            raise SegmentError, 'invalid segment location: %#x' % location
         return self.space[relative_location]
 
     def get_phys(self, location, width=1):
@@ -62,7 +62,7 @@ class Segment:
                         references[i+self.start] = 1
                     self.unset_location(meta.location)
                 else:
-                    raise SegmentError, 'conflict with data at 0x{0:x}'.format(i)
+                    raise SegmentError, 'conflict with data at %#x' % i
         if len(comments) > 0:
             if value.comment is not None:
                 comments.insert(0, value.comment)
@@ -89,15 +89,15 @@ class MemoryModel:
             self.segments.append(Segment(name=name, start=start, length=len, phys=phys))
 
     def __lookup_segment(self, location):
-            for segment in self.segments:
-                if location >= segment.start and location < segment.start + segment.length:
-                    return segment
-            raise SegmentError, 'invalid segment address {0}'.format(location)
+        for segment in self.segments:
+            if location >= segment.start and location < segment.start + segment.length:
+                return segment
+        raise SegmentError, 'invalid segment address: %#x' % location
 
     def get_phys(self, location, width=1):
         seg = self.__lookup_segment(location)
         if seg.phys is None:
-            raise SegmentError, '0x{0:x} is not a physical location'.format(location)
+            raise SegmentError, '%#x is not a physical location' % location
         return seg.get_phys(location, width)
 
     def get_location(self, location):

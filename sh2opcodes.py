@@ -7,7 +7,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0111nnnniiiiiiii",
         "cmd"   : "add",
-        "args"  : "#0x{imm:x},r{n}",
+        "args"  : "#0x%(imm)x,r%(n)d",
     },
     {
         "opmask": (0x300C, 0xF00F),
@@ -17,7 +17,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm1100",
         "cmd"   : "add",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x300E, 0xF00F),
@@ -27,7 +27,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm1110",
         "cmd"   : "addc",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x300F, 0xF00F),
@@ -37,7 +37,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm1111",
         "cmd"   : "addv",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0xC900, 0xFF00),
@@ -47,7 +47,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "11001001iiiiiiii",
         "cmd"   : "and",
-        "args"  : "#0x{imm:x},r0",
+        "args"  : "#0x%(imm)x,r0",
     },
     {
         "opmask": (0x2009, 0xF00F),
@@ -57,7 +57,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm1001",
         "cmd"   : "and",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0xCD00, 0xFF00),
@@ -67,7 +67,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "11001101iiiiiiii",
         "cmd"   : "and.b",
-        "args"  : "#0x{imm:x},@(r0,gbr)",
+        "args"  : "#0x%(imm)x,@(r0,gbr)",
     },
     {
         "opmask": (0x8B00, 0xFF00),
@@ -107,7 +107,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000mmmm00100011",
         "cmd"   : "braf",
-        "args"  : "r{m}",
+        "args"  : "r%(m)d",
     },
     {
         "opmask": (0xB000, 0xF000),
@@ -127,7 +127,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000mmmm00000011",
         "cmd"   : "bsrf",
-        "args"  : "r{m}",
+        "args"  : "r%(m)d",
     },
     {
         "opmask": (0x8900, 0xFF00),
@@ -177,7 +177,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "10001000iiiiiiii",
         "cmd"   : "cmp/eq",
-        "args"  : "#0x{imm:x},r0",
+        "args"  : "#0x%(imm)x,r0",
     },
     {
         "opmask": (0x3000, 0xF00F),
@@ -187,7 +187,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm0000",
         "cmd"   : "cmp/eq",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x3003, 0xF00F),
@@ -197,7 +197,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm0011",
         "cmd"   : "cmp/ge",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x3007, 0xF00F),
@@ -207,7 +207,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm0111",
         "cmd"   : "cmp/gt",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x3006, 0xF00F),
@@ -217,7 +217,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm0110",
         "cmd"   : "cmp/hi",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x3002, 0xF00F),
@@ -227,7 +227,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm0010",
         "cmd"   : "cmp/hs",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x4015, 0xF0FF),
@@ -237,7 +237,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00010101",
         "cmd"   : "cmp/pl",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x4011, 0xF0FF),
@@ -247,7 +247,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00010001",
         "cmd"   : "cmp/pz",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x200C, 0xF00F),
@@ -257,7 +257,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm1100",
         "cmd"   : "cmp/str",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x2007, 0xF00F),
@@ -267,7 +267,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm0111",
         "cmd"   : "div0s",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x0019, 0xFFFF),
@@ -287,7 +287,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm0100",
         "cmd"   : "div1",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x300D, 0xF00F),
@@ -297,7 +297,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm1101",
         "cmd"   : "dmuls.l",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x3005, 0xF00F),
@@ -307,7 +307,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm0101",
         "cmd"   : "dmulu.l",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x4010, 0xF0FF),
@@ -317,7 +317,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00010000",
         "cmd"   : "dt",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x600E, 0xF00F),
@@ -327,7 +327,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm1110",
         "cmd"   : "exts.b",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x600F, 0xF00F),
@@ -337,7 +337,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm1111",
         "cmd"   : "exts.w",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x600C, 0xF00F),
@@ -347,7 +347,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm1100",
         "cmd"   : "extu.b",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x600D, 0xF00F),
@@ -357,7 +357,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm1101",
         "cmd"   : "extu.w",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x402B, 0xF0FF),
@@ -367,7 +367,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00101011",
         "cmd"   : "jmp",
-        "args"  : "@r{m}",
+        "args"  : "@r%(m)d",
     },
     {
         "opmask": (0x400B, 0xF0FF),
@@ -377,7 +377,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00001011",
         "cmd"   : "jsr",
-        "args"  : "@r{m}",
+        "args"  : "@r%(m)d",
     },
     {
         "opmask": (0x401E, 0xF0FF),
@@ -387,7 +387,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00011110",
         "cmd"   : "ldc",
-        "args"  : "r{m},gbr",
+        "args"  : "r%(m)d,gbr",
     },
     {
         "opmask": (0x405E, 0xF0FF),
@@ -397,7 +397,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm01011110",
         "cmd"   : "ldc",
-        "args"  : "r{m},mod",
+        "args"  : "r%(m)d,mod",
     },
     {
         "opmask": (0x407E, 0xF0FF),
@@ -407,7 +407,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm01111110",
         "cmd"   : "ldc",
-        "args"  : "r{m},re",
+        "args"  : "r%(m)d,re",
     },
     {
         "opmask": (0x406E, 0xF0FF),
@@ -417,7 +417,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm01101110",
         "cmd"   : "ldc",
-        "args"  : "r{m},rs",
+        "args"  : "r%(m)d,rs",
     },
     {
         "opmask": (0x400E, 0xF0FF),
@@ -427,7 +427,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00001110",
         "cmd"   : "ldc",
-        "args"  : "r{m},sr",
+        "args"  : "r%(m)d,sr",
     },
     {
         "opmask": (0x402E, 0xF0FF),
@@ -437,7 +437,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00101110",
         "cmd"   : "ldc",
-        "args"  : "r{m},vbr",
+        "args"  : "r%(m)d,vbr",
     },
     {
         "opmask": (0x4017, 0xF0FF),
@@ -447,7 +447,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00010111",
         "cmd"   : "ldc.l",
-        "args"  : "@r{m}+,gbr",
+        "args"  : "@r%(m)d+,gbr",
     },
     {
         "opmask": (0x4057, 0xF0FF),
@@ -457,7 +457,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm01010111",
         "cmd"   : "ldc.l",
-        "args"  : "@r{m}+,mod",
+        "args"  : "@r%(m)d+,mod",
     },
     {
         "opmask": (0x4077, 0xF0FF),
@@ -467,7 +467,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm01110111",
         "cmd"   : "ldc.l",
-        "args"  : "@r{m}+,re",
+        "args"  : "@r%(m)d+,re",
     },
     {
         "opmask": (0x4067, 0xF0FF),
@@ -477,7 +477,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm01100111",
         "cmd"   : "ldc.l",
-        "args"  : "@r{m}+,rs",
+        "args"  : "@r%(m)d+,rs",
     },
     {
         "opmask": (0x4007, 0xF0FF),
@@ -487,7 +487,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00000111",
         "cmd"   : "ldc.l",
-        "args"  : "@r{m}+,sr",
+        "args"  : "@r%(m)d+,sr",
     },
     {
         "opmask": (0x4027, 0xF0FF),
@@ -497,7 +497,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00100111",
         "cmd"   : "ldc.l",
-        "args"  : "@r{m}+,vbr",
+        "args"  : "@r%(m)d+,vbr",
     },
     {
         "opmask": (0x8E00, 0xFF00),
@@ -507,7 +507,7 @@ opcodes = (
         "disp"  : 0x00FF,
         "bits"  : "10001110dddddddd",
         "cmd"   : "ldre",
-        "args"  : "@(0x{disp:x},pc)",
+        "args"  : "@(0x%(disp)x,pc)",
     },
     {
         "opmask": (0x8C00, 0xFF00),
@@ -517,7 +517,7 @@ opcodes = (
         "disp"  : 0x00FF,
         "bits"  : "10001100dddddddd",
         "cmd"   : "ldrs",
-        "args"  : "@(0x{disp:x},pc)",
+        "args"  : "@(0x%(disp)x,pc)",
     },
     {
         "opmask": (0x407A, 0xF0FF),
@@ -527,7 +527,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm01111010",
         "cmd"   : "lds",
-        "args"  : "r{m},a0",
+        "args"  : "r%(m)d,a0",
     },
     {
         "opmask": (0x406A, 0xF0FF),
@@ -537,7 +537,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm01101010",
         "cmd"   : "lds",
-        "args"  : "r{m},dsr",
+        "args"  : "r%(m)d,dsr",
     },
     {
         "opmask": (0x400A, 0xF0FF),
@@ -547,7 +547,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00001010",
         "cmd"   : "lds",
-        "args"  : "r{m},mach",
+        "args"  : "r%(m)d,mach",
     },
     {
         "opmask": (0x401A, 0xF0FF),
@@ -557,7 +557,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00011010",
         "cmd"   : "lds",
-        "args"  : "r{m},macl",
+        "args"  : "r%(m)d,macl",
     },
     {
         "opmask": (0x402A, 0xF0FF),
@@ -567,7 +567,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00101010",
         "cmd"   : "lds",
-        "args"  : "r{m},pr",
+        "args"  : "r%(m)d,pr",
     },
     {
         "opmask": (0x408A, 0xF0FF),
@@ -577,7 +577,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm10001010",
         "cmd"   : "lds",
-        "args"  : "r{m},x0",
+        "args"  : "r%(m)d,x0",
     },
     {
         "opmask": (0x409A, 0xF0FF),
@@ -587,7 +587,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm10011010",
         "cmd"   : "lds",
-        "args"  : "r{m},x1",
+        "args"  : "r%(m)d,x1",
     },
     {
         "opmask": (0x40AA, 0xF0FF),
@@ -597,7 +597,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm10101010",
         "cmd"   : "lds",
-        "args"  : "r{m},y0",
+        "args"  : "r%(m)d,y0",
     },
     {
         "opmask": (0x40BA, 0xF0FF),
@@ -607,7 +607,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm10111010",
         "cmd"   : "lds",
-        "args"  : "r{m},y1",
+        "args"  : "r%(m)d,y1",
     },
     {
         "opmask": (0x4076, 0xF0FF),
@@ -617,7 +617,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm01110110",
         "cmd"   : "lds.l",
-        "args"  : "@r{m}+,a0",
+        "args"  : "@r%(m)d+,a0",
     },
     {
         "opmask": (0x4066, 0xF0FF),
@@ -627,7 +627,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm01100110",
         "cmd"   : "lds.l",
-        "args"  : "@r{m}+,dsr",
+        "args"  : "@r%(m)d+,dsr",
     },
     {
         "opmask": (0x4006, 0xF0FF),
@@ -637,7 +637,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00000110",
         "cmd"   : "lds.l",
-        "args"  : "@r{m}+,mach",
+        "args"  : "@r%(m)d+,mach",
     },
     {
         "opmask": (0x4016, 0xF0FF),
@@ -647,7 +647,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00010110",
         "cmd"   : "lds.l",
-        "args"  : "@r{m}+,macl",
+        "args"  : "@r%(m)d+,macl",
     },
     {
         "opmask": (0x4026, 0xF0FF),
@@ -657,7 +657,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00100110",
         "cmd"   : "lds.l",
-        "args"  : "@r{m}+,pr",
+        "args"  : "@r%(m)d+,pr",
     },
     {
         "opmask": (0x4086, 0xF0FF),
@@ -667,7 +667,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm10000110",
         "cmd"   : "lds.l",
-        "args"  : "@r{m}+,x0",
+        "args"  : "@r%(m)d+,x0",
     },
     {
         "opmask": (0x4096, 0xF0FF),
@@ -677,7 +677,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm10010110",
         "cmd"   : "lds.l",
-        "args"  : "@r{m}+,x1",
+        "args"  : "@r%(m)d+,x1",
     },
     {
         "opmask": (0x40A6, 0xF0FF),
@@ -687,7 +687,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm10100110",
         "cmd"   : "lds.l",
-        "args"  : "@r{m}+,y0",
+        "args"  : "@r%(m)d+,y0",
     },
     {
         "opmask": (0x40B6, 0xF0FF),
@@ -697,7 +697,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm10110110",
         "cmd"   : "lds.l",
-        "args"  : "@r{m}+,y1",
+        "args"  : "@r%(m)d+,y1",
     },
     {
         "opmask": (0x000F, 0xF00F),
@@ -707,7 +707,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnnmmmm1111",
         "cmd"   : "mac.l",
-        "args"  : "@r{m}+,@r{n}+",
+        "args"  : "@r%(m)d+,@r%(n)d+",
     },
     {
         "opmask": (0x400F, 0xF00F),
@@ -717,7 +717,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnnmmmm1111",
         "cmd"   : "mac.w",
-        "args"  : "@r{m}+,@r{n}+",
+        "args"  : "@r%(m)d+,@r%(n)d+",
     },
     {
         "opmask": (0xE000, 0xF000),
@@ -727,7 +727,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "1110nnnniiiiiiii",
         "cmd"   : "mov",
-        "args"  : "#0x{imm:x},r{n}",
+        "args"  : "#0x%(imm)x,r%(n)d",
     },
     {
         "opmask": (0x6003, 0xF00F),
@@ -737,7 +737,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm0011",
         "cmd"   : "mov",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0xC400, 0xFF00),
@@ -747,7 +747,7 @@ opcodes = (
         "disp"  : 0x00FF,
         "bits"  : "11000100dddddddd",
         "cmd"   : "mov.b",
-        "args"  : "@(0x{disp:x},gbr),r0",
+        "args"  : "@(0x%(disp)x,gbr),r0",
     },
     {
         "opmask": (0x8400, 0xFF00),
@@ -757,7 +757,7 @@ opcodes = (
         "disp"  : 0x000F,
         "bits"  : "10000100mmmmdddd",
         "cmd"   : "mov.b",
-        "args"  : "@(0x{disp:x},r{m}),r0",
+        "args"  : "@(0x%(disp)x,r%(m)d),r0",
     },
     {
         "opmask": (0x000C, 0xF00F),
@@ -767,7 +767,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnnmmmm1100",
         "cmd"   : "mov.b",
-        "args"  : "@(r0,r{m}),r{n}",
+        "args"  : "@(r0,r%(m)d),r%(n)d",
     },
     {
         "opmask": (0x6004, 0xF00F),
@@ -777,7 +777,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm0100",
         "cmd"   : "mov.b",
-        "args"  : "@r{m}+,r{n}",
+        "args"  : "@r%(m)d+,r%(n)d",
     },
     {
         "opmask": (0x6000, 0xF00F),
@@ -787,7 +787,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm0000",
         "cmd"   : "mov.b",
-        "args"  : "@r{m},r{n}",
+        "args"  : "@r%(m)d,r%(n)d",
     },
     {
         "opmask": (0xC000, 0xFF00),
@@ -797,7 +797,7 @@ opcodes = (
         "disp"  : 0x00FF,
         "bits"  : "11000000dddddddd",
         "cmd"   : "mov.b",
-        "args"  : "r0,@(0x{disp:x},gbr)",
+        "args"  : "r0,@(0x%(disp)x,gbr)",
     },
     {
         "opmask": (0x8000, 0xFF00),
@@ -807,7 +807,7 @@ opcodes = (
         "disp"  : 0x000F,
         "bits"  : "10000000nnnndddd",
         "cmd"   : "mov.b",
-        "args"  : "r0,@(0x{disp:x},r{n})",
+        "args"  : "r0,@(0x%(disp)x,r%(n)d)",
     },
     {
         "opmask": (0x0004, 0xF00F),
@@ -817,7 +817,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnnmmmm0100",
         "cmd"   : "mov.b",
-        "args"  : "r{m},@(r0,r{n})",
+        "args"  : "r%(m)d,@(r0,r%(n)d)",
     },
     {
         "opmask": (0x2004, 0xF00F),
@@ -827,7 +827,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm0100",
         "cmd"   : "mov.b",
-        "args"  : "r{m},@.r{n}",
+        "args"  : "r%(m)d,@.r%(n)d",
     },
     {
         "opmask": (0x2000, 0xF00F),
@@ -837,7 +837,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm0000",
         "cmd"   : "mov.b",
-        "args"  : "r{m},@r{n}",
+        "args"  : "r%(m)d,@r%(n)d",
     },
     {
         "opmask": (0xC600, 0xFF00),
@@ -847,7 +847,7 @@ opcodes = (
         "disp"  : 0x00FF,
         "bits"  : "11000110dddddddd",
         "cmd"   : "mov.l",
-        "args"  : "@(0x{disp:x},gbr),r0",
+        "args"  : "@(0x%(disp)x,gbr),r0",
     },
     {
         "opmask": (0xD000, 0xF000),
@@ -857,7 +857,7 @@ opcodes = (
         "disp"  : 0x00FF,
         "bits"  : "1101nnnndddddddd",
         "cmd"   : "mov.l",
-        "args"  : "@(0x{disp:x},pc),r{n}",
+        "args"  : "@(0x%(disp)x,pc),r%(n)d",
     },
     {
         "opmask": (0x5000, 0xF000),
@@ -867,7 +867,7 @@ opcodes = (
         "disp"  : 0x000F,
         "bits"  : "0101nnnnmmmmdddd",
         "cmd"   : "mov.l",
-        "args"  : "@(0x{disp:x},r{m}),r{n}",
+        "args"  : "@(0x%(disp)x,r%(m)d),r%(n)d",
     },
     {
         "opmask": (0x000E, 0xF00F),
@@ -877,7 +877,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnnmmmm1110",
         "cmd"   : "mov.l",
-        "args"  : "@(r0,r{m}),r{n}",
+        "args"  : "@(r0,r%(m)d),r%(n)d",
     },
     {
         "opmask": (0x6006, 0xF00F),
@@ -887,7 +887,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm0110",
         "cmd"   : "mov.l",
-        "args"  : "@r{m}+,r{n}",
+        "args"  : "@r%(m)d+,r%(n)d",
     },
     {
         "opmask": (0x6002, 0xF00F),
@@ -897,7 +897,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm0010",
         "cmd"   : "mov.l",
-        "args"  : "@r{m},r{n}",
+        "args"  : "@r%(m)d,r%(n)d",
     },
     {
         "opmask": (0xC200, 0xFF00),
@@ -907,7 +907,7 @@ opcodes = (
         "disp"  : 0x00FF,
         "bits"  : "11000010dddddddd",
         "cmd"   : "mov.l",
-        "args"  : "r0,@(0x{disp:x},gbr)",
+        "args"  : "r0,@(0x%(disp)x,gbr)",
     },
     {
         "opmask": (0x1000, 0xF000),
@@ -917,7 +917,7 @@ opcodes = (
         "disp"  : 0x000F,
         "bits"  : "0001nnnnmmmmdddd",
         "cmd"   : "mov.l",
-        "args"  : "r{m},@(0x{disp:x},r{n})",
+        "args"  : "r%(m)d,@(0x%(disp)x,r%(n)d)",
     },
     {
         "opmask": (0x0006, 0xF00F),
@@ -927,7 +927,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnnmmmm0110",
         "cmd"   : "mov.l",
-        "args"  : "r{m},@(r0,r{n})",
+        "args"  : "r%(m)d,@(r0,r%(n)d)",
     },
     {
         "opmask": (0x2006, 0xF00F),
@@ -937,7 +937,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm0110",
         "cmd"   : "mov.l",
-        "args"  : "r{m},@-r{n}",
+        "args"  : "r%(m)d,@-r%(n)d",
     },
     {
         "opmask": (0x2002, 0xF00F),
@@ -947,7 +947,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm0010",
         "cmd"   : "mov.l",
-        "args"  : "r{m},@r{n}",
+        "args"  : "r%(m)d,@r%(n)d",
     },
     {
         "opmask": (0xC500, 0xFF00),
@@ -957,7 +957,7 @@ opcodes = (
         "disp"  : 0x00FF,
         "bits"  : "11000101dddddddd",
         "cmd"   : "mov.w",
-        "args"  : "@(0x{disp:x},gbr),r0",
+        "args"  : "@(0x%(disp)x,gbr),r0",
     },
     {
         "opmask": (0x9000, 0xF000),
@@ -967,7 +967,7 @@ opcodes = (
         "disp"  : 0x00FF,
         "bits"  : "1001nnnndddddddd",
         "cmd"   : "mov.w",
-        "args"  : "@(0x{disp:x},pc),r{n}",
+        "args"  : "@(0x%(disp)x,pc),r%(n)d",
     },
     {
         "opmask": (0x8500, 0xFF00),
@@ -977,7 +977,7 @@ opcodes = (
         "disp"  : 0x000F,
         "bits"  : "10000101mmmmdddd",
         "cmd"   : "mov.w",
-        "args"  : "@(0x{disp:x},r{m}),r0",
+        "args"  : "@(0x%(disp)x,r%(m)d),r0",
     },
     {
         "opmask": (0x000D, 0xF00F),
@@ -987,7 +987,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnnmmmm1101",
         "cmd"   : "mov.w",
-        "args"  : "@(r0,r{m}),r{n}",
+        "args"  : "@(r0,r%(m)d),r%(n)d",
     },
     {
         "opmask": (0x6005, 0xF00F),
@@ -997,7 +997,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm0101",
         "cmd"   : "mov.w",
-        "args"  : "@r{m}+,r{n}",
+        "args"  : "@r%(m)d+,r%(n)d",
     },
     {
         "opmask": (0x6001, 0xF00F),
@@ -1007,7 +1007,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm0001",
         "cmd"   : "mov.w",
-        "args"  : "@r{m},r{n}",
+        "args"  : "@r%(m)d,r%(n)d",
     },
     {
         "opmask": (0xC100, 0xFF00),
@@ -1017,7 +1017,7 @@ opcodes = (
         "disp"  : 0x00FF,
         "bits"  : "11000001dddddddd",
         "cmd"   : "mov.w",
-        "args"  : "r0,@(0x{disp:x},gbr)",
+        "args"  : "r0,@(0x%(disp)x,gbr)",
     },
     {
         "opmask": (0x8100, 0xFF00),
@@ -1027,7 +1027,7 @@ opcodes = (
         "disp"  : 0x000F,
         "bits"  : "10000001nnnndddd",
         "cmd"   : "mov.w",
-        "args"  : "r0,@(0x{disp:x},r{n})",
+        "args"  : "r0,@(0x%(disp)x,r%(n)d)",
     },
     {
         "opmask": (0x0005, 0xF00F),
@@ -1037,7 +1037,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnnmmmm0101",
         "cmd"   : "mov.w",
-        "args"  : "r{m},@(r0,r{n})",
+        "args"  : "r%(m)d,@(r0,r%(n)d)",
     },
     {
         "opmask": (0x2005, 0xF00F),
@@ -1047,7 +1047,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm0101",
         "cmd"   : "mov.w",
-        "args"  : "r{m},@-r{n}",
+        "args"  : "r%(m)d,@-r%(n)d",
     },
     {
         "opmask": (0x2001, 0xF00F),
@@ -1057,7 +1057,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm0001",
         "cmd"   : "mov.w",
-        "args"  : "r{m},@r{n}",
+        "args"  : "r%(m)d,@r%(n)d",
     },
     {
         "opmask": (0xC700, 0xFF00),
@@ -1067,7 +1067,7 @@ opcodes = (
         "disp"  : 0x00FF,
         "bits"  : "11000111dddddddd",
         "cmd"   : "mova",
-        "args"  : "@(0x{disp:x},pc),r0",
+        "args"  : "@(0x%(disp)x,pc),r0",
     },
     {
         "opmask": (0x0029, 0xF0FF),
@@ -1077,7 +1077,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn00101001",
         "cmd"   : "movt",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x0007, 0xF00F),
@@ -1087,7 +1087,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnnmmmm0111",
         "cmd"   : "mul.l",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x200F, 0xF00F),
@@ -1097,7 +1097,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm1111",
         "cmd"   : "muls.w",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x200E, 0xF00F),
@@ -1107,7 +1107,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm1110",
         "cmd"   : "mulu.w",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x600B, 0xF00F),
@@ -1117,7 +1117,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm1011",
         "cmd"   : "neg",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x600A, 0xF00F),
@@ -1127,7 +1127,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm1010",
         "cmd"   : "negc",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x0009, 0xFFFF),
@@ -1147,7 +1147,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm0111",
         "cmd"   : "not",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0xCB00, 0xFF00),
@@ -1157,7 +1157,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "11001011iiiiiiii",
         "cmd"   : "or",
-        "args"  : "#0x{imm:x},r0",
+        "args"  : "#0x%(imm)x,r0",
     },
     {
         "opmask": (0x200B, 0xF00F),
@@ -1167,7 +1167,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm1011",
         "cmd"   : "or",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0xCF00, 0xFF00),
@@ -1177,7 +1177,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "11001111iiiiiiii",
         "cmd"   : "or.b",
-        "args"  : "#0x{imm:x},@(r0,gbr)",
+        "args"  : "#0x%(imm)x,@(r0,gbr)",
     },
     {
         "opmask": (0x4024, 0xF0FF),
@@ -1187,7 +1187,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00100100",
         "cmd"   : "rotcl",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x4025, 0xF0FF),
@@ -1197,7 +1197,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00100101",
         "cmd"   : "rotcr",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x4004, 0xF0FF),
@@ -1207,7 +1207,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00000100",
         "cmd"   : "rotl",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x4005, 0xF0FF),
@@ -1217,7 +1217,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00000101",
         "cmd"   : "rotr",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x002B, 0xFFFF),
@@ -1247,7 +1247,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "10000010iiiiiiii",
         "cmd"   : "setrc",
-        "args"  : "#0x{imm:x}",
+        "args"  : "#0x%(imm)x",
     },
     {
         "opmask": (0x4014, 0xF0FF),
@@ -1257,7 +1257,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100mmmm00010100",
         "cmd"   : "setrc",
-        "args"  : "r{m}",
+        "args"  : "r%(m)d",
     },
     {
         "opmask": (0x0018, 0xFFFF),
@@ -1277,7 +1277,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00100000",
         "cmd"   : "shal",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x4021, 0xF0FF),
@@ -1287,7 +1287,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00100001",
         "cmd"   : "shar",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x4000, 0xF0FF),
@@ -1297,7 +1297,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00000000",
         "cmd"   : "shll",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x4008, 0xF0FF),
@@ -1307,7 +1307,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00001000",
         "cmd"   : "shll2",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x4018, 0xF0FF),
@@ -1317,7 +1317,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00011000",
         "cmd"   : "shll8",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x4028, 0xF0FF),
@@ -1327,7 +1327,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00101000",
         "cmd"   : "shll16",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x4001, 0xF0FF),
@@ -1337,7 +1337,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00000001",
         "cmd"   : "shlr",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x4009, 0xF0FF),
@@ -1347,7 +1347,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00001001",
         "cmd"   : "shlr2",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x4019, 0xF0FF),
@@ -1357,7 +1357,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00011001",
         "cmd"   : "shlr8",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x4029, 0xF0FF),
@@ -1367,7 +1367,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00101001",
         "cmd"   : "shlr16",
-        "args"  : "r{n}",
+        "args"  : "r%(n)d",
     },
     {
         "opmask": (0x001B, 0xFFFF),
@@ -1387,7 +1387,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn00010010",
         "cmd"   : "stc",
-        "args"  : "gbr,r{n}",
+        "args"  : "gbr,r%(n)d",
     },
     {
         "opmask": (0x0052, 0xF0FF),
@@ -1397,7 +1397,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn01010010",
         "cmd"   : "stc",
-        "args"  : "mod,r{n}",
+        "args"  : "mod,r%(n)d",
     },
     {
         "opmask": (0x0072, 0xF0FF),
@@ -1407,7 +1407,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn01110010",
         "cmd"   : "stc",
-        "args"  : "re,r{n}",
+        "args"  : "re,r%(n)d",
     },
     {
         "opmask": (0x0062, 0xF0FF),
@@ -1417,7 +1417,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn01100010",
         "cmd"   : "stc",
-        "args"  : "rs,r{n}",
+        "args"  : "rs,r%(n)d",
     },
     {
         "opmask": (0x0002, 0xF0FF),
@@ -1427,7 +1427,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn00000010",
         "cmd"   : "stc",
-        "args"  : "sr,r{n}",
+        "args"  : "sr,r%(n)d",
     },
     {
         "opmask": (0x0022, 0xF0FF),
@@ -1437,7 +1437,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn00100010",
         "cmd"   : "stc",
-        "args"  : "vbr,r{n}",
+        "args"  : "vbr,r%(n)d",
     },
     {
         "opmask": (0x4013, 0xF0FF),
@@ -1447,7 +1447,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00010011",
         "cmd"   : "stc.l",
-        "args"  : "gbr,@-r{n}",
+        "args"  : "gbr,@-r%(n)d",
     },
     {
         "opmask": (0x4053, 0xF0FF),
@@ -1457,7 +1457,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn01010011",
         "cmd"   : "stc.l",
-        "args"  : "mod,@-r{n}",
+        "args"  : "mod,@-r%(n)d",
     },
     {
         "opmask": (0x4073, 0xF0FF),
@@ -1467,7 +1467,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn01110011",
         "cmd"   : "stc.l",
-        "args"  : "re,@-r{n}",
+        "args"  : "re,@-r%(n)d",
     },
     {
         "opmask": (0x4063, 0xF0FF),
@@ -1477,7 +1477,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn01100011",
         "cmd"   : "stc.l",
-        "args"  : "rs,@-r{n}",
+        "args"  : "rs,@-r%(n)d",
     },
     {
         "opmask": (0x4003, 0xF0FF),
@@ -1487,7 +1487,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00000011",
         "cmd"   : "tc.l",
-        "args"  : "sr,@-r{n}",
+        "args"  : "sr,@-r%(n)d",
     },
     {
         "opmask": (0x4023, 0xF0FF),
@@ -1497,7 +1497,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00100011",
         "cmd"   : "stc.l",
-        "args"  : "vbr,@-r{n}",
+        "args"  : "vbr,@-r%(n)d",
     },
     {
         "opmask": (0x007A, 0xF0FF),
@@ -1507,7 +1507,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn01111010",
         "cmd"   : "sts",
-        "args"  : "a0,r{n}",
+        "args"  : "a0,r%(n)d",
     },
     {
         "opmask": (0x006A, 0xF0FF),
@@ -1517,7 +1517,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn01101010",
         "cmd"   : "sts",
-        "args"  : "dsr,r{n}",
+        "args"  : "dsr,r%(n)d",
     },
     {
         "opmask": (0x000A, 0xF0FF),
@@ -1527,7 +1527,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn00001010",
         "cmd"   : "sts",
-        "args"  : "mach,r{n}",
+        "args"  : "mach,r%(n)d",
     },
     {
         "opmask": (0x001A, 0xF0FF),
@@ -1537,7 +1537,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn00011010",
         "cmd"   : "sts",
-        "args"  : "macl,r{n}",
+        "args"  : "macl,r%(n)d",
     },
     {
         "opmask": (0x002A, 0xF0FF),
@@ -1547,7 +1547,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn00101010",
         "cmd"   : "sts",
-        "args"  : "pr,r{n}",
+        "args"  : "pr,r%(n)d",
     },
     {
         "opmask": (0x008A, 0xF0FF),
@@ -1557,7 +1557,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn10001010",
         "cmd"   : "sts",
-        "args"  : "x0,r{n}",
+        "args"  : "x0,r%(n)d",
     },
     {
         "opmask": (0x009A, 0xF0FF),
@@ -1567,7 +1567,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn10011010",
         "cmd"   : "sts",
-        "args"  : "x1,r{n}",
+        "args"  : "x1,r%(n)d",
     },
     {
         "opmask": (0x00AA, 0xF0FF),
@@ -1577,7 +1577,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn10101010",
         "cmd"   : "sts",
-        "args"  : "y0,r{n}",
+        "args"  : "y0,r%(n)d",
     },
     {
         "opmask": (0x00BA, 0xF0FF),
@@ -1587,7 +1587,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0000nnnn10111010",
         "cmd"   : "sts",
-        "args"  : "y1,r{n}",
+        "args"  : "y1,r%(n)d",
     },
     {
         "opmask": (0x4072, 0xF0FF),
@@ -1597,7 +1597,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn01110010",
         "cmd"   : "sts.l",
-        "args"  : "a0,@-r{n}",
+        "args"  : "a0,@-r%(n)d",
     },
     {
         "opmask": (0x4062, 0xF0FF),
@@ -1607,7 +1607,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn01100010",
         "cmd"   : "sts.l",
-        "args"  : "dsr,@-r{n}",
+        "args"  : "dsr,@-r%(n)d",
     },
     {
         "opmask": (0x4002, 0xF0FF),
@@ -1617,7 +1617,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00000010",
         "cmd"   : "sts.l",
-        "args"  : "mach,@-r{n}",
+        "args"  : "mach,@-r%(n)d",
     },
     {
         "opmask": (0x4012, 0xF0FF),
@@ -1627,7 +1627,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00010010",
         "cmd"   : "sts.l",
-        "args"  : "macl,@-r{n}",
+        "args"  : "macl,@-r%(n)d",
     },
     {
         "opmask": (0x4022, 0xF0FF),
@@ -1637,7 +1637,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00100010",
         "cmd"   : "sts.l",
-        "args"  : "pr,@-r{n}",
+        "args"  : "pr,@-r%(n)d",
     },
     {
         "opmask": (0x4082, 0xF0FF),
@@ -1647,7 +1647,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn10000010",
         "cmd"   : "sts.l",
-        "args"  : "x0,@-r{n}",
+        "args"  : "x0,@-r%(n)d",
     },
     {
         "opmask": (0x4092, 0xF0FF),
@@ -1657,7 +1657,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn10010010",
         "cmd"   : "sts.l",
-        "args"  : "x1,@-r{n}",
+        "args"  : "x1,@-r%(n)d",
     },
     {
         "opmask": (0x40A2, 0xF0FF),
@@ -1667,7 +1667,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn10100010",
         "cmd"   : "sts.l",
-        "args"  : "y0,@-r{n}",
+        "args"  : "y0,@-r%(n)d",
     },
     {
         "opmask": (0x40B2, 0xF0FF),
@@ -1677,7 +1677,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn10110010",
         "cmd"   : "sts.l",
-        "args"  : "y1,@-r{n}",
+        "args"  : "y1,@-r%(n)d",
     },
     {
         "opmask": (0x3008, 0xF00F),
@@ -1687,7 +1687,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm1000",
         "cmd"   : "sub",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x300A, 0xF00F),
@@ -1697,7 +1697,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm1010",
         "cmd"   : "subc",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x300B, 0xF00F),
@@ -1707,7 +1707,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0011nnnnmmmm1011",
         "cmd"   : "subv",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x6008, 0xF00F),
@@ -1717,7 +1717,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm1000",
         "cmd"   : "swap.b",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x6009, 0xF00F),
@@ -1727,7 +1727,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0110nnnnmmmm1001",
         "cmd"   : "swap.w",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0x401B, 0xF0FF),
@@ -1737,7 +1737,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0100nnnn00011011",
         "cmd"   : "tas.b",
-        "args"  : "@r{n}",
+        "args"  : "@r%(n)d",
     },
     {
         "opmask": (0xC300, 0xFF00),
@@ -1747,7 +1747,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "11000011iiiiiiii",
         "cmd"   : "trapa",
-        "args"  : "#0x{imm:x}",
+        "args"  : "#0x%(imm)x",
     },
     {
         "opmask": (0xC800, 0xFF00),
@@ -1757,7 +1757,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "11001000iiiiiiii",
         "cmd"   : "tst",
-        "args"  : "#0x{imm:x},r0",
+        "args"  : "#0x%(imm)x,r0",
     },
     {
         "opmask": (0x2008, 0xF00F),
@@ -1767,7 +1767,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm1000",
         "cmd"   : "tst",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0xCC00, 0xFF00),
@@ -1777,7 +1777,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "11001100iiiiiiii",
         "cmd"   : "tst.b",
-        "args"  : "#0x{imm:x},@(r0,gbr)",
+        "args"  : "#0x%(imm)x,@(r0,gbr)",
     },
     {
         "opmask": (0xCA00, 0xFF00),
@@ -1787,7 +1787,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "11001010iiiiiiii",
         "cmd"   : "xor",
-        "args"  : "#0x{imm:x},r0",
+        "args"  : "#0x%(imm)x,r0",
     },
     {
         "opmask": (0x200A, 0xF00F),
@@ -1797,7 +1797,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm1010",
         "cmd"   : "xor",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
     {
         "opmask": (0xCE00, 0xFF00),
@@ -1807,7 +1807,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "11001110iiiiiiii",
         "cmd"   : "xor.b",
-        "args"  : "#0x{imm:x},@(r0,gbr)",
+        "args"  : "#0x%(imm)x,@(r0,gbr)",
     },
     {
         "opmask": (0x200D, 0xF00F),
@@ -1817,6 +1817,6 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm1101",
         "cmd"   : "xtrct",
-        "args"  : "r{m},r{n}",
+        "args"  : "r%(m)d,r%(n)d",
     },
 )
