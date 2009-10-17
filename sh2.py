@@ -105,15 +105,15 @@ class CodeField(DataField):
         DataField.__init__(self, *args, **kwargs)
 
     def __str__(self):
-        if 'label' in self.extra['text']:
-            meta = self.model.get_location(self.extra['args']['target'])
+        if 'label' in self.extra.text:
+            meta = self.model.get_location(self.extra.args['target'])
             if meta is not None:
                 target = meta.get_label()
             else:
-                target = 'sub_%X' % self.extra['args']['target']
-            text = self.extra['text'].replace('label', target)
+                target = 'sub_%X' % self.extra.args['target']
+            text = self.extra.text.replace('label', target)
         else:
-            text = self.extra['text']
+            text = self.extra.text
         label = self.label + ':' if self.label is not None else ''
         return '%-16s %s' % (self.get_label(), text)
 
@@ -159,15 +159,6 @@ def parse_args(instruction, opcode):
         op['disp'] = None
     return op
 
-
-def disasm_single(instruction):
-    """Disassemble a single instruction."""
-    # TODO: brute force sucks, we can do much better here.
-    for opcode in opcodes:
-        instbits, instmask = opcode['opmask']
-        if instruction & instmask == instbits:
-            args = parse_args(instruction, opcode)
-            return opcode, args
 
 def calculate_disp_target(opcode, args, pc):
     disp = args['disp']
@@ -247,6 +238,32 @@ def track_registers(opcode, args, location, registers, model):
         registers[0] = None
 
 
+def lookup_instruction(instruction):
+    """Perform a basic lookup of the instruction in our registry."""
+    # TODO: brute force sucks, we can do much better here.
+    for opcode in opcodes:
+        instbits, instmask = opcode['opmask']
+        if instruction & instmask == instbits:
+            args = parse_args(instruction, opcode)
+            return opcode, args
+    raise AssemblyError, 'no matching instruction for %#x' % instruction
+
+
+def disasm_single(instruction, pc, registers, model):
+    """Disassemble a single instruction."""
+    class CodeExtra:
+        pass
+
+    opcode, args = lookup_instruction(instruction)
+    calculate_disp_target(opcode, args, pc)
+    track_registers(opcode, args, pc, registers, model)
+    extra = CodeExtra()
+    extra.text = ' '.join((opcode['cmd'], opcode['args'] % args))
+    extra.opcode = opcode
+    extra.args = args
+    return CodeField(location=pc, width=2, extra=extra, model=model)
+
+
 def disassemble(location, model):
     """Given a memory model and a location within it, disassemble."""
     work_queue = [(location,None),]
@@ -270,38 +287,31 @@ def disassemble(location, model):
                 break
 
             instruction = struct.unpack('>H', bytes)[0]
-            opcode, args = disasm_single(instruction)
-            calculate_disp_target(opcode, args, location)
-            track_registers(opcode, args, location, registers, model)
+            code = disasm_single(instruction, location, registers, model)
 
             # Handle register-based branches.
-            if opcode['cmd'] in register_branchers:
-                if registers[args['m']] is not None:
-                    work_queue.append((registers[args['m']], location))
+            if code.extra.opcode['cmd'] in register_branchers:
+                if registers[code.extra.args['m']] is not None:
+                    work_queue.append((registers[code.extra.args['m']], location))
                 # TODO: Make some kind of note about unresolved branches.
                 #else:
                 #    print 'unresolved branch at 0x%x' % location
-            if opcode['cmd'] in label_branchers:
-                work_queue.append((args['target'], location))
+            if code.extra.opcode['cmd'] in label_branchers:
+                work_queue.append((code.extra.args['target'], location))
 
-            extra = {
-                'text': ' '.join((opcode['cmd'], opcode['args'] % args)),
-                'opcode': opcode,
-                'args': args,
-            }
-            code = CodeField(location=location, width=2, extra=extra, model=model)
             if reference is not None:
                 code.references.append(reference)
                 reference = None
             if orig is not None:
                 code.label = orig.label
+
             model.set_location(code)
 
-            if opcode['cmd'] in delayed_branchers:
+            if code.extra.opcode['cmd'] in delayed_branchers:
                 branch_countdown = 1
                 branching = True
-                if args['target'] is not None:
-                    work_queue.append((args['target'], location))
+                if code.extra.args['target'] is not None:
+                    work_queue.append((code.extra.args['target'], location))
             if branching:
                 branch_countdown -= 1
 
