@@ -6,7 +6,7 @@ TODO:
 """
 
 
-import getopt, os.path, struct, sys
+import getopt, os.path, sys
 import segment, sh2, sh7052, sh7055
 
 
@@ -38,18 +38,16 @@ def get_segments(phys):
 def setup_vectors(model):
     """Pre-define the vector table."""
     for i in range(0x0, 0x400, 0x4):
-        bytes = model.get_phys(i, 4)
-        value = struct.unpack('>L', bytes)[0]
         if i in proc.vectors:
             label = proc.vectors[i]
         else:
             label = None
-        model.set_location(sh2.LongField(location=i, extra=value, model=model, label=label))
+        model.set_location(sh2.LongField(location=i, model=model, label=label))
 
     for addr, name in proc.registers.items():
         meta = model.get_location(addr)
         if meta is None:
-            meta = sh2.ByteField(location=addr, extra=0, model=model)
+            meta = sh2.ByteField(location=addr, model=model)
         meta.label = name
         model.set_location(meta)
 
@@ -102,8 +100,7 @@ def main(argv):
             code = True
             print '         !', '-' * 60
         if meta is None:
-            value = ord(model.get_phys(i, 1))
-            meta = sh2.ByteField(location=i, model=model, extra=value)
+            meta = sh2.ByteField(location=i, model=model)
         countdown = meta.width - 1
         print '%08X' % i, meta
 

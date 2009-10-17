@@ -3,8 +3,6 @@
 
 """
 TODO:
-- Byte, Long, and Word fields should do their own data conversion, rather
-  than the caller doing the struct work.
 - make some sort of note with the code about both resolved and unresolved
   branch targets.
 """
@@ -50,6 +48,10 @@ class ByteField(DataField):
     def __init__(self, *args, **kwargs):
         kwargs['width'] = 1
         DataField.__init__(self, *args, **kwargs)
+        try:
+            self.extra = ord(self.model.get_phys(self.location, 1))
+        except segment.SegmentError:
+            self.extra = None
 
 
 class WordField(DataField):
@@ -58,6 +60,11 @@ class WordField(DataField):
     def __init__(self, *args, **kwargs):
         kwargs['width'] = 2
         DataField.__init__(self, *args, **kwargs)
+        try:
+            bytes = self.model.get_phys(self.location, 2)
+            self.extra = struct.unpack('>H', bytes)[0]
+        except segment.SegmentError:
+            self.extra = None
 
 
 class LongField(DataField):
@@ -66,6 +73,11 @@ class LongField(DataField):
     def __init__(self, *args, **kwargs):
         kwargs['width'] = 4
         DataField.__init__(self, *args, **kwargs)
+        try:
+            bytes = self.model.get_phys(self.location, 4)
+            self.extra = struct.unpack('>L', bytes)[0]
+        except segment.SegmentError:
+            self.extra = None
 
         # Make us a reference if we refer to a legitimate address.
         try:
@@ -214,16 +226,13 @@ def track_registers(opcode, args, location, registers, model):
                     meta = model.get_location(target)
                     if meta is None:
                         if opcode['cmd'][-2:] == '.l' or opcode['cmd'] == 'mova':
-                            extra = struct.unpack('>L', model.get_phys(target, 4))[0]
-                            meta = LongField(location=target, model=model, extra=extra)
+                            meta = LongField(location=target, model=model)
                             model.set_location(meta)
                         elif opcode['cmd'][-2:] == '.w':
-                            extra = struct.unpack('>H', model.get_phys(target, 2))[0]
-                            meta = WordField(location=target, model=model, extra=extra)
+                            meta = WordField(location=target, model=model)
                             model.set_location(meta)
                         else:
-                            extra = ord(model.get_phys(target, 1))
-                            meta = ByteField(location=target,model=model, extra=extra)
+                            meta = ByteField(location=target,model=model)
                             model.set_location(meta)
                     if location not in meta.references:
                         meta.references.append(location)
