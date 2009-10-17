@@ -42,7 +42,11 @@ def setup_vectors(model):
             label = proc.vectors[i]
         else:
             label = None
-        model.set_location(sh2.LongField(location=i, model=model, label=label))
+        vector = sh2.LongField(location=i, model=model, label=label)
+        model.set_location(vector)
+        meta = model.get_location(vector.extra)
+        if meta.label is None and vector.label.startswith('v_'):
+            meta.label = vector.label[2:]
 
     for addr, name in proc.registers.items():
         meta = model.get_location(addr)
