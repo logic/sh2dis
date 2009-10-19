@@ -73,10 +73,10 @@ def disassemble_vectors(model):
     """Disassemble the locations referenced by the vector table."""
     for i in range(0x0, 0x400, 0x4):
         if i == 0x4 or i == 0x12:
-            # Skip stack point addresses.
+            # Skip stack pointer addresses.
             continue
         meta = model.get_location(i)
-        sh2.disassemble(meta.extra, model)
+        sh2.disassemble(meta.extra, meta.location, model)
 
 
 def disassemble(phys, outfile=sys.stdout):
@@ -102,7 +102,7 @@ def disassemble(phys, outfile=sys.stdout):
             # Create this as a throwaway byte, to save memory.
             meta = sh2.ByteField(location=i, model=model)
         countdown = meta.width - 1
-        print >> outfile, '%08X %s' % (i, meta)
+        print >> outfile, meta
 
 
 def main():

@@ -18,6 +18,53 @@ class SegmentData:
         self.references = references # A list of references to this location.
         self.extra = extra
 
+    def __str__(self):
+        instruction = self.get_instruction()
+
+        label = self.get_label()
+        if label is None:
+            label = ''
+        else:
+            label += ':'
+
+        comments = self.generate_comments()
+        count = 1
+        for r in sorted(self.references):
+            if r == self.location:
+                continue
+            l = None
+            meta = self.model.get_location(r)
+            if meta is not None:
+                l = meta.get_label()
+            if l is None:
+                l = '0x%X' % r
+            if count > 0:
+                comments.append('XREF: %s' % l)
+                count -= 1
+            else:
+                comments.append('XREF: %s ...' % l)
+                break
+        if self.comment is not None:
+            comments.append(self.comment.split('\n'))
+
+        val = [ ]
+        if len(comments) > 0:
+            comments.reverse()
+            if len(instruction) > 30:
+                val.append('%08X %-16s %s' % (self.location, label, instruction))
+            else:
+                c = comments.pop()
+                val.append('%08X %-16s %-30s ! %s' % (self.location, label, instruction, c))
+            for c in comments:
+                val.append('%56s ! %s' % ('', c))
+        else:
+            val.append('%08X %-16s %s' % (self.location, label, instruction))
+
+        return '\n'.join(val)
+
+    def generate_comments(self):
+        return [ ]
+
 
 class Segment:
     def __init__(self, start, length, phys=None, name=None):
@@ -67,7 +114,7 @@ class Segment:
             value.comment = ''.join(comments)
         for i in references.keys():
             if i not in value.references:
-                value.references.append(references)
+                value.references.append(i)
         self.space[rel_loc] = value
         for i in range(1, value.width):
             self.space[rel_loc + i] = -i

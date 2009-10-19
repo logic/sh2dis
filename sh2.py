@@ -25,21 +25,21 @@ label_branchers = ('bf','bf/s','bra','bsr','bt','bt/s')
 class DataField(segment.SegmentData):
     """Metaclass for SH2 data types."""
 
-    def __str__(self):
+    def get_instruction(self):
         """A GAS-compatible string representation for this data type."""
         name = self.__class__.__name__.lower().replace('field', '')
-        val = '%-16s .%s 0x%%0%dX' % (self.get_label(), name, (self.width * 2))
+        val = '.%s 0x%%0%dX' % (name, (self.width * 2))
         return val % self.extra
 
     def get_label(self):
         if self.label is None and len(self.references) > 0:
             meta = self.model.get_location(self.location - 1)
             if meta is not None and meta.label is not None:
-                return '%s+%d:' % (meta.label, self.location-meta.location)
-            return 'unk_%X:' % self.location
+                return '%s+%d' % (meta.label, self.location-meta.location)
+            return 'unk_%X' % self.location
         if self.label is not None:
-            return self.label + ':'
-        return ''
+            return self.label
+        return None
 
 
 class ByteField(DataField):
@@ -86,21 +86,20 @@ class LongField(DataField):
         except segment.SegmentError:
             pass
 
-    def __str__(self):
+    def get_instruction(self):
         name = self.__class__.__name__.lower().replace('field', '')
         try:
             meta = self.model.get_location(self.extra)
             if meta is not None:
-                if meta.get_label() != '':
-                    text = meta.get_label()[:-1]
-                else:
+                text = meta.get_label()
+                if text is None:
                     raise segment.SegmentError
             else:
                 raise segment.SegmentError
         except segment.SegmentError:
             text = '0x%%0%dX' % (self.width * 2)
             text = text % self.extra
-        return '%-16s .%s %s' % (self.get_label(), name, text)
+        return '.%s %s' % (name, text)
 
 
 class CodeField(DataField):
@@ -109,25 +108,36 @@ class CodeField(DataField):
     def __init__(self, *args, **kwargs):
         DataField.__init__(self, *args, **kwargs)
 
-    def __str__(self):
+    def get_instruction(self):
         if 'label' in self.extra.text:
             meta = self.model.get_location(self.extra.args['target'])
             if meta is not None:
                 target = meta.get_label()
+                if target is None:
+                    target = '0x%X' % self.extra.args['target']
             else:
                 target = 'sub_%X' % self.extra.args['target']
             text = self.extra.text.replace('label', target)
         else:
             text = self.extra.text
-        label = self.label + ':' if self.label is not None else ''
-        return '%-16s %s' % (self.get_label(), text)
+        return text
 
     def get_label(self):
         if self.label is None and len(self.references) > 0:
-            return 'sub_%X:' % self.location
+            return 'sub_%X' % self.location
         if self.label is not None:
-            return self.label + ':'
-        return ''
+            return self.label
+        return None
+
+    def generate_comments(self):
+        comments = DataField.generate_comments(self)
+        if 'target' in self.extra.args and self.extra.args['target'] is not None:
+            meta = self.model.get_location(self.extra.args['target'])
+            if meta is not None:
+                target = meta.get_label()
+                if target is not None:
+                    comments.append('REF: %s' % target)
+        return comments
 
 
 class NullField(segment.SegmentData):
@@ -136,7 +146,7 @@ class NullField(segment.SegmentData):
     def __init__(self, *args, **kwargs):
         segment.SegmentData.__init__(self, *args, **kwargs)
 
-    def __str__(self):
+    def get_instruction(self):
         return '.org %#X' % (self.location + self.width)
 
 
@@ -272,9 +282,9 @@ def disasm_single(instruction, pc, registers, model):
     return CodeField(location=pc, width=2, extra=extra, model=model)
 
 
-def disassemble(location, model):
+def disassemble(location, reference, model):
     """Given a memory model and a location within it, disassemble."""
-    work_queue = [(location,None),]
+    work_queue = [ (location, reference), ]
 
     while len(work_queue) > 0:
         location, reference = work_queue.pop()
@@ -285,6 +295,8 @@ def disassemble(location, model):
         # Quick check to make sure we haven't already processed this location.
         meta = model.get_location(location)
         if isinstance(meta, CodeField):
+            if reference not in meta.references:
+                meta.references.append(reference)
             continue
 
         while not branching or branch_countdown >= 0:
