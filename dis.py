@@ -6,8 +6,11 @@ TODO:
 """
 
 
-import getopt, os.path, sys
+import optparse, os.path, sys
 import segment, sh2, sh7052, sh7055
+
+
+version='0.99'
 
 
 class ROMError(StandardError):
@@ -34,6 +37,7 @@ def get_segments(phys):
             ('REG', 0xFFFFE400, 0x1460, None),
         )
     raise ROMError, 'invalid or unrecognized ROM'
+
 
 def setup_vectors(model):
     """Pre-define the vector table."""
@@ -67,6 +71,7 @@ def setup_vectors(model):
     meta = model.get_location(meta.extra)
     meta.label = 'reset'
 
+
 def disassemble_vectors(model):
     """Disassemble the locations referenced by the vector table."""
     for i in range(0x0, 0x400, 0x4):
@@ -76,15 +81,8 @@ def disassemble_vectors(model):
         meta = model.get_location(i)
         sh2.disassemble(meta.extra, model)
 
-def main(argv):
-    if len(argv) != 1:
-        print 'No ROM specified.'
-        sys.exit(1)
-    romname = argv[0]
-    if not os.path.isfile(romname):
-        print 'No such file:', romname
-        sys.exit(1)
-    phys = open(romname).read()
+
+def disassemble(phys, outfile=sys.stdout):
     model = segment.MemoryModel(get_segments(phys))
     setup_vectors(model)
     disassemble_vectors(model)
@@ -99,14 +97,43 @@ def main(argv):
         meta = model.get_location(i)
         if code and not isinstance(meta, sh2.CodeField):
             code = False
-            print '         !', '-' * 60
+            print >> outfile, '         !', '-' * 60
         elif not code and isinstance(meta, sh2.CodeField):
             code = True
-            print '         !', '-' * 60
+            print >> outfile, '         !', '-' * 60
         if meta is None:
             meta = sh2.ByteField(location=i, model=model)
         countdown = meta.width - 1
-        print '%08X' % i, meta
+        print >> outfile, '%08X %s' % (i, meta)
+
+
+def main():
+    parser = optparse.OptionParser(
+      usage='Usage: %prog [options] <ROM file>',
+      version=version)
+    parser.add_option('-o', '--output', dest='file', default=None,
+      help='specify a destination file (default is standard output)')
+    options, args = parser.parse_args()
+
+    if len(args) != 1:
+        print >> sys.stderr, 'No ROM file specified!\n'
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+
+    romname = args[0]
+    if not os.path.isfile(romname):
+        print >> sys.stderr, 'No such ROM file `%s\'!\n' % romname
+        parser.print_help(sys.stderr)
+        sys.exit(1)
+    phys = open(romname).read()
+
+    if options.file is None:
+        output = sys.stdout
+    else:
+        output = open(options.file, 'w')
+
+    disassemble(phys, output)
+
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main()
