@@ -53,11 +53,8 @@ def setup_vectors(model):
             meta.label = vector.label[2:]
 
     for addr, name in proc.registers.items():
-        meta = model.get_location(addr)
-        if meta is None:
-            meta = sh2.ByteField(location=addr, model=model)
+        meta = sh2.create_reference(None, addr, model)
         meta.label = name
-        model.set_location(meta)
 
     # Name a few common vector items.
     meta = model.get_location(0)
@@ -102,6 +99,7 @@ def disassemble(phys, outfile=sys.stdout):
             code = True
             print >> outfile, '         !', '-' * 60
         if meta is None:
+            # Create this as a throwaway byte, to save memory.
             meta = sh2.ByteField(location=i, model=model)
         countdown = meta.width - 1
         print >> outfile, '%08X %s' % (i, meta)

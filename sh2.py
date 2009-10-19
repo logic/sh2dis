@@ -81,15 +81,8 @@ class LongField(DataField):
 
         # Make us a reference if we refer to a legitimate address.
         try:
-            meta = self.model.get_location(self.extra)
-            if meta is None:
-                try:
-                    value = ord(self.model.get_phys(self.extra, 1))
-                except segment.SegmentError:
-                    value = 0
-                self.model.set_location(ByteField(location=self.extra,extra=value,model=self.model))
-                meta = self.model.get_location(self.extra)
-                meta.references.append(self.location)
+            if self.model.get_location(self.extra) is None:
+                create_reference(self.location, self.extra, self.model)
         except segment.SegmentError:
             pass
 
@@ -149,6 +142,16 @@ class NullField(segment.SegmentData):
 
 class AssemblyError(StandardError):
     pass
+
+
+def create_reference(referer, location, model, metatype=ByteField):
+    meta = model.get_location(location)
+    if meta is None:
+        meta = metatype(location=location, model=model)
+        model.set_location(meta)
+    if referer is not None:
+        meta.references.append(referer)
+    return meta
 
 
 def parse_args(instruction, opcode):
@@ -226,16 +229,12 @@ def track_registers(opcode, args, location, registers, model):
                     meta = model.get_location(target)
                     if meta is None:
                         if opcode['cmd'][-2:] == '.l' or opcode['cmd'] == 'mova':
-                            meta = LongField(location=target, model=model)
-                            model.set_location(meta)
+                            meta_type = LongField
                         elif opcode['cmd'][-2:] == '.w':
-                            meta = WordField(location=target, model=model)
-                            model.set_location(meta)
+                            meta_type = WordField
                         else:
-                            meta = ByteField(location=target,model=model)
-                            model.set_location(meta)
-                    if location not in meta.references:
-                        meta.references.append(location)
+                            meta_type = ByteField
+                        meta = create_reference(location, target, model, meta_type)
                     registers[n] = meta.extra
                     return
 
