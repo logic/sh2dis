@@ -37,7 +37,7 @@ class SegmentData:
             if meta is not None:
                 l = meta.get_label()
             if l is None:
-                l = '%s:%X' % (self.model.get_segment_name(r), r)
+                l = '0x%X' % r
             if count > 0:
                 comments.append('XREF: %s' % l)
                 count -= 1
@@ -49,13 +49,13 @@ class SegmentData:
 
         val = [ ]
         if len(comments) > 0:
-            if len(instruction) > 30:
+            if len(instruction) > 21:
                 val.append('%08X %-16s %s' % (self.location, label, instruction))
             else:
                 c = comments.pop(0)
-                val.append('%08X %-16s %-30s ! %s' % (self.location, label, instruction, c))
+                val.append('%08X %-16s %-21s ! %s' % (self.location, label, instruction, c))
             for c in comments:
-                val.append('%56s ! %s' % ('', c))
+                val.append('%47s ! %s' % ('', c))
         else:
             val.append('%08X %-16s %s' % (self.location, label, instruction))
 
@@ -133,6 +133,8 @@ class MemoryModel:
             self.segments.append(Segment(name=name, start=start, length=len, phys=phys))
 
     def __lookup_segment(self, location):
+        if not isinstance(location, (int, long)):
+            raise SyntaxError, 'invalid location: %s' % repr(location)
         for segment in self.segments:
             if location >= segment.start and location < segment.start + segment.length:
                 return segment

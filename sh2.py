@@ -137,9 +137,19 @@ class CodeField(DataField):
                 meta = self.model.get_location(target)
                 if meta is not None:
                     label = meta.get_label()
-                    if target is not None:
-                        seg = self.model.get_segment_name(target)
-                        comments.append('REF: %s:%s' % (seg, label))
+                    if isinstance(meta.extra, (int, long)):
+                        try:
+                            target2 = self.model.get_location(meta.extra)
+                            if target2 is None:
+                                raise segment.SegmentError
+                            t2label = target2.get_label()
+                            if t2label is None:
+                                t2label = '0x%X' % target2.location
+                            comments.append('[%s] = %s' % (label, t2label))
+                        except segment.SegmentError:
+                            comments.append('[%s]' % (label))
+                    elif 'label' not in self.extra.text:
+                        comments.append(label)
         return comments
 
 
@@ -314,11 +324,10 @@ def disassemble(location, reference, model):
 
             # Handle register-based branches.
             if code.extra.opcode['cmd'] in register_branchers:
-                if registers[code.extra.args['m']] is not None:
-                    work_queue.append((registers[code.extra.args['m']], location))
-                # TODO: Make some kind of note about unresolved branches.
-                #else:
-                #    print 'unresolved branch at 0x%x' % location
+                r = registers[code.extra.args['m']]
+                if r is not None:
+                    code.extra.args['target'] = r
+                    work_queue.append((r, location))
             if code.extra.opcode['cmd'] in label_branchers:
                 work_queue.append((code.extra.args['target'], location))
 
