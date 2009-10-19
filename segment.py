@@ -49,11 +49,10 @@ class SegmentData:
 
         val = [ ]
         if len(comments) > 0:
-            comments.reverse()
             if len(instruction) > 30:
                 val.append('%08X %-16s %s' % (self.location, label, instruction))
             else:
-                c = comments.pop()
+                c = comments.pop(0)
                 val.append('%08X %-16s %-30s ! %s' % (self.location, label, instruction, c))
             for c in comments:
                 val.append('%56s ! %s' % ('', c))
