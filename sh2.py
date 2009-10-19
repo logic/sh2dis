@@ -131,12 +131,15 @@ class CodeField(DataField):
 
     def generate_comments(self):
         comments = DataField.generate_comments(self)
-        if 'target' in self.extra.args and self.extra.args['target'] is not None:
-            meta = self.model.get_location(self.extra.args['target'])
-            if meta is not None:
-                target = meta.get_label()
-                if target is not None:
-                    comments.append('REF: %s' % target)
+        if 'target' in self.extra.args:
+            target = self.extra.args['target']
+            if target is not None:
+                meta = self.model.get_location(target)
+                if meta is not None:
+                    label = meta.get_label()
+                    if target is not None:
+                        seg = self.model.get_segment_name(target)
+                        comments.append('REF: %s:%s' % (seg, label))
         return comments
 
 

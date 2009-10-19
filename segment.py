@@ -37,7 +37,7 @@ class SegmentData:
             if meta is not None:
                 l = meta.get_label()
             if l is None:
-                l = '0x%X' % r
+                l = '%s:%X' % (self.model.get_segment_name(r), r)
             if count > 0:
                 comments.append('XREF: %s' % l)
                 count -= 1
@@ -144,6 +144,9 @@ class MemoryModel:
         if seg.phys is None:
             raise SegmentError, '%#x is not a physical location' % location
         return seg.get_phys(location, width)
+
+    def get_segment_name(self, location):
+        return self.__lookup_segment(location).name
 
     def get_location(self, location):
         return self.__lookup_segment(location).get_location(location)
