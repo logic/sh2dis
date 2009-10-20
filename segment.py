@@ -45,7 +45,7 @@ class SegmentData:
                 comments.append('XREF: %s ...' % l)
                 break
         if self.comment is not None:
-            comments.append(self.comment.split('\n'))
+            comments.extend(self.comment.split('\n'))
 
         val = [ ]
         if len(comments) > 0:
@@ -147,6 +147,13 @@ class MemoryModel:
         if seg.phys is None:
             raise SegmentError, '%#x is not a physical location' % location
         return seg.get_phys(location, width)
+
+    def get_phys_ranges(self):
+        ranges = [ ]
+        for segment in self.segments:
+            if segment.phys is not None:
+                 ranges.append((segment.start, segment.length))
+        return ranges
 
     def get_segment_name(self, location):
         return self.__lookup_segment(location).name
