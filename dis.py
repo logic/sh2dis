@@ -67,6 +67,7 @@ def disassemble_vectors(model):
         sh2.disassemble(meta.extra, meta.location, model)
 
 def mitsu_fixup_mova(meta, model):
+    # Mitsu seems to love MOVA for jump tables.
     jump_tbl = meta.extra.args['target']
     jump_off = 0
     while True:
@@ -88,6 +89,21 @@ def mitsu_fixup_mova(meta, model):
         jump_off += 2
 
 
+def mitsu_fixup_mut(meta, model):
+    mut_loc = model.get_location(meta.extra.args['target']).extra
+    mut_off = 0
+    while True:
+        mut_entry = sh2.LongField(location=(mut_loc+(mut_off<<2)), model=model)
+        if mut_entry.extra == 0xFFFFFFFF:
+            break
+        model.set_location(mut_entry)
+        mut_target = model.get_location(mut_entry.extra)
+        mut_target.label = 'MUT_%X' % mut_off
+        mut_off += 1
+    mut_entry = model.get_location(mut_loc)
+    mut_entry.label = 'MUT_TABLE'
+
+
 def mitsu_fixups(model):
     # Rename a few common vector items.
     meta = model.get_location(0)
@@ -104,15 +120,33 @@ def mitsu_fixups(model):
 
     for start, length in model.get_phys_ranges():
         countdown = 0
+        movw_found = shll2_found = mut_found = False
         for i in range(start, start+length):
             if countdown > 0:
                 countdown -= 1
                 continue
             meta = model.get_location(i)
-            # Mitsu seems to love MOVA for jump tables.
-            if isinstance(meta, sh2.CodeField) and meta.extra.opcode['cmd'] == 'mova':
-                mitsu_fixup_mova(meta, model)
+            if isinstance(meta, sh2.CodeField):
+                if meta.extra.opcode['cmd'] == 'mova':
+                    mitsu_fixup_mova(meta, model)
 
+                elif not mut_found:
+                    if not movw_found and meta.extra.opcode['cmd'] == 'mov.w':
+                        if meta.extra.args['target'] is not None:
+                            target = model.get_location(meta.extra.args['target'])
+                            if target is not None and target.extra == 0xBF:
+                                movw_found = True
+                    elif movw_found and meta.extra.opcode['cmd'] == 'shll2':
+                        if shll2_found:
+                            movw_found = shll2_found = False
+                        else:
+                            shll2_found = True
+                    elif movw_found and shll2_found:
+                        if meta.extra.opcode['cmd'] == 'mov.l':
+                            if meta.extra.args['target'] is not None:
+                                mitsu_fixup_mut(meta, model)
+                                mut_found = True
+                        movw_found = shll2_found = False
             if meta is not None:
                 countdown = meta.width - 1
 
