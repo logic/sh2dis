@@ -56,18 +56,6 @@ def setup_vectors(model):
         meta = sh2.create_reference(None, addr, model)
         meta.label = name
 
-    # Name a few common vector items.
-    meta = model.get_location(0)
-    meta = model.get_location(meta.extra)
-    meta.label = 'init'
-    meta = model.get_location(4)
-    meta = model.get_location(meta.extra)
-    if meta is not None:
-        meta.label = 'sp'
-    meta = model.get_location(0x10)
-    meta = model.get_location(meta.extra)
-    meta.label = 'reset'
-
 
 def disassemble_vectors(model):
     """Disassemble the locations referenced by the vector table."""
@@ -78,31 +66,78 @@ def disassemble_vectors(model):
         meta = model.get_location(i)
         sh2.disassemble(meta.extra, meta.location, model)
 
+def mitsu_fixup_mova(meta, model):
+    jump_tbl = meta.extra.args['target']
+    jump_off = 0
+    while True:
+        jumper_addr = jump_tbl + jump_off
+        jumper = model.get_location(jumper_addr)
+        if jumper is not None:
+            break
 
-def disassemble(phys, outfile=sys.stdout):
-    model = segment.MemoryModel(get_segments(phys))
-    setup_vectors(model)
-    disassemble_vectors(model)
+        jumper = sh2.WordField(location=jumper_addr, model=model)
+        model.set_location(jumper)
+        jumper.references.append(meta.location)
 
+        jumper_ref = jump_tbl + jumper.extra
+        sh2.disassemble(jumper_ref, jumper_addr, model)
+
+        jumper_ref_meta = model.get_location(jumper_ref)
+        jumper.comment = 'jsr %s' % jumper_ref_meta.get_label()
+
+        jump_off += 2
+
+
+def mitsu_fixups(model):
+    # Rename a few common vector items.
+    meta = model.get_location(0)
+    meta = model.get_location(meta.extra)
+    meta.label = 'init'
+
+    meta = model.get_location(4)
+    meta = model.get_location(meta.extra)
+    meta.label = 'sp'
+
+    meta = model.get_location(0x10)
+    meta = model.get_location(meta.extra)
+    meta.label = 'reset'
+
+    for start, length in model.get_phys_ranges():
+        countdown = 0
+        for i in range(start, start+length):
+            if countdown > 0:
+                countdown -= 1
+                continue
+            meta = model.get_location(i)
+            # Mitsu seems to love MOVA for jump tables.
+            if isinstance(meta, sh2.CodeField) and meta.extra.opcode['cmd'] == 'mova':
+                mitsu_fixup_mova(meta, model)
+
+            if meta is not None:
+                countdown = meta.width - 1
+
+
+def final_output(model, outfile=sys.stdout):
     # Output a moderately-useful disassembly.
     countdown = 0
     code = False
-    for i in range(len(phys)):
-        if countdown > 0:
-            countdown -= 1
-            continue
-        meta = model.get_location(i)
-        if code and not isinstance(meta, sh2.CodeField):
-            code = False
-            print >> outfile, '         !', '-' * 60
-        elif not code and isinstance(meta, sh2.CodeField):
-            code = True
-            print >> outfile, '         !', '-' * 60
-        if meta is None:
-            # Create this as a throwaway byte, to save memory.
-            meta = sh2.ByteField(location=i, model=model)
-        countdown = meta.width - 1
-        print >> outfile, meta
+    for start, length in model.get_phys_ranges():
+        for i in range(start, start+length):
+            if countdown > 0:
+                countdown -= 1
+                continue
+            meta = model.get_location(i)
+            if code and not isinstance(meta, sh2.CodeField):
+                code = False
+                print >> outfile, '         !', '-' * 60
+            elif not code and isinstance(meta, sh2.CodeField):
+                code = True
+                print >> outfile, '         !', '-' * 60
+            if meta is None:
+                # Create this as a throwaway byte, to save memory.
+                meta = sh2.ByteField(location=i, model=model)
+            countdown = meta.width - 1
+            print >> outfile, meta
 
 
 def main():
@@ -111,6 +146,8 @@ def main():
       version=version)
     parser.add_option('-o', '--output', dest='file', default=None,
       help='specify a destination file (default is standard output)')
+    parser.add_option('-m', '--mitsu', action='store_true', dest='mitsu',
+      help='perform fixups specific to Mitsubishi ECUs')
     options, args = parser.parse_args()
 
     if len(args) != 1:
@@ -125,12 +162,17 @@ def main():
         sys.exit(1)
     phys = open(romname).read()
 
+    model = segment.MemoryModel(get_segments(phys))
+    setup_vectors(model)
+    disassemble_vectors(model)
+    if options.mitsu:
+        mitsu_fixups(model)
+
     if options.file is None:
         output = sys.stdout
     else:
         output = open(options.file, 'w')
-
-    disassemble(phys, output)
+    final_output(model, output)
 
 
 if __name__ == '__main__':
