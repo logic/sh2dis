@@ -83,6 +83,8 @@ class Segment:
         if self.phys is None:
             return chr(0)
         relative_location = location - self.start
+        if relative_location + width > len(self.phys):
+            raise SegmentError, 'requested width exceeds segment size'
         return self.phys[relative_location:relative_location+width]
 
     def get_location(self, location):
