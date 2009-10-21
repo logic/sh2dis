@@ -66,6 +66,25 @@ def disassemble_vectors(model):
         meta = model.get_location(i)
         sh2.disassemble(meta.extra, meta.location, model)
 
+def scan_free_space(model):
+    for start, length in model.get_phys_ranges():
+        countdown = 0
+        ff_seen = 0
+        for i in range(start, start+length):
+            if countdown > 0:
+                countdown -= 1
+                continue
+            meta = model.get_location(i)
+            if meta is not None:
+                if ff_seen > 0x1FF:
+                    null = sh2.NullField(location=i-ff_seen, width=ff_seen, model=model)
+                    model.set_location(null)
+                ff_seen = 0
+                countdown = meta.width - 1
+            else:
+                if model.get_phys(i, 1) == chr(0xFF):
+                    ff_seen += 1
+
 def mitsu_fixup_mova(meta, model):
     # Mitsu seems to love MOVA for jump tables.
     jump_tbl = meta.extra.args['target']
@@ -151,6 +170,7 @@ def mitsu_fixups(model):
                 countdown = meta.width - 1
 
 
+output_separator = '         ! ' + '-' * 60
 def final_output(model, outfile=sys.stdout):
     # Output a moderately-useful disassembly.
     countdown = 0
@@ -163,14 +183,16 @@ def final_output(model, outfile=sys.stdout):
             meta = model.get_location(i)
             if code and not isinstance(meta, sh2.CodeField):
                 code = False
-                print >> outfile, '         !', '-' * 60
+                print >> outfile, output_separator
             elif not code and isinstance(meta, sh2.CodeField):
                 code = True
-                print >> outfile, '         !', '-' * 60
+                print >> outfile, output_separator
             if meta is None:
                 # Create this as a throwaway byte, to save memory.
                 meta = sh2.ByteField(location=i, model=model)
             countdown = meta.width - 1
+            if isinstance(meta, sh2.NullField):
+                print >> outfile, output_separator
             print >> outfile, meta
 
 
@@ -201,6 +223,7 @@ def main():
     disassemble_vectors(model)
     if options.mitsu:
         mitsu_fixups(model)
+    scan_free_space(model)
 
     if options.file is None:
         output = sys.stdout
