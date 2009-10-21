@@ -22,7 +22,7 @@ class SegmentData:
         instruction = self.get_instruction()
 
         label = self.get_label()
-        if label is None:
+        if label is None or '+' in label:
             label = ''
         else:
             label += ':'
@@ -63,6 +63,9 @@ class SegmentData:
 
     def generate_comments(self):
         return [ ]
+
+    def get_label(self):
+        return None
 
 
 class Segment:
