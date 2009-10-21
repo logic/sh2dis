@@ -53,6 +53,12 @@ class ByteField(DataField):
         except segment.SegmentError:
             self.extra = None
 
+    def generate_comments(self):
+        comments = DataField.generate_comments(self)
+        if chr(self.extra).isalnum():
+            comments.append('\'%c\'' % self.extra)
+        return comments
+
 
 class WordField(DataField):
     """Defines a "word" of two bytes."""
@@ -160,7 +166,15 @@ class NullField(segment.SegmentData):
         segment.SegmentData.__init__(self, *args, **kwargs)
 
     def get_instruction(self):
-        return '.org %#X' % (self.location + self.width)
+        return '.org 0x%X' % (self.location + self.width)
+
+    def generate_comments(self):
+        comments = segment.SegmentData.generate_comments(self)
+        comments.append('%d bytes of free space' % self.width)
+        return comments
+
+    def get_label(self):
+        return self.label
 
 
 class AssemblyError(StandardError):
