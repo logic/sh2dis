@@ -98,6 +98,8 @@ class LongField(DataField):
             meta = self.model.get_location(self.extra)
             if meta is not None:
                 text = meta.get_label()
+                if meta.location < self.extra:
+                    text = '%s+%d' % (text, self.extra-meta.location)
                 if text is None:
                     raise segment.SegmentError
             else:
@@ -148,6 +150,8 @@ class CodeField(DataField):
                             try:
                                 target2 = self.model.get_location(meta.extra)
                                 t2label = target2.get_label()
+                                if target2.location < meta.extra:
+                                    t2label = '%s+%d' % (t2label, meta.extra-target2.location)
                             except segment.SegmentError:
                                 t2label = '0x%X' % meta.extra
                             comments.append('[%s] = %s' % (label, t2label))

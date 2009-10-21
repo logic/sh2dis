@@ -36,6 +36,8 @@ class SegmentData:
             meta = self.model.get_location(r)
             if meta is not None:
                 l = meta.get_label()
+                if meta.location < r:
+                    l = '%s+%d' % (l, r-meta.location)
             if l is None:
                 l = '0x%X' % r
             if count > 0:
