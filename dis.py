@@ -137,17 +137,37 @@ def mitsu_fixups(model):
     meta = model.get_location(meta.extra)
     meta.label = 'reset'
 
+    meta = sh2.WordField(location=0xF34, model=model)
+    model.set_location(meta)
+
+    meta = sh2.WordField(location=0xF3C, model=model)
+    model.set_location(meta)
+
+    for p in range(0xF40, 0xF5B, 2):
+        meta = sh2.WordField(location=p, model=model)
+        if p == 0xF44:
+            meta.label = 'ECU_ID1'
+        elif p == 0xF54:
+            meta.label = 'ECU_ID2'
+        model.set_location(meta)
+
     for p in range(0xF6A, 0xF89, 4):
         meta = sh2.LongField(location=p, model=model)
         model.set_location(meta)
 
     for p in range(0xF8A, 0xF8A + (16*9), 16):
         meta = sh2.WordField(location=p, model=model)
-        meta.label = 'periphery_%X' % p
+        if p == 0xFFA:
+            meta.label = 'periphery_IMMOB'
+        else:
+            meta.label = 'periphery_%X' % p
         model.set_location(meta)
         for p1 in range(p + 2, p + 16, 2):
             meta = sh2.WordField(location=p1, model=model)
             model.set_location(meta)
+
+    meta = sh2.WordField(location=0x3FFCE, model=model, label='immobilizer')
+    model.set_location(meta)
 
     for start, length in model.get_phys_ranges():
         countdown = 0
