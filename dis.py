@@ -97,7 +97,7 @@ def mitsu_fixup_mova(meta, model):
 
         jumper = sh2.WordField(location=jumper_addr, model=model)
         model.set_location(jumper)
-        jumper.references.append(meta.location)
+        jumper.references[meta.location] = 1
 
         jumper_ref = jump_tbl + jumper.extra
         sh2.disassemble(jumper_ref, jumper_addr, model)
@@ -136,6 +136,18 @@ def mitsu_fixups(model):
     meta = model.get_location(0x10)
     meta = model.get_location(meta.extra)
     meta.label = 'reset'
+
+    for p in range(0xF6A, 0xF89, 4):
+        meta = sh2.LongField(location=p, model=model)
+        model.set_location(meta)
+
+    for p in range(0xF8A, 0xF8A + (16*9), 16):
+        meta = sh2.WordField(location=p, model=model)
+        meta.label = 'periphery_%X' % p
+        model.set_location(meta)
+        for p1 in range(p + 2, p + 16, 2):
+            meta = sh2.WordField(location=p1, model=model)
+            model.set_location(meta)
 
     for start, length in model.get_phys_ranges():
         countdown = 0

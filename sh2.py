@@ -144,17 +144,13 @@ class CodeField(DataField):
                 if meta is not None:
                     label = meta.get_label()
                     if label is not None:
-                        if isinstance(meta.extra, (int, long)):
+                        if isinstance(meta, LongField):
                             try:
                                 target2 = self.model.get_location(meta.extra)
-                                if target2 is None:
-                                    raise segment.SegmentError
                                 t2label = target2.get_label()
-                                if t2label is None:
-                                    t2label = '0x%X' % target2.location
-                                comments.append('[%s] = %s' % (label, t2label))
                             except segment.SegmentError:
-                                comments.append('[%s]' % label)
+                                t2label = '0x%X' % meta.extra
+                            comments.append('[%s] = %s' % (label, t2label))
                         elif 'label' not in self.extra.text:
                             comments.append(label)
         return comments
@@ -188,7 +184,7 @@ def create_reference(referer, location, model, metatype=ByteField):
         meta = metatype(location=location, model=model)
         model.set_location(meta)
     if referer is not None:
-        meta.references.append(referer)
+        meta.references[referer] = 1
     return meta
 
 
@@ -323,8 +319,7 @@ def disassemble(location, reference, model):
         # Quick check to make sure we haven't already processed this location.
         meta = model.get_location(location)
         if isinstance(meta, CodeField):
-            if reference not in meta.references:
-                meta.references.append(reference)
+            meta.references[reference] = 1
             continue
 
         while not branching or branch_countdown >= 0:
@@ -347,7 +342,7 @@ def disassemble(location, reference, model):
                 work_queue.append((code.extra.args['target'], location))
 
             if reference is not None:
-                code.references.append(reference)
+                code.references[reference] = 1
                 reference = None
             if orig is not None:
                 code.label = orig.label

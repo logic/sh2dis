@@ -9,7 +9,7 @@ class SegmentData:
     """Metaclass for segment data types."""
     def __init__(self, location, width, model, label=None, comment=None, references=None, extra=None):
         if references is None:
-            references = [ ]
+            references = { }
         self.location = location     # Our absolute memory location.
         self.width = width           # The size of the data type in bytes.
         self.model = model           # The memeory model we're a part of.
@@ -29,7 +29,7 @@ class SegmentData:
 
         comments = self.generate_comments()
         count = 1
-        for r in sorted(self.references):
+        for r in sorted(self.references.keys()):
             if r == self.location:
                 continue
             l = None
@@ -95,7 +95,6 @@ class Segment:
 
     def set_location(self, value):
         comments = [ ]
-        references = { }
         rel_loc = value.location - self.start
         rel_end = rel_loc + value.width
         for i in range(rel_loc, rel_loc + value.width):
@@ -104,18 +103,15 @@ class Segment:
                 if i + meta.width <= rel_end:
                     if meta.comment is not None:
                         comments.append(meta.comment)
-                    for j in meta.references:
-                        references[i+self.start] = 1
+                    for j in meta.references.keys():
+                        value.references[j] = 1
                     self.unset_location(meta.location)
                 else:
                     raise SegmentError, 'conflict with data at %#x' % i
         if len(comments) > 0:
             if value.comment is not None:
                 comments.insert(0, value.comment)
-            value.comment = ''.join(comments)
-        for i in references.keys():
-            if i not in value.references:
-                value.references.append(i)
+            value.comment = '\n'.join(comments)
         self.space[rel_loc] = value
         for i in range(1, value.width):
             self.space[rel_loc + i] = -i
