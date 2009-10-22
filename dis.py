@@ -53,7 +53,7 @@ def setup_vectors(model):
             meta.label = vector.label[2:]
 
     for addr, name in proc.registers.items():
-        meta = sh2.create_reference(None, addr, model)
+        meta = sh2.create_reference(referer=None, location=addr, model=model, known_reference=True)
         meta.label = name
 
 
@@ -221,7 +221,7 @@ def final_output(model, outfile=sys.stdout):
                 print >> outfile, output_separator
             if meta is None:
                 # Create this as a throwaway byte, to save memory.
-                meta = sh2.ByteField(location=i, model=model)
+                meta = sh2.ByteField(location=i, model=model, unknown_prefix='unk')
             countdown = meta.width - 1
             if isinstance(meta, sh2.NullField):
                 print >> outfile, output_separator

@@ -7,7 +7,7 @@ class SegmentError(StandardError):
 
 class SegmentData:
     """Metaclass for segment data types."""
-    def __init__(self, location, width, model, label=None, comment=None, references=None, extra=None):
+    def __init__(self, location, width, model, label=None, comment=None, references=None, unknown_prefix='unk', extra=None):
         if references is None:
             references = { }
         self.location = location     # Our absolute memory location.
@@ -17,11 +17,12 @@ class SegmentData:
         self.comment = comment       # A comment for this location.
         self.references = references # A list of references to this location.
         self.extra = extra
+        self.unknown_prefix = unknown_prefix
 
     def __str__(self):
         instruction = self.get_instruction()
 
-        label = self.get_label()
+        label = self.model.get_label(self.location)
         if label is None or '+' in label:
             label = ''
         else:
@@ -32,12 +33,7 @@ class SegmentData:
         for r in sorted(self.references.keys()):
             if r == self.location:
                 continue
-            l = None
-            meta = self.model.get_location(r)
-            if meta is not None:
-                l = meta.get_label()
-                if meta.location < r:
-                    l = '%s+%d' % (l, r-meta.location)
+            l = self.model.get_label(r)
             if l is None:
                 l = '0x%X' % r
             if count > 0:
@@ -128,6 +124,19 @@ class Segment:
             for i in range(rel_loc, rel_loc + meta.width):
                 self.space[i] = None
 
+    def get_label(self, location):
+        label = None
+        meta = self.get_location(location)
+        if meta is None and location-self.start > 0:
+            meta = self.get_location(location - 1)
+        if meta is not None:
+            label = meta.label
+            if len(meta.references) > 0 and label is None:
+                label = '%s_%X' % (meta.unknown_prefix, meta.location)
+            if meta.location < location:
+                label = '%s+%d' % (label, meta.location-location)
+        return label
+
 
 class MemoryModel:
     def __init__(self, segments):
@@ -167,6 +176,9 @@ class MemoryModel:
 
     def unset_location(self, location):
         self.__lookup_segment(location).unset_location(location)
+
+    def get_label(self, location):
+        return self.__lookup_segment(location).get_label(location)
 
 
 if __name__ == '__main__':

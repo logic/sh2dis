@@ -31,22 +31,14 @@ class DataField(segment.SegmentData):
         val = '.%s 0x%%0%dX' % (name, (self.width * 2))
         return val % self.extra
 
-    def get_label(self):
-        if self.label is None and len(self.references) > 0:
-            meta = self.model.get_location(self.location - 1)
-            if meta is not None and meta.label is not None:
-                return '%s+%d' % (meta.label, self.location-meta.location)
-            return 'unk_%X' % self.location
-        if self.label is not None:
-            return self.label
-        return None
-
 
 class ByteField(DataField):
     """Defines a single byte."""
 
     def __init__(self, *args, **kwargs):
         kwargs['width'] = 1
+        if not 'unknown_prefix' in kwargs:
+            kwargs['unknown_prefix'] = 'byte'
         DataField.__init__(self, *args, **kwargs)
         try:
             self.extra = ord(self.model.get_phys(self.location, 1))
@@ -65,6 +57,7 @@ class WordField(DataField):
 
     def __init__(self, *args, **kwargs):
         kwargs['width'] = 2
+        kwargs['unknown_prefix'] = 'word'
         DataField.__init__(self, *args, **kwargs)
         try:
             bytes = self.model.get_phys(self.location, 2)
@@ -78,6 +71,7 @@ class LongField(DataField):
 
     def __init__(self, *args, **kwargs):
         kwargs['width'] = 4
+        kwargs['unknown_prefix'] = 'long'
         DataField.__init__(self, *args, **kwargs)
         try:
             bytes = self.model.get_phys(self.location, 4)
@@ -88,22 +82,14 @@ class LongField(DataField):
         # Make us a reference if we refer to a legitimate address.
         try:
             if self.model.get_location(self.extra) is None:
-                create_reference(self.location, self.extra, self.model)
+                create_reference(referer=self.location, location=self.extra, model=self.model)
         except segment.SegmentError:
             pass
 
     def get_instruction(self):
         name = self.__class__.__name__.lower().replace('field', '')
         try:
-            meta = self.model.get_location(self.extra)
-            if meta is not None:
-                text = meta.get_label()
-                if meta.location < self.extra:
-                    text = '%s+%d' % (text, self.extra-meta.location)
-                if text is None:
-                    raise segment.SegmentError
-            else:
-                raise segment.SegmentError
+            text = self.model.get_label(self.extra)
         except segment.SegmentError:
             text = '0x%%0%dX' % (self.width * 2)
             text = text % self.extra
@@ -114,49 +100,34 @@ class CodeField(DataField):
     """Defines a single assembly instruction."""
 
     def __init__(self, *args, **kwargs):
+        kwargs['unknown_prefix'] = 'sub'
         DataField.__init__(self, *args, **kwargs)
 
     def get_instruction(self):
         if 'label' in self.extra.text:
-            meta = self.model.get_location(self.extra.args['target'])
-            if meta is not None:
-                target = meta.get_label()
-                if target is None:
-                    target = '0x%X' % self.extra.args['target']
-            else:
-                target = 'sub_%X' % self.extra.args['target']
-            text = self.extra.text.replace('label', target)
-        else:
-            text = self.extra.text
-        return text
-
-    def get_label(self):
-        if self.label is None and len(self.references) > 0:
-            return 'sub_%X' % self.location
-        if self.label is not None:
-            return self.label
-        return None
+            t = self.extra.args['target']
+            label = self.model.get_label(t)
+            if label is None:
+                label = '0x%X' % t
+            return self.extra.text.replace('label', label)
+        return self.extra.text
 
     def generate_comments(self):
         comments = DataField.generate_comments(self)
         if 'target' in self.extra.args:
             target = self.extra.args['target']
             if target is not None:
-                meta = self.model.get_location(target)
-                if meta is not None:
-                    label = meta.get_label()
-                    if label is not None:
-                        if isinstance(meta, LongField):
-                            try:
-                                target2 = self.model.get_location(meta.extra)
-                                t2label = target2.get_label()
-                                if target2.location < meta.extra:
-                                    t2label = '%s+%d' % (t2label, meta.extra-target2.location)
-                            except segment.SegmentError:
-                                t2label = '0x%X' % meta.extra
-                            comments.append('[%s] = %s' % (label, t2label))
-                        elif 'label' not in self.extra.text:
-                            comments.append(label)
+                label = self.model.get_label(target)
+                if label is not None:
+                    meta = self.model.get_location(target)
+                    if isinstance(meta, LongField):
+                        try:
+                            t2label = self.model.get_label(meta.extra)
+                        except segment.SegmentError:
+                            t2label = '0x%X' % meta.extra
+                        comments.append('[%s] = %s' % (label, t2label))
+                    elif 'label' not in self.extra.text:
+                        comments.append(label)
         return comments
 
 
@@ -174,18 +145,18 @@ class NullField(segment.SegmentData):
         comments.append('%d bytes of free space' % self.width)
         return comments
 
-    def get_label(self):
-        return self.label
-
 
 class AssemblyError(StandardError):
     pass
 
 
-def create_reference(referer, location, model, metatype=ByteField):
+def create_reference(referer, location, model, metatype=ByteField, known_reference=False):
     meta = model.get_location(location)
     if meta is None:
-        meta = metatype(location=location, model=model)
+        if known_reference:
+            meta = metatype(location=location, model=model)
+        else:
+            meta = metatype(location=location, model=model, unknown_prefix='unk')
         model.set_location(meta)
     if referer is not None:
         meta.references[referer] = 1
@@ -272,7 +243,7 @@ def track_registers(opcode, args, location, registers, model):
                             meta_type = WordField
                         else:
                             meta_type = ByteField
-                        meta = create_reference(location, target, model, meta_type)
+                        meta = create_reference(referer=location, location=target, model=model, metatype=meta_type, known_reference=True)
                     registers[n] = meta.extra
                     return
 
