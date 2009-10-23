@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 opcodes = (
     {
         "opmask": (0x7000, 0xF000),
@@ -827,7 +829,7 @@ opcodes = (
         "disp"  : 0x0000,
         "bits"  : "0010nnnnmmmm0100",
         "cmd"   : "mov.b",
-        "args"  : ("r%(m)d", "@.r%(n)d"),
+        "args"  : ("r%(m)d", "@-r%(n)d"),
     },
     {
         "opmask": (0x2000, 0xF00F),

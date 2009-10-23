@@ -1,7 +1,7 @@
 11000000dddddddd MOV.B R0,@(disp,GBR)
 10000000nnnndddd MOV.B R0,@(disp,Rn)
 0000nnnnmmmm0100 MOV.B Rm,@(R0,Rn)
-0010nnnnmmmm0100 MOV.B Rm,@.Rn
+0010nnnnmmmm0100 MOV.B Rm,@-Rn
 0010nnnnmmmm0000 MOV.B Rm,@Rn
 11000110dddddddd MOV.L @(disp,GBR),R0
 1101nnnndddddddd MOV.L @(disp,PC),Rn
