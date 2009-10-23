@@ -1,13 +1,42 @@
 #!/usr/bin/env python
 
+def fixup_args(arg):
+    arg = arg.replace('label', 'LABEL')
+    arg = arg.replace('disp', '0x{disp:X}')
+    arg = arg.replace('#imm', '#0x{imm:X}')
+    arg = arg.replace('Rm', 'R{m}')
+    arg = arg.replace('Rn', 'R{n}')
+    return arg.lower()
+
 for fn in ('501.txt','502.txt','503.txt','504.txt','505.txt','506.txt','507.txt','508.txt','509.txt'):
     with open(fn,'r') as f:
         for line in f:
             bits, cmd = line.strip().split(' ', 1)
             if ' ' in cmd:
-                cmd, args = cmd.split(' ', 1)
+                cmd, arg = cmd.split(' ', 1)
             else:
-                args = ''
+                arg = ''
+            cmd = cmd.lower()
+
+            args = [ ]
+            if ',' in arg:
+                queue = arg.split(',')
+                while len(queue) > 0:
+                    arg = queue.pop(0)
+                    if arg.startswith('@('):
+                        arg = arg + ',' + queue.pop(0)
+                    args.append(arg)
+            else:
+                args.append(arg)
+            if len(args) > 0:
+                arg1 = fixup_args(args[0])
+                if len(args) > 1:
+                    arg2 = fixup_args(args[1])
+                else:
+                    arg2 = ''
+            else:
+                arg1 = arg2 = ''
+
             bytes = (bits[0:4], bits[4:8], bits[8:12], bits[12:16])
             inst = mask = ''
             for b in bytes:
@@ -60,12 +89,4 @@ for fn in ('501.txt','502.txt','503.txt','504.txt','505.txt','506.txt','507.txt'
                     if bits[4] == 'd':
                         disp |= 0x0f00
 
-            cmd = cmd.lower()
-            args = args.replace('label', 'LABEL')
-            args = args.replace('disp', '0x{disp:X}')
-            args = args.replace('#imm', '#0x{imm:X}')
-            args = args.replace('Rm', 'R{m}')
-            args = args.replace('Rn', 'R{n}')
-            args = args.lower()
-
-            print '0x%s,0x%s,0x%04x,%d,0x%04x,%d,0x%04x,%d,0x%04x,"%s","%s","%s"' % (inst, mask, m, mshift, n, nshift, imm, ishift, disp, bits, cmd.lower(), args)
+            print '0x%s,0x%s,0x%04x,%d,0x%04x,%d,0x%04x,%d,0x%04x,"%s","%s","%s","%s"' % (inst, mask, m, mshift, n, nshift, imm, ishift, disp, bits, cmd.lower(), arg1,arg2)

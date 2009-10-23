@@ -227,9 +227,16 @@ def calculate_disp_target(opcode, args, pc):
 def track_registers(opcode, args, location, registers, model):
     """Track register assignments."""
     n = args['n']
+    if n is None:
+        if opcode['args'][1] == 'r0':
+            n = 0
     if n is not None:
-        if opcode['cmd'][:3] == 'mov':
-            if args['m'] is None:
+        if opcode['cmd'].startswith('mov'):
+            m = args['m']
+            if m is None:
+                if opcode['args'][0] == 'r0':
+                    m = 0
+            if m is None:
                 if args['imm'] is not None:
                     registers[n] = args['imm']
                     return
@@ -237,7 +244,7 @@ def track_registers(opcode, args, location, registers, model):
                     target = args['target']
                     meta = model.get_location(target)
                     if meta is None:
-                        if opcode['cmd'][-2:] == '.l' or opcode['cmd'] == 'mova':
+                        if opcode['cmd'][-2:] == '.l' or opcode['cmd'] == 'mova' or opcode['args'][1].startswith('@('):
                             meta_type = LongField
                         elif opcode['cmd'][-2:] == '.w':
                             meta_type = WordField
@@ -251,8 +258,6 @@ def track_registers(opcode, args, location, registers, model):
         # calculate invalidates any current value. Register estimation
         # is a best-effort kind of thing.
         registers[n] = None
-    elif opcode['args'][-3:] == ',r0':
-        registers[0] = None
 
 
 def lookup_instruction(instruction):
@@ -275,7 +280,10 @@ def disasm_single(instruction, pc, registers, model):
     calculate_disp_target(opcode, args, pc)
     track_registers(opcode, args, pc, registers, model)
     extra = CodeExtra()
-    extra.text = ' '.join((opcode['cmd'], opcode['args'] % args))
+    a = opcode['args'][0]
+    if opcode['args'][1] != '':
+        a = a + ', ' + opcode['args'][1]
+    extra.text = ' '.join((opcode['cmd'], a % args))
     extra.opcode = opcode
     extra.args = args
     return CodeField(location=pc, width=2, extra=extra, model=model)
