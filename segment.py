@@ -133,7 +133,7 @@ class Segment:
             label = meta.label
             if len(meta.references) > 0 and label is None:
                 label = '%s_%X' % (meta.unknown_prefix, meta.location)
-            if meta.location < location:
+            if meta.location < location and label is not None:
                 label = '%s+%d' % (label, meta.location-location)
         return label
 

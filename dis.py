@@ -67,6 +67,7 @@ def disassemble_vectors(model):
         sh2.disassemble(meta.extra, meta.location, model)
 
 def scan_free_space(model):
+    """Scan for contiguous blocks of 0xFF, replace with NullField."""
     for start, length in model.get_phys_ranges():
         countdown = 0
         ff_seen = 0
@@ -75,15 +76,15 @@ def scan_free_space(model):
                 countdown -= 1
                 continue
             meta = model.get_location(i)
-            if meta is not None:
+            if meta is None and model.get_phys(i, 1) == chr(0xFF):
+                ff_seen += 1
+            else:
                 if ff_seen > 0x1FF:
                     null = sh2.NullField(location=i-ff_seen, width=ff_seen, model=model)
                     model.set_location(null)
                 ff_seen = 0
-                countdown = meta.width - 1
-            else:
-                if model.get_phys(i, 1) == chr(0xFF):
-                    ff_seen += 1
+                if meta is not None:
+                    countdown = meta.width - 1
 
 def mitsu_fixup_mova(meta, model):
     # Mitsu seems to love MOVA for jump tables.
@@ -226,6 +227,8 @@ def final_output(model, outfile=sys.stdout):
             if isinstance(meta, sh2.NullField):
                 print >> outfile, output_separator
             print >> outfile, meta
+            if isinstance(meta, sh2.NullField):
+                print >> outfile, output_separator
 
 
 def main():

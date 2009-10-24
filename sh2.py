@@ -1,13 +1,6 @@
 #!/usr/bin/env python
 
 
-"""
-TODO:
-- make some sort of note with the code about both resolved and unresolved
-  branch targets.
-"""
-
-
 import csv, segment, struct
 from sh2opcodes import opcodes
 
@@ -91,6 +84,8 @@ class LongField(DataField):
         try:
             text = self.model.get_label(self.extra)
         except segment.SegmentError:
+            text = None
+        if text is None:
             text = '0x%%0%dX' % (self.width * 2)
             text = text % self.extra
         return '.%s %s' % (name, text)
@@ -124,6 +119,8 @@ class CodeField(DataField):
                         try:
                             t2label = self.model.get_label(meta.extra)
                         except segment.SegmentError:
+                            t2label = None
+                        if t2label is None:
                             t2label = '0x%X' % meta.extra
                         comments.append('[%s] = %s' % (label, t2label))
                     elif 'label' not in self.extra.text:
@@ -200,14 +197,14 @@ def calculate_disp_target(opcode, args, pc):
             sign = 0
 
         # 1-, 2-, or 4-byte multiplier determination.
-        if opcode['cmd'][-2:] == '.b':
+        if opcode['cmd'].endswith('.b'):
             disp_mult = 1
-        elif opcode['cmd'][-2:] == '.l' or opcode['cmd'] == 'mova':
+        elif opcode['cmd'].endswith('.l') or opcode['cmd'] == 'mova':
             disp_mult = 4
         else:
             disp_mult = 2
 
-        if disp & sign != 0 and opcode['cmd'][0:3] != 'mov':
+        if disp & sign != 0 and not opcode['cmd'].startswith('mov'):
             target = -((sign << 1) - ((disp - sign) * disp_mult))
         else:
             target = disp * disp_mult
@@ -244,7 +241,7 @@ def track_registers(opcode, args, location, registers, model):
                     target = args['target']
                     meta = model.get_location(target)
                     if meta is None:
-                        if opcode['cmd'][-2:] == '.l' or opcode['cmd'] == 'mova' or opcode['args'][1].startswith('@('):
+                        if opcode['cmd'].endswith('.l') or opcode['cmd'].endswith('a') or opcode['args'][1].startswith('@('):
                             meta_type = LongField
                         elif opcode['cmd'][-2:] == '.w':
                             meta_type = WordField
