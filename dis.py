@@ -93,19 +93,17 @@ def mitsu_fixup_mova(meta, model):
     while True:
         jumper_addr = jump_tbl + jump_off
         jumper = model.get_location(jumper_addr)
-        if jumper is not None:
+        if isinstance(jumper, sh2.CodeField):
             break
 
         jumper = sh2.WordField(location=jumper_addr, model=model)
-        model.set_location(jumper)
         jumper.references[meta.location] = 1
+        model.set_location(jumper)
 
         jumper_ref = jump_tbl + jumper.extra
         sh2.disassemble(jumper_ref, jumper_addr, model)
 
-        jumper_ref_meta = model.get_location(jumper_ref)
-        jumper.comment = 'jsr %s' % jumper_ref_meta.get_label()
-
+        jumper.comment = 'jsr %s' % model.get_label(jumper_ref)
         jump_off += 2
 
 

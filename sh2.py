@@ -241,7 +241,7 @@ def track_registers(opcode, args, location, registers, model):
                     target = args['target']
                     meta = model.get_location(target)
                     if meta is None:
-                        if opcode['cmd'].endswith('.l') or opcode['cmd'].endswith('a') or opcode['args'][1].startswith('@('):
+                        if opcode['cmd'].endswith('.l') or opcode['args'][1].startswith('@('):
                             meta_type = LongField
                         elif opcode['cmd'][-2:] == '.w':
                             meta_type = WordField
