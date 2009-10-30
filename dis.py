@@ -249,7 +249,7 @@ def main():
         print >> sys.stderr, 'No such ROM file `%s\'!\n' % romname
         parser.print_help(sys.stderr)
         sys.exit(1)
-    phys = open(romname).read()
+    phys = open(romname, mode='rb').read()
 
     model = segment.MemoryModel(get_segments(phys))
     setup_vectors(model)
