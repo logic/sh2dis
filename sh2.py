@@ -5,6 +5,14 @@ import csv, segment, struct
 from sh2opcodes import opcodes
 
 
+# collections.namedtuple() is only available in Python 2.6.
+try:
+    from collections import namedtuple
+except ImportError:
+    from namedtuple import namedtuple
+CodeExtra = namedtuple('CodeExtra', 'text, opcode, args')
+
+
 # Opcodes that use delayed branching; an legal instruction should follow.
 delayed_branchers = ('bra','braf','jmp','rte','rts')
 
@@ -270,19 +278,13 @@ def lookup_instruction(instruction):
 
 def disasm_single(instruction, pc, registers, model):
     """Disassemble a single instruction."""
-    class CodeExtra:
-        pass
-
     opcode, args = lookup_instruction(instruction)
     calculate_disp_target(opcode, args, pc)
     track_registers(opcode, args, pc, registers, model)
-    extra = CodeExtra()
     a = opcode['args'][0]
     if opcode['args'][1] != '':
         a = a + ', ' + opcode['args'][1]
-    extra.text = ' '.join((opcode['cmd'], a % args))
-    extra.opcode = opcode
-    extra.args = args
+    extra = CodeExtra(' '.join((opcode['cmd'], a % args)), opcode, args)
     return CodeField(location=pc, width=2, extra=extra, model=model)
 
 
