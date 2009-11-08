@@ -5,7 +5,7 @@ class SegmentError(StandardError):
     pass
 
 
-class SegmentData:
+class SegmentData(object):
     """Metaclass for segment data types."""
     def __init__(self, location, width, model, label=None, comment=None, references=None, unknown_prefix='unk', extra=None):
         if references is None:
@@ -66,7 +66,7 @@ class SegmentData:
         return None
 
 
-class Segment:
+class Segment(object):
     def __init__(self, start, length, phys=None, name=None):
         self.start = start
         self.length = length
@@ -138,7 +138,7 @@ class Segment:
         return label
 
 
-class MemoryModel:
+class MemoryModel(object):
     def __init__(self, segments):
         self.segments = [ ]
         for name, start, len, phys in segments:
