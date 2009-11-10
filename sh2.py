@@ -320,7 +320,7 @@ def disassemble(location, reference, model):
                 if r is not None:
                     code.extra.args['target'] = r
                     work_queue.append((r, location))
-            if code.extra.opcode['cmd'] in label_branchers:
+            elif code.extra.opcode['cmd'] in label_branchers:
                 work_queue.append((code.extra.args['target'], location))
 
             if reference is not None:
@@ -334,8 +334,6 @@ def disassemble(location, reference, model):
             if code.extra.opcode['cmd'] in delayed_branchers:
                 branch_countdown = 1
                 branching = True
-                if code.extra.args['target'] is not None:
-                    work_queue.append((code.extra.args['target'], location))
             if branching:
                 branch_countdown -= 1
 
