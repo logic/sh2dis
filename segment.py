@@ -70,28 +70,22 @@ class Segment(object):
     def __init__(self, start, length, phys=None, name=None):
         self.start = start
         self.length = length
+        self.end = start + length
         self.phys = phys
         self.name = name
         self.space = [None] * self.length
-
-    def __get_relative_location(self, location):
-        relative_location = location - self.start
-        if relative_location < 0 or relative_location > self.length:
-            raise SegmentError, 'invalid segment location: %#x' % location
-        return self.space[relative_location]
 
     def get_phys(self, location, width=1):
         if self.phys is None:
             return chr(0)
         relative_location = location - self.start
-        if relative_location + width > len(self.phys):
-            raise SegmentError, 'requested width exceeds segment size'
         return self.phys[relative_location:relative_location+width]
 
     def get_location(self, location):
-        meta = self.__get_relative_location(location)
+        relative_location = location - self.start
+        meta = self.space[relative_location]
         if type(meta) is int:
-            return self.get_location(location+meta)
+            meta = self.space[relative_location + meta]
         return meta
 
     def set_location(self, value):
@@ -145,10 +139,8 @@ class MemoryModel(object):
             self.segments.append(Segment(name=name, start=start, length=len, phys=phys))
 
     def __lookup_segment(self, location):
-        if not isinstance(location, (int, long)):
-            raise SyntaxError, 'invalid location: %s' % repr(location)
         for segment in self.segments:
-            if location >= segment.start and location < segment.start + segment.length:
+            if location >= segment.start and location < segment.end:
                 return segment
         raise SegmentError, 'invalid segment address: %#x' % location
 
