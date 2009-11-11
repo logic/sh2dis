@@ -8,6 +8,7 @@ class SegmentError(StandardError):
 class SegmentData(object):
     """Metaclass for segment data types."""
     def __init__(self, location, width, model, label=None, comment=None, references=None, unknown_prefix='unk', extra=None):
+        object.__init__(self)
         if references is None:
             references = { }
         self.location = location     # Our absolute memory location.
@@ -68,6 +69,7 @@ class SegmentData(object):
 
 class Segment(object):
     def __init__(self, start, length, phys=None, name=None):
+        object.__init__(self)
         self.start = start
         self.length = length
         self.end = start + length
@@ -134,6 +136,7 @@ class Segment(object):
 
 class MemoryModel(object):
     def __init__(self, segments):
+        object.__init__(self)
         self.segments = [ ]
         for name, start, len, phys in segments:
             self.segments.append(Segment(name=name, start=start, length=len, phys=phys))
