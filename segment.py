@@ -68,14 +68,13 @@ class SegmentData(object):
 
 
 class Segment(object):
-    def __init__(self, start, length, phys=None, name=None):
+    def __init__(self, start, end, phys=None, name=None):
         object.__init__(self)
         self.start = start
-        self.length = length
-        self.end = start + length
+        self.end = end
         self.phys = phys
         self.name = name
-        self.space = [None] * self.length
+        self.space = [None] * (end - start)
 
     def get_phys(self, location, width=1):
         if self.phys is None:
@@ -138,8 +137,8 @@ class MemoryModel(object):
     def __init__(self, segments):
         object.__init__(self)
         self.segments = [ ]
-        for name, start, len, phys in segments:
-            self.segments.append(Segment(name=name, start=start, length=len, phys=phys))
+        for name, start, end, phys in segments:
+            self.segments.append(Segment(name=name, start=start, end=end, phys=phys))
 
     def __lookup_segment(self, location):
         for segment in self.segments:
@@ -157,7 +156,7 @@ class MemoryModel(object):
         ranges = [ ]
         for segment in self.segments:
             if segment.phys is not None:
-                 ranges.append((segment.start, segment.length))
+                 ranges.append((segment.start, segment.end))
         return ranges
 
     def get_segment_name(self, location):

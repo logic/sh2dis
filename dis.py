@@ -25,16 +25,16 @@ def get_segments(phys):
         proc = sh7052
         return (
             ('ROM', 0x0, len(phys), phys),
-            ('RAM', 0xFFFF8000, 0x3000, None),
-            ('REG', 0xFFFFE400, 0x1460, None),
+            ('RAM', 0xFFFF8000, 0xFFFFFB00, None),
+            ('REG', 0xFFFFE400, 0xFFFFF860, None),
         )
     elif len(phys) == 0x80000:
         # SH/7055F
         proc = sh7055
         return (
             ('ROM', 0x0, len(phys), phys),
-            ('RAM', 0xFFFF6000, 0x8000, None),
-            ('REG', 0xFFFFE400, 0x1460, None),
+            ('RAM', 0xFFFF6000, 0xFFFFFE00, None),
+            ('REG', 0xFFFFE400, 0xFFFFF860, None),
         )
     raise ROMError, 'invalid or unrecognized ROM'
 
@@ -68,10 +68,10 @@ def disassemble_vectors(model):
 
 def scan_free_space(model):
     """Scan for contiguous blocks of 0xFF, replace with NullField."""
-    for start, length in model.get_phys_ranges():
+    for start, end in model.get_phys_ranges():
         countdown = 0
         ff_seen = 0
-        for i in range(start, start+length):
+        for i in range(start, end):
             if countdown > 0:
                 countdown -= 1
                 continue
@@ -168,10 +168,10 @@ def mitsu_fixups(model):
     meta = sh2.WordField(location=0x3FFCE, model=model, label='immobilizer')
     model.set_location(meta)
 
-    for start, length in model.get_phys_ranges():
+    for start, end in model.get_phys_ranges():
         countdown = 0
         movw_found = shll2_found = mut_found = False
-        for i in range(start, start+length):
+        for i in range(start, end):
             if countdown > 0:
                 countdown -= 1
                 continue
@@ -206,8 +206,8 @@ def final_output(model, outfile=sys.stdout):
     # Output a moderately-useful disassembly.
     countdown = 0
     code = False
-    for start, length in model.get_phys_ranges():
-        for i in range(start, start+length):
+    for start, end in model.get_phys_ranges():
+        for i in range(start, end):
             if countdown > 0:
                 countdown -= 1
                 continue
