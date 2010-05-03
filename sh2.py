@@ -132,7 +132,10 @@ class CodeField(DataField):
                             t2label = '0x%X' % meta.extra
                         comments.append('[%s] = %s' % (label, t2label))
                     elif 'label' not in self.extra.text:
-                        comments.append(label)
+                        if isinstance(meta, WordField) or isinstance(meta, ByteField):
+                            comments.append('[%s] = 0x%X' % (label, meta.extra))
+                        else:
+                            comments.append(label)
         return comments
 
 
