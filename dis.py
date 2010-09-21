@@ -202,11 +202,17 @@ def mitsu_fixups(model):
 
 
 output_separator = '         ! ' + '-' * 60
-def final_output(model, outfile=sys.stdout):
+def final_output(model, outfile=sys.stdout, output_ram=False):
     # Output a moderately-useful disassembly.
     countdown = 0
     code = False
-    for start, end in model.get_phys_ranges():
+    ranges = [ ]
+    if output_ram:
+        for segment in model.segments:
+             ranges.append((segment.start, segment.end))
+    else:
+        ranges = model.get_phys_ranges()
+    for start, end in ranges:
         for i in range(start, end):
             if countdown > 0:
                 countdown -= 1
@@ -237,6 +243,8 @@ def main():
       help='specify a destination file (default is standard output)')
     parser.add_option('-m', '--mitsu', action='store_true', dest='mitsu',
       help='perform fixups specific to Mitsubishi ECUs')
+    parser.add_option('-r', '--ram', action='store_true', dest='output_ram',
+      help='include RAM addresses in output')
     options, args = parser.parse_args()
 
     if len(args) != 1:
@@ -262,7 +270,7 @@ def main():
         output = sys.stdout
     else:
         output = open(options.file, 'w')
-    final_output(model, output)
+    final_output(model, output, options.output_ram)
 
 
 if __name__ == '__main__':

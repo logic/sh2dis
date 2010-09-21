@@ -30,6 +30,8 @@ class DataField(segment.SegmentData):
         """A GAS-compatible string representation for this data type."""
         name = self.__class__.__name__.lower().replace('field', '')
         val = '.%s 0x%%0%dX' % (name, (self.width * 2))
+        if self.extra is None:
+            self.extra = 0
         return val % self.extra
 
 
