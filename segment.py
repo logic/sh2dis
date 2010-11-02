@@ -7,7 +7,7 @@ class SegmentError(StandardError):
 
 class SegmentData(object):
     """Metaclass for segment data types."""
-    def __init__(self, location, width, model, label=None, comment=None, references=None, unknown_prefix='unk', extra=None):
+    def __init__(self, location, width, model, label=None, comment=None, references=None, unknown_prefix='unk', extra=None, member_of=None):
         object.__init__(self)
         if references is None:
             references = { }
@@ -19,8 +19,14 @@ class SegmentData(object):
         self.references = references # A list of references to this location.
         self.extra = extra
         self.unknown_prefix = unknown_prefix
+        self.member_of = member_of
 
     def __str__(self):
+        if self.member_of is not None:
+            if self.member_of.members[0] == self:
+                return self.member_of.__str__()
+            return ''
+
         instruction = self.get_instruction()
 
         label = self.model.get_label(self.location)
@@ -65,6 +71,42 @@ class SegmentData(object):
 
     def get_label(self):
         return None
+
+class CompositeData(SegmentData):
+    """Collection of segment data."""
+    def __init__(self, members=None, items_per_line=1, model=None, comment=None, extra=None):
+        self.members = members if members is not None else []
+        self.items_per_line = items_per_line
+        self.model = model
+        self.comment = comment
+        self.extra = extra
+
+    def __str__(self):
+        val = [ ]
+        label = None
+        per_line = 1
+        for member in self.members:
+            if per_line == 1:
+                if label is None:
+                    label = self.model.get_label(member.location)
+                    if label is None or '+' in label:
+                        label = ''
+                    else:
+                        label += ':'
+                else:
+                     label = ''
+                val.append('%08X %-16s ' % (member.location, label))
+                val.append(member.get_instruction(no_cmd=False))
+            else:
+                val.append(member.get_instruction(no_cmd=True))
+            val.append(', ')
+            per_line += 1
+            if per_line > self.items_per_line:
+                val[-1] = '\n'
+                per_line = 1
+        if len(val) and val[-1] == '\n':
+            val.pop()
+        return ''.join(val)
 
 
 class Segment(object):

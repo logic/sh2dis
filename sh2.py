@@ -26,10 +26,13 @@ label_branchers = ('bf','bf/s','bra','bsr','bt','bt/s')
 class DataField(segment.SegmentData):
     """Metaclass for SH2 data types."""
 
-    def get_instruction(self):
+    def get_instruction(self, no_cmd=False):
         """A GAS-compatible string representation for this data type."""
-        name = self.__class__.__name__.lower().replace('field', '')
-        val = '.%s 0x%%0%dX' % (name, (self.width * 2))
+        if no_cmd:
+            val = '0x%%0%dX' % (self.width*2)
+        else:
+            name = self.__class__.__name__.lower().replace('field', '')
+            val = '.%s 0x%%0%dX' % (name, (self.width * 2))
         if self.extra is None:
             self.extra = 0
         return val % self.extra
@@ -89,7 +92,7 @@ class LongField(DataField):
         except segment.SegmentError:
             pass
 
-    def get_instruction(self):
+    def get_instruction(self, no_cmd=False):
         name = self.__class__.__name__.lower().replace('field', '')
         try:
             text = self.model.get_label(self.extra)
@@ -98,6 +101,8 @@ class LongField(DataField):
         if text is None:
             text = '0x%%0%dX' % (self.width * 2)
             text = text % self.extra
+        if no_cmd:
+            return text
         return '.%s %s' % (name, text)
 
 
@@ -108,8 +113,8 @@ class CodeField(DataField):
         kwargs['unknown_prefix'] = 'sub'
         DataField.__init__(self, *args, **kwargs)
 
-    def get_instruction(self):
-        if 'label' in self.extra.text:
+    def get_instruction(self, no_cmd=False):
+        if 'label' in self.extra.text and not no_cmd:
             t = self.extra.args['target']
             label = self.model.get_label(t)
             if label is None:
@@ -147,7 +152,7 @@ class NullField(segment.SegmentData):
     def __init__(self, *args, **kwargs):
         segment.SegmentData.__init__(self, *args, **kwargs)
 
-    def get_instruction(self):
+    def get_instruction(self, no_cmd=False):
         return '.org 0x%X' % (self.location + self.width)
 
     def generate_comments(self):
@@ -325,6 +330,7 @@ def disassemble(location, reference, model):
                 if r is not None:
                     code.extra.args['target'] = r
                     work_queue.append((r, location))
+
             elif code.extra.opcode['cmd'] in label_branchers:
                 work_queue.append((code.extra.args['target'], location))
 
