@@ -230,7 +230,9 @@ def final_output(model, outfile=sys.stdout, output_ram=False):
             countdown = meta.width - 1
             if isinstance(meta, sh2.NullField):
                 print >> outfile, output_separator
-            print >> outfile, meta
+            o = str(meta)
+            if len(o):
+                print >> outfile, meta
             if isinstance(meta, sh2.NullField):
                 print >> outfile, output_separator
 
