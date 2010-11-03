@@ -216,6 +216,12 @@ class MemoryModel(object):
     def get_label(self, location):
         return self.__lookup_segment(location).get_label(location)
 
+    def location_isset(self, location):
+        try:
+            return self.__lookup_segment(location).get_location(location) is not None
+        except SegmentError:
+            return False
+
 
 if __name__ == '__main__':
     print 'no tests yet'
