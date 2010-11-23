@@ -86,14 +86,17 @@ class LongField(DataField):
             self.extra = None
 
         # Make us a reference if we refer to a legitimate address.
-        try:
-            if self.model.get_location(self.extra) is None:
-                create_reference(referer=self.location, location=self.extra, model=self.model)
-        except segment.SegmentError:
-            pass
+        if self.extra is not None:
+            try:
+                if self.model.get_location(self.extra) is None:
+                    create_reference(referer=self.location, location=self.extra, model=self.model)
+            except segment.SegmentError:
+                pass
 
     def get_instruction(self, no_cmd=False):
         name = self.__class__.__name__.lower().replace('field', '')
+        if self.extra is None:
+            return '.%s 0x00000000' % name
         try:
             text = self.model.get_label(self.extra)
         except segment.SegmentError:

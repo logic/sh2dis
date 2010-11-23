@@ -25,7 +25,7 @@ def get_segments(phys):
         proc = sh7052
         return (
             ('ROM', 0x0, len(phys), phys),
-            ('RAM', 0xFFFF8000, 0xFFFFFB00, None),
+            ('RAM', 0xFFFF8000, 0xFFFFB000, None),
             ('REG', 0xFFFFE400, 0xFFFFF860, None),
         )
     elif len(phys) == 0x80000:
@@ -33,7 +33,7 @@ def get_segments(phys):
         proc = sh7055
         return (
             ('ROM', 0x0, len(phys), phys),
-            ('RAM', 0xFFFF6000, 0xFFFFFE00, None),
+            ('RAM', 0xFFFF6000, 0xFFFFE000, None),
             ('REG', 0xFFFFE400, 0xFFFFF860, None),
         )
     raise ROMError, 'invalid or unrecognized ROM'
@@ -42,19 +42,31 @@ def get_segments(phys):
 def setup_vectors(model):
     """Pre-define the vector table."""
     for i in range(0x0, 0x400, 0x4):
+        label = None
+        comment = None
+        kind = sh2.LongField
         if i in proc.vectors:
-            label = proc.vectors[i]
-        else:
-            label = None
-        vector = sh2.LongField(location=i, model=model, label=label)
+            v = proc.vectors[i]
+            label = v['name']
+            comment = v['comment']
+            if v['size'] == 1:
+                kind = sh2.ByteField
+            elif v['size'] == 2:
+                kind = sh2.WordField
+        vector = kind(location=i, model=model, label=label, comment=comment)
         model.set_location(vector)
         meta = model.get_location(vector.extra)
         if meta.label is None and vector.label.startswith('v_'):
             meta.label = vector.label[2:]
 
-    for addr, name in proc.registers.items():
-        meta = sh2.create_reference(referer=None, location=addr, model=model, known_reference=True)
-        meta.label = name
+    for addr, v in proc.registers.items():
+        kind = sh2.LongField
+        if v['size'] == 1:
+            kind = sh2.ByteField
+        elif v['size'] == 2:
+            kind = sh2.WordField
+        meta = kind(location=addr, model=model, label=v['name'], comment=v['comment'])
+        model.set_location(meta)
 
 
 def disassemble_vectors(model):
@@ -167,6 +179,18 @@ def mitsu_fixups(model):
 
     meta = sh2.WordField(location=0x3FFCE, model=model, label='immobilizer')
     model.set_location(meta)
+
+    # Temporary hack to see if tables work.
+    members = []
+    for p in range(0x33bd, 0x34cb):
+        meta = sh2.ByteField(location=p, model=model)
+        model.set_location(meta)
+        members.append(meta)
+    members[0].label = 'HiOctFuel'
+    tbl = segment.CompositeData(members=members, items_per_line=15, model=model)
+    for meta in members:
+        meta.member_of = tbl
+    # End temporary hack.
 
     for start, end in model.get_phys_ranges():
         countdown = 0

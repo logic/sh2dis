@@ -1,0 +1,783 @@
+v_power_on_pc,0x00000000,4,Power-on reset (PC)
+v_power_on_sp,0x00000004,4,Power-on reset (SP)
+v_reset_pc,0x00000008,4,Manual reset (PC)
+v_reset_sp,0x0000000C,4,Manual reset (SP)
+v_gen_ill_inst,0x00000010,4,General illegal instruction
+v_slot_ill_inst,0x00000018,4,Slot illegal instruction
+v_cpu_addr_err,0x00000024,4,CPU address error
+v_dmac_addr_err,0x00000028,4,DMAC address error
+v_int_nmi,0x0000002C,4,NMI interrupt
+v_int_ubc,0x00000030,4,User break interrupt
+v_int_irq0,0x00000100,4,IRQ0 interrupt
+v_int_irq1,0x00000104,4,IRQ1 interrupt
+v_int_irq2,0x00000108,4,IRQ2 interrupt
+v_int_irq3,0x0000010C,4,IRQ3 interrupt
+v_dmac0_dei0,0x00000120,4,Direct memory access controller 0 interrupt
+v_dmac1_dei1,0x00000128,4,Direct memory access controller 1 interrupt
+v_dmac2_dei2,0x00000130,4,Direct memory access controller 2 interrupt
+v_dmac3_dei3,0x00000138,4,Direct memory access controller 3 interrupt
+v_atu01_itv,0x00000140,4,Advanced timer unit channel 0 interval interrupt
+v_atu02_ici0A,0x00000150,4,Advanced timer unit channel 0 input capture interrupt A
+v_atu02_ici0B,0x00000158,4,Advanced timer unit channel 0 input capture interrupt B
+v_atu03_ici0C,0x00000160,4,Advanced timer unit channel 0 input capture interrupt C
+v_atu03_ici0D,0x00000168,4,Advanced timer unit channel 0 input capture interrupt D
+v_atu04_ovi0,0x00000170,4,Advanced timer unit channel 0 overflow interrupt
+v_atu11_imi1A,0x00000180,4,Advanced timer unit channel 1 input capture/compare-match interrupt A
+v_atu11_imi1B,0x00000184,4,Advanced timer unit channel 1 input capture/compare-match interrupt B
+v_atu11_imi1C,0x00000188,4,Advanced timer unit channel 1 input capture/compare-match interrupt C
+v_atu11_imi1D,0x0000018C,4,Advanced timer unit channel 1 input capture/compare-match interrupt D
+v_atu12_imi1E,0x00000190,4,Advanced timer unit channel 1 input capture/compare-match interrupt E
+v_atu12_imi1F,0x00000194,4,Advanced timer unit channel 1 input capture/compare-match interrupt F
+v_atu12_imi1G,0x00000198,4,Advanced timer unit channel 1 input capture/compare-match interrupt G
+v_atu12_imi1H,0x0000019C,4,Advanced timer unit channel 1 input capture/compare-match interrupt H
+v_atu13_ovi1AB,0x000001A0,4,Advanced timer unit channel 1 counter overflow interrupt A/B
+v_atu21_imi2A,0x000001B0,4,Advanced timer unit channel 2 input capture/compare-match interrupt A
+v_atu21_imi2B,0x000001B4,4,Advanced timer unit channel 2 input capture/compare-match interrupt B
+v_atu21_imi2C,0x000001B8,4,Advanced timer unit channel 2 input capture/compare-match interrupt C
+v_atu21_imi2D,0x000001BC,4,Advanced timer unit channel 2 input capture/compare-match interrupt D
+v_atu22_imi2E,0x000001C0,4,Advanced timer unit channel 2 input capture/compare-match interrupt E
+v_atu22_imi2F,0x000001C4,4,Advanced timer unit channel 2 input capture/compare-match interrupt F
+v_atu22_imi2G,0x000001C8,4,Advanced timer unit channel 2 input capture/compare-match interrupt G
+v_atu22_imi2H,0x000001CC,4,Advanced timer unit channel 2 input capture/compare-match interrupt H
+v_atu23_ovi2AB,0x000001D0,4,Advanced timer unit channel 2 counter overflow interrupt A/B
+v_atu31_imi3A,0x000001E0,4,Advanced timer unit channel 3 input capture/compare-match interrupt A
+v_atu31_imi3B,0x000001E4,4,Advanced timer unit channel 3 input capture/compare-match interrupt B
+v_atu31_imi3C,0x000001E8,4,Advanced timer unit channel 3 input capture/compare-match interrupt C
+v_atu31_imi3D,0x000001EC,4,Advanced timer unit channel 3 input capture/compare-match interrupt D
+v_atu32_ovi3,0x000001F0,4,Advanced timer unit channel 3 counter overflow interrupt
+v_atu41_imi4A,0x00000200,4,Advanced timer unit channel 4 input capture/compare-match interrupt A
+v_atu41_imi4B,0x00000204,4,Advanced timer unit channel 4 input capture/compare-match interrupt B
+v_atu41_imi4C,0x00000208,4,Advanced timer unit channel 4 input capture/compare-match interrupt C
+v_atu41_imi4D,0x0000020C,4,Advanced timer unit channel 4 input capture/compare-match interrupt D
+v_atu42_ovi4,0x00000210,4,Advanced timer unit channel 4 counter overflow interrupt
+v_atu51_imi5A,0x00000220,4,Advanced timer unit channel 5 input capture/compare-match interrupt A
+v_atu51_imi5B,0x00000224,4,Advanced timer unit channel 5 input capture/compare-match interrupt B
+v_atu51_imi5C,0x00000228,4,Advanced timer unit channel 5 input capture/compare-match interrupt C
+v_atu51_imi5D,0x0000022C,4,Advanced timer unit channel 5 input capture/compare-match interrupt D
+v_atu52_ovi5,0x00000230,4,Advanced timer unit channel 5 counter overflow interrupt
+v_atu6_cmi6A,0x00000240,4,Advanced timer unit channel 6 compare-match interrupt A
+v_atu6_cmi6B,0x00000244,4,Advanced timer unit channel 6 compare-match interrupt B
+v_atu6_cmi6C,0x00000248,4,Advanced timer unit channel 6 compare-match interrupt C
+v_atu6_cmi6D,0x0000024C,4,Advanced timer unit channel 6 compare-match interrupt D
+v_atu7_cmi7A,0x00000250,4,Advanced timer unit channel 7 compare-match interrupt A
+v_atu7_cmi7B,0x00000254,4,Advanced timer unit channel 7 compare-match interrupt B
+v_atu7_cmi7C,0x00000258,4,Advanced timer unit channel 7 compare-match interrupt C
+v_atu7_cmi7D,0x0000025C,4,Advanced timer unit channel 7 compare-match interrupt D
+v_atu81_osi8A,0x00000260,4,Advanced timer unit channel 8 one-shot end interrupt A
+v_atu81_osi8B,0x00000264,4,Advanced timer unit channel 8 one-shot end interrupt B
+v_atu81_osi8C,0x00000268,4,Advanced timer unit channel 8 one-shot end interrupt C
+v_atu81_osi8D,0x0000026C,4,Advanced timer unit channel 8 one-shot end interrupt D
+v_atu82_osi8E,0x00000270,4,Advanced timer unit channel 8 one-shot end interrupt E
+v_atu82_osi8F,0x00000274,4,Advanced timer unit channel 8 one-shot end interrupt F
+v_atu82_osi8G,0x00000278,4,Advanced timer unit channel 8 one-shot end interrupt G
+v_atu82_osi8H,0x0000027C,4,Advanced timer unit channel 8 one-shot end interrupt H
+v_atu83_osi8I,0x00000280,4,Advanced timer unit channel 8 one-shot end interrupt I
+v_atu83_osi8J,0x00000284,4,Advanced timer unit channel 8 one-shot end interrupt J
+v_atu83_osi8K,0x00000288,4,Advanced timer unit channel 8 one-shot end interrupt K
+v_atu83_osi8L,0x0000028C,4,Advanced timer unit channel 8 one-shot end interrupt L
+v_atu84_osi8M,0x00000290,4,Advanced timer unit channel 8 one-shot end interrupt M
+v_atu84_osi8N,0x00000294,4,Advanced timer unit channel 8 one-shot end interrupt N
+v_atu84_osi8O,0x00000298,4,Advanced timer unit channel 8 one-shot end interrupt O
+v_atu84_osi8P,0x0000029C,4,Advanced timer unit channel 8 one-shot end interrupt P
+v_atu91_cmi9A,0x000002A0,4,Advanced timer unit channel 9 compare-match interrupt A
+v_atu91_cmi9B,0x000002A4,4,Advanced timer unit channel 9 compare-match interrupt B
+v_atu91_cmi9C,0x000002A8,4,Advanced timer unit channel 9 compare-match interrupt C
+v_atu91_cmi9D,0x000002AC,4,Advanced timer unit channel 9 compare-match interrupt D
+v_atu92_cmi9E,0x000002B0,4,Advanced timer unit channel 9 compare-match interrupt E
+v_atu92_cmi9F,0x000002B8,4,Advanced timer unit channel 9 compare-match interrupt F
+v_atu101_cmi10A,0x000002C0,4,Advanced timer unit channel 10 compare-match interrupt A
+v_atu101_cmi10B,0x000002C8,4,Advanced timer unit channel 10 compare-match interrupt B
+v_atu102_ici10A,0x000002D0,4,Advanced timer unit channel 10 compare-match interrupt C
+v_atu11_imi11A,0x000002E0,4,Advanced timer unit channel 11 input capture/compare-match interrupt A
+v_atu11_imi11B,0x000002E8,4,Advanced timer unit channel 11 input capture/compare-match interrupt B
+v_atu11_ovi11,0x000002EC,4,Advanced timer unit channel 11 overflow interrupt
+v_cmti0,0x000002F0,4,Compare match timer 0 interrupt
+v_adi0,0x000002F8,4,A/D converter 0 interrupt
+v_cmti1,0x00000300,4,Compare match timer 1 interrupt
+v_adi1,0x00000308,4,A/D converter 1 interrupt
+v_sci0_eri0,0x00000320,4,Serial communication interface 0 receive-error interrupt
+v_sci0_rxi0,0x00000324,4,Serial communication interface 0 receive-data-full interrupt
+v_sci0_txi0,0x00000328,4,Serial communication interface 0 transmit-data-empty interrupt
+v_sci0_tei0,0x0000032C,4,Serial communication interface 0 transmit-end interrupt
+v_sci1_eri1,0x00000330,4,Serial communication interface 1 receive-error interrupt
+v_sci1_rxi1,0x00000334,4,Serial communication interface 1 receive-data-full interrupt
+v_sci1_txi1,0x00000338,4,Serial communication interface 1 transmit-data-empty interrupt
+v_sci1_tei1,0x0000033C,4,Serial communication interface 1 transmit-end interrupt
+v_sci2_eri2,0x00000340,4,Serial communication interface 2 receive-error interrupt
+v_sci2_rxi2,0x00000344,4,Serial communication interface 2 receive-data-full interrupt
+v_sci2_txi2,0x00000348,4,Serial communication interface 2 transmit-data-empty interrupt
+v_sci2_tei2,0x0000034C,4,Serial communication interface 2 transmit-end interrupt
+v_sci3_eri3,0x00000350,4,Serial communication interface 3 receive-error interrupt
+v_sci3_rxi3,0x00000354,4,Serial communication interface 3 receive-data-full interrupt
+v_sci3_txi3,0x00000358,4,Serial communication interface 3 transmit-data-empty interrupt
+v_sci3_tei3,0x0000035C,4,Serial communication interface 3 transmit-end interrupt
+v_sci4_eri4,0x00000360,4,Serial communication interface 4 receive-error interrupt
+v_sci4_rxi4,0x00000364,4,Serial communication interface 4 receive-data-full interrupt
+v_sci4_txi4,0x00000368,4,Serial communication interface 4 transmit-data-empty interrupt
+v_sci4_tei4,0x0000036C,4,Serial communication interface 4 transmit-end interrupt
+v_hcan_ers,0x00000370,4,Error passive interrupt request
+v_hcan_ovr,0x00000374,4,Receive overload warning interrupt
+v_hcan_rm,0x00000378,4,Receive message interrupt
+v_hcan_sle,0x0000037C,4,Mailbox empty interrupt
+v_wdt_iti,0x00000380,4,Watchdog timer interval timer interrupt
+MCR,0xFFFFE400,1,Master control register
+GSR,0xFFFFE401,1,General status register
+BCR,0xFFFFE402,2,Bit configuration register
+MBCR,0xFFFFE404,2,Mailbox configuration register
+TXPR,0xFFFFE406,2,Transmit wait register
+TXCR,0xFFFFE408,2,Transmit wait cancel register
+TXACK,0xFFFFE40A,2,Transmit acknowledge register
+ABACK,0xFFFFE40C,2,Abort acknowledge register
+RXPR,0xFFFFE40E,2,Receive complete register
+RFPR,0xFFFFE410,2,Remote request register
+IRR,0xFFFFE412,2,Interrupt register
+MBIMR,0xFFFFE414,2,Mailbox interrupt mask register
+IMR,0xFFFFE416,2,Interrupt mask register
+REC,0xFFFFE418,1,Receive error counter
+TEC,0xFFFFE419,1,Transmit error counter
+UMSR,0xFFFFE41A,2,Unread message status register
+LAFML,0xFFFFE41C,2,Local acceptance filter mask L
+LAFMH,0xFFFFE41E,2,Local acceptance filter mask H
+MC0_1,0xFFFFE420,1,Message control 0 1
+MC0_2,0xFFFFE421,1,Message control 0 2
+MC0_3,0xFFFFE422,1,Message control 0 3
+MC0_4,0xFFFFE423,1,Message control 0 4
+MC0_5,0xFFFFE424,1,Message control 0 5
+MC0_6,0xFFFFE425,1,Message control 0 6
+MC0_7,0xFFFFE426,1,Message control 0 7
+MC0_8,0xFFFFE427,1,Message control 0 8
+MC1_1,0xFFFFE428,1,Message control 1 1
+MC1_2,0xFFFFE429,1,Message control 1 2
+MC1_3,0xFFFFE42A,1,Message control 1 3
+MC1_4,0xFFFFE42B,1,Message control 1 4
+MC1_5,0xFFFFE42C,1,Message control 1 5
+MC1_6,0xFFFFE42D,1,Message control 1 6
+MC1_7,0xFFFFE42E,1,Message control 1 7
+MC1_8,0xFFFFE42F,1,Message control 1 8
+MC2_1,0xFFFFE430,1,Message control 2 1
+MC2_2,0xFFFFE431,1,Message control 2 2
+MC2_3,0xFFFFE432,1,Message control 2 3
+MC2_4,0xFFFFE433,1,Message control 2 4
+MC2_5,0xFFFFE434,1,Message control 2 5
+MC2_6,0xFFFFE435,1,Message control 2 6
+MC2_7,0xFFFFE436,1,Message control 2 7
+MC2_8,0xFFFFE437,1,Message control 2 8
+MC3_1,0xFFFFE438,1,Message control 3 1
+MC3_2,0xFFFFE439,1,Message control 3 2
+MC3_3,0xFFFFE43A,1,Message control 3 3
+MC3_4,0xFFFFE43B,1,Message control 3 4
+MC3_5,0xFFFFE43C,1,Message control 3 5
+MC3_6,0xFFFFE43D,1,Message control 3 6
+MC3_7,0xFFFFE43E,1,Message control 3 7
+MC3_8,0xFFFFE43F,1,Message control 3 8
+MC4_1,0xFFFFE440,1,Message control 4 1
+MC4_2,0xFFFFE441,1,Message control 4 2
+MC4_3,0xFFFFE442,1,Message control 4 3
+MC4_4,0xFFFFE443,1,Message control 4 4
+MC4_5,0xFFFFE444,1,Message control 4 5
+MC4_6,0xFFFFE445,1,Message control 4 6
+MC4_7,0xFFFFE446,1,Message control 4 7
+MC4_8,0xFFFFE447,1,Message control 4 8
+MC5_1,0xFFFFE448,1,Message control 5 1
+MC5_2,0xFFFFE449,1,Message control 5 2
+MC5_3,0xFFFFE44A,1,Message control 5 3
+MC5_4,0xFFFFE44B,1,Message control 5 4
+MC5_5,0xFFFFE44C,1,Message control 5 5
+MC5_6,0xFFFFE44D,1,Message control 5 6
+MC5_7,0xFFFFE44E,1,Message control 5 7
+MC5_8,0xFFFFE44F,1,Message control 5 8
+MC6_1,0xFFFFE450,1,Message control 6 1
+MC6_2,0xFFFFE451,1,Message control 6 2
+MC6_3,0xFFFFE452,1,Message control 6 3
+MC6_4,0xFFFFE453,1,Message control 6 4
+MC6_5,0xFFFFE454,1,Message control 6 5
+MC6_6,0xFFFFE455,1,Message control 6 6
+MC6_7,0xFFFFE456,1,Message control 6 7
+MC6_8,0xFFFFE457,1,Message control 6 8
+MC7_1,0xFFFFE458,1,Message control 7 1
+MC7_2,0xFFFFE459,1,Message control 7 2
+MC7_3,0xFFFFE45A,1,Message control 7 3
+MC7_4,0xFFFFE45B,1,Message control 7 4
+MC7_5,0xFFFFE45C,1,Message control 7 5
+MC7_6,0xFFFFE45D,1,Message control 7 6
+MC7_7,0xFFFFE45E,1,Message control 7 7
+MC7_8,0xFFFFE45F,1,Message control 7 8
+MC8_1,0xFFFFE460,1,Message control 8 1
+MC8_2,0xFFFFE461,1,Message control 8 2
+MC8_3,0xFFFFE462,1,Message control 8 3
+MC8_4,0xFFFFE463,1,Message control 8 4
+MC8_5,0xFFFFE464,1,Message control 8 5
+MC8_6,0xFFFFE465,1,Message control 8 6
+MC8_7,0xFFFFE466,1,Message control 8 7
+MC8_8,0xFFFFE467,1,Message control 8 8
+MC9_1,0xFFFFE468,1,Message control 9 1
+MC9_2,0xFFFFE469,1,Message control 9 2
+MC9_3,0xFFFFE46A,1,Message control 9 3
+MC9_4,0xFFFFE46B,1,Message control 9 4
+MC9_5,0xFFFFE46C,1,Message control 9 5
+MC9_6,0xFFFFE46D,1,Message control 9 6
+MC9_7,0xFFFFE46E,1,Message control 9 7
+MC9_8,0xFFFFE46F,1,Message control 9 8
+MC10_1,0xFFFFE470,1,Message control 10 1
+MC10_2,0xFFFFE471,1,Message control 10 2
+MC10_3,0xFFFFE472,1,Message control 10 3
+MC10_4,0xFFFFE473,1,Message control 10 4
+MC10_5,0xFFFFE474,1,Message control 10 5
+MC10_6,0xFFFFE475,1,Message control 10 6
+MC10_7,0xFFFFE476,1,Message control 10 7
+MC10_8,0xFFFFE477,1,Message control 10 8
+MC11_1,0xFFFFE478,1,Message control 11 1
+MC11_2,0xFFFFE479,1,Message control 11 2
+MC11_3,0xFFFFE47A,1,Message control 11 3
+MC11_4,0xFFFFE47B,1,Message control 11 4
+MC11_5,0xFFFFE47C,1,Message control 11 5
+MC11_6,0xFFFFE47D,1,Message control 11 6
+MC11_7,0xFFFFE47E,1,Message control 11 7
+MC11_8,0xFFFFE47F,1,Message control 11 8
+MC12_1,0xFFFFE480,1,Message control 12 1
+MC12_2,0xFFFFE481,1,Message control 12 2
+MC12_3,0xFFFFE482,1,Message control 12 3
+MC12_4,0xFFFFE483,1,Message control 12 4
+MC12_5,0xFFFFE484,1,Message control 12 5
+MC12_6,0xFFFFE485,1,Message control 12 6
+MC12_7,0xFFFFE486,1,Message control 12 7
+MC12_8,0xFFFFE487,1,Message control 12 8
+MC13_1,0xFFFFE488,1,Message control 13 1
+MC13_2,0xFFFFE489,1,Message control 13 2
+MC13_3,0xFFFFE48A,1,Message control 13 3
+MC13_4,0xFFFFE48B,1,Message control 13 4
+MC13_5,0xFFFFE48C,1,Message control 13 5
+MC13_6,0xFFFFE48D,1,Message control 13 6
+MC13_7,0xFFFFE48E,1,Message control 13 7
+MC13_8,0xFFFFE48F,1,Message control 13 8
+MC14_1,0xFFFFE490,1,Message control 14 1
+MC14_2,0xFFFFE491,1,Message control 14 2
+MC14_3,0xFFFFE492,1,Message control 14 3
+MC14_4,0xFFFFE493,1,Message control 14 4
+MC14_5,0xFFFFE494,1,Message control 14 5
+MC14_6,0xFFFFE495,1,Message control 14 6
+MC14_7,0xFFFFE496,1,Message control 14 7
+MC14_8,0xFFFFE497,1,Message control 14 8
+MC15_1,0xFFFFE498,1,Message control 15 1
+MC15_2,0xFFFFE499,1,Message control 15 2
+MC15_3,0xFFFFE49A,1,Message control 15 3
+MC15_4,0xFFFFE49B,1,Message control 15 4
+MC15_5,0xFFFFE49C,1,Message control 15 5
+MC15_6,0xFFFFE49D,1,Message control 15 6
+MC15_7,0xFFFFE49E,1,Message control 15 7
+MC15_8,0xFFFFE49F,1,Message control 15 8
+MD0_1,0xFFFFE4B0,1,Message data 0 1
+MD0_2,0xFFFFE4B1,1,Message data 0 2
+MD0_3,0xFFFFE4B2,1,Message data 0 3
+MD0_4,0xFFFFE4B3,1,Message data 0 4
+MD0_5,0xFFFFE4B4,1,Message data 0 5
+MD0_6,0xFFFFE4B5,1,Message data 0 6
+MD0_7,0xFFFFE4B6,1,Message data 0 7
+MD0_8,0xFFFFE4B7,1,Message data 0 8
+MD1_1,0xFFFFE4B8,1,Message data 1 1
+MD1_2,0xFFFFE4B9,1,Message data 1 2
+MD1_3,0xFFFFE4BA,1,Message data 1 3
+MD1_4,0xFFFFE4BB,1,Message data 1 4
+MD1_5,0xFFFFE4BC,1,Message data 1 5
+MD1_6,0xFFFFE4BD,1,Message data 1 6
+MD1_7,0xFFFFE4BE,1,Message data 1 7
+MD1_8,0xFFFFE4BF,1,Message data 1 8
+MD2_1,0xFFFFE4C0,1,Message data 2 1
+MD2_2,0xFFFFE4C1,1,Message data 2 2
+MD2_3,0xFFFFE4C2,1,Message data 2 3
+MD2_4,0xFFFFE4C3,1,Message data 2 4
+MD2_5,0xFFFFE4C4,1,Message data 2 5
+MD2_6,0xFFFFE4C5,1,Message data 2 6
+MD2_7,0xFFFFE4C6,1,Message data 2 7
+MD2_8,0xFFFFE4C7,1,Message data 2 8
+MD3_1,0xFFFFE4C8,1,Message data 3 1
+MD3_2,0xFFFFE4C9,1,Message data 3 2
+MD3_3,0xFFFFE4CA,1,Message data 3 3
+MD3_4,0xFFFFE4CB,1,Message data 3 4
+MD3_5,0xFFFFE4CC,1,Message data 3 5
+MD3_6,0xFFFFE4CD,1,Message data 3 6
+MD3_7,0xFFFFE4CE,1,Message data 3 7
+MD3_8,0xFFFFE4CF,1,Message data 3 8
+MD4_1,0xFFFFE4D0,1,Message data 4 1
+MD4_2,0xFFFFE4D1,1,Message data 4 2
+MD4_3,0xFFFFE4D2,1,Message data 4 3
+MD4_4,0xFFFFE4D3,1,Message data 4 4
+MD4_5,0xFFFFE4D4,1,Message data 4 5
+MD4_6,0xFFFFE4D5,1,Message data 4 6
+MD4_7,0xFFFFE4D6,1,Message data 4 7
+MD4_8,0xFFFFE4D7,1,Message data 4 8
+MD5_1,0xFFFFE4D8,1,Message data 5 1
+MD5_2,0xFFFFE4D9,1,Message data 5 2
+MD5_3,0xFFFFE4DA,1,Message data 5 3
+MD5_4,0xFFFFE4DB,1,Message data 5 4
+MD5_5,0xFFFFE4DC,1,Message data 5 5
+MD5_6,0xFFFFE4DD,1,Message data 5 6
+MD5_7,0xFFFFE4DE,1,Message data 5 7
+MD5_8,0xFFFFE4DF,1,Message data 5 8
+MD6_1,0xFFFFE4E0,1,Message data 6 1
+MD6_2,0xFFFFE4E1,1,Message data 6 2
+MD6_3,0xFFFFE4E2,1,Message data 6 3
+MD6_4,0xFFFFE4E3,1,Message data 6 4
+MD6_5,0xFFFFE4E4,1,Message data 6 5
+MD6_6,0xFFFFE4E5,1,Message data 6 6
+MD6_7,0xFFFFE4E6,1,Message data 6 7
+MD6_8,0xFFFFE4E7,1,Message data 6 8
+MD7_1,0xFFFFE4E8,1,Message data 7 1
+MD7_2,0xFFFFE4E9,1,Message data 7 2
+MD7_3,0xFFFFE4EA,1,Message data 7 3
+MD7_4,0xFFFFE4EB,1,Message data 7 4
+MD7_5,0xFFFFE4EC,1,Message data 7 5
+MD7_6,0xFFFFE4ED,1,Message data 7 6
+MD7_7,0xFFFFE4EE,1,Message data 7 7
+MD7_8,0xFFFFE4EF,1,Message data 7 8
+MD8_1,0xFFFFE4F0,1,Message data 8 1
+MD8_2,0xFFFFE4F1,1,Message data 8 2
+MD8_3,0xFFFFE4F2,1,Message data 8 3
+MD8_4,0xFFFFE4F3,1,Message data 8 4
+MD8_5,0xFFFFE4F4,1,Message data 8 5
+MD8_6,0xFFFFE4F5,1,Message data 8 6
+MD8_7,0xFFFFE4F6,1,Message data 8 7
+MD8_8,0xFFFFE4F7,1,Message data 8 8
+MD9_1,0xFFFFE4F8,1,Message data 9 1
+MD9_2,0xFFFFE4F9,1,Message data 9 2
+MD9_3,0xFFFFE4FA,1,Message data 9 3
+MD9_4,0xFFFFE4FB,1,Message data 9 4
+MD9_5,0xFFFFE4FC,1,Message data 9 5
+MD9_6,0xFFFFE4FD,1,Message data 9 6
+MD9_7,0xFFFFE4FE,1,Message data 9 7
+MD9_8,0xFFFFE4FF,1,Message data 9 8
+MD10_1,0xFFFFE500,1,Message data 10 1
+MD10_2,0xFFFFE501,1,Message data 10 2
+MD10_3,0xFFFFE502,1,Message data 10 3
+MD10_4,0xFFFFE503,1,Message data 10 4
+MD10_5,0xFFFFE504,1,Message data 10 5
+MD10_6,0xFFFFE505,1,Message data 10 6
+MD10_7,0xFFFFE506,1,Message data 10 7
+MD10_8,0xFFFFE507,1,Message data 10 8
+MD11_1,0xFFFFE508,1,Message data 11 1
+MD11_2,0xFFFFE509,1,Message data 11 2
+MD11_3,0xFFFFE50A,1,Message data 11 3
+MD11_4,0xFFFFE50B,1,Message data 11 4
+MD11_5,0xFFFFE50C,1,Message data 11 5
+MD11_6,0xFFFFE50D,1,Message data 11 6
+MD11_7,0xFFFFE50E,1,Message data 11 7
+MD11_8,0xFFFFE50F,1,Message data 11 8
+MD12_1,0xFFFFE510,1,Message data 12 1
+MD12_2,0xFFFFE511,1,Message data 12 2
+MD12_3,0xFFFFE512,1,Message data 12 3
+MD12_4,0xFFFFE513,1,Message data 12 4
+MD12_5,0xFFFFE514,1,Message data 12 5
+MD12_6,0xFFFFE515,1,Message data 12 6
+MD12_7,0xFFFFE516,1,Message data 12 7
+MD12_8,0xFFFFE517,1,Message data 12 8
+MD13_1,0xFFFFE518,1,Message data 13 1
+MD13_2,0xFFFFE519,1,Message data 13 2
+MD13_3,0xFFFFE51A,1,Message data 13 3
+MD13_4,0xFFFFE51B,1,Message data 13 4
+MD13_5,0xFFFFE51C,1,Message data 13 5
+MD13_6,0xFFFFE51D,1,Message data 13 6
+MD13_7,0xFFFFE51E,1,Message data 13 7
+MD13_8,0xFFFFE51F,1,Message data 13 8
+MD14_1,0xFFFFE520,1,Message data 14 1
+MD14_2,0xFFFFE521,1,Message data 14 2
+MD14_3,0xFFFFE522,1,Message data 14 3
+MD14_4,0xFFFFE523,1,Message data 14 4
+MD14_5,0xFFFFE524,1,Message data 14 5
+MD14_6,0xFFFFE525,1,Message data 14 6
+MD14_7,0xFFFFE526,1,Message data 14 7
+MD14_8,0xFFFFE527,1,Message data 14 8
+MD15_1,0xFFFFE528,1,Message data 15 1
+MD15_2,0xFFFFE529,1,Message data 15 2
+MD15_3,0xFFFFE52A,1,Message data 15 3
+MD15_4,0xFFFFE52B,1,Message data 15 4
+MD15_5,0xFFFFE52C,1,Message data 15 5
+MD15_6,0xFFFFE52D,1,Message data 15 6
+MD15_7,0xFFFFE52E,1,Message data 15 7
+MD15_8,0xFFFFE52F,1,Message data 15 8
+FLMCR1,0xFFFFE800,1,Flash memory control register 1
+FLMCR2,0xFFFFE801,1,Flash memory control register 2
+EBR1,0xFFFFE802,1,Erase block register 1
+EBR2,0xFFFFE803,1,Erase block register 2
+UBARH,0xFFFFEC00,2,User break address register H
+UBARL,0xFFFFEC02,2,User break address register L
+UBAMRH,0xFFFFEC04,2,User break address mask register H
+UBAMRL,0xFFFFEC06,2,User break address mask register L
+UBBR,0xFFFFEC08,2,User break bus cycle register
+UBCR,0xFFFFEC0A,2,User break control register
+TCSR,0xFFFFEC10,1,Timer control/status register
+TCNT,0xFFFFEC11,1,Timer counter
+RSTCSR_W,0xFFFFEC12,1,Reset control/status register (write)
+RSTCSR_R,0xFFFFEC13,1,Reset control/status register (read)
+SBYCR,0xFFFFEC14,1,Standby control register
+BCR1,0xFFFFEC20,2,Bus control register 1
+BCR2,0xFFFFEC22,2,Bus control register 2
+WCR,0xFFFFEC24,2,Wait state control register
+RAMER,0xFFFFEC26,2,RAM emulation register
+DMAOR,0xFFFFECB0,2,Shared DMA operation register
+SAR0,0xFFFFECC0,4,DMA source address register 0
+DAR0,0xFFFFECC4,4,DMA destination address register 0
+DMATCR0,0xFFFFECC8,4,DMA transfer count register 0
+CHCR0,0xFFFFECCC,4,DMA channel control register 0
+SAR1,0xFFFFECD0,4,DMA source address register 1
+DAR1,0xFFFFECD4,4,DMA destination address register 1
+DMATCR1,0xFFFFECD8,4,DMA transfer count register 1
+CHCR1,0xFFFFECDC,4,DMA channel control register 1
+SAR2,0xFFFFECE0,4,DMA source address register 2
+DAR2,0xFFFFECE4,4,DMA destination address register 2
+DMATCR2,0xFFFFECE8,4,DMA transfer count register 2
+CHCR2,0xFFFFECEC,4,DMA channel control register 2
+SAR3,0xFFFFECF0,4,DMA source address register 3
+DAR3,0xFFFFECF4,4,DMA destination address register 3
+DMATCR3,0xFFFFECF8,4,DMA transfer count register 3
+CHCR3,0xFFFFECFC,4,DMA channel control register 3
+IPRA,0xFFFFED00,2,Interrupt priority register A
+IPRB,0xFFFFED02,2,Interrupt priority register B
+IPRC,0xFFFFED04,2,Interrupt priority register C
+IPRD,0xFFFFED06,2,Interrupt priority register D
+IPRE,0xFFFFED08,2,Interrupt priority register E
+IPRF,0xFFFFED0A,2,Interrupt priority register F
+IPRG,0xFFFFED0C,2,Interrupt priority register G
+IPRH,0xFFFFED0E,2,Interrupt priority register H
+IPRI,0xFFFFED10,2,Interrupt priority register I
+IPRJ,0xFFFFED12,2,Interrupt priority register J
+IPRK,0xFFFFED14,2,Interrupt priority register K
+IPRL,0xFFFFED16,2,Interrupt priority register L
+ICR,0xFFFFED18,2,Interrupt control register
+ISR,0xFFFFED1A,2,IRQ status register
+SMR0,0xFFFFF000,1,Serial mode register 0
+BRR0,0xFFFFF001,1,Bit rate register 0
+SCR0,0xFFFFF002,1,Serial control register 0
+TDR0,0xFFFFF003,1,Transmit data register 0
+SSR0,0xFFFFF004,1,Seria status register 0
+RDR0,0xFFFFF005,1,Receive data register 0
+SDCR0,0xFFFFF006,1,Serial direction control register 0
+SMR1,0xFFFFF008,1,Serial mode register 1
+BRR1,0xFFFFF009,1,Bit rate register 1
+SCR1,0xFFFFF00A,1,Serial control register 1
+TDR1,0xFFFFF00B,1,Transmit data register 1
+SSR1,0xFFFFF00C,1,Seria status register 1
+RDR1,0xFFFFF00D,1,Receive data register 1
+SDCR1,0xFFFFF00E,1,Serial direction control register 1
+SMR2,0xFFFFF010,1,Serial mode register 2
+BRR2,0xFFFFF011,1,Bit rate register 2
+SCR2,0xFFFFF012,1,Serial control register 2
+TDR2,0xFFFFF013,1,Transmit data register 2
+SSR2,0xFFFFF014,1,Seria status register 2
+RDR2,0xFFFFF015,1,Receive data register 2
+SDCR2,0xFFFFF016,1,Serial direction control register 2
+SMR3,0xFFFFF018,1,Serial mode register 3
+BRR3,0xFFFFF019,1,Bit rate register 3
+SCR3,0xFFFFF01A,1,Serial control register 3
+TDR3,0xFFFFF01B,1,Transmit data register 3
+SSR3,0xFFFFF01C,1,Seria status register 3
+RDR3,0xFFFFF01D,1,Receive data register 3
+SDCR3,0xFFFFF01E,1,Serial direction control register 3
+SMR4,0xFFFFF020,1,Serial mode register 4
+BRR4,0xFFFFF021,1,Bit rate register 4
+SCR4,0xFFFFF022,1,Serial control register 4
+TDR4,0xFFFFF023,1,Transmit data register 4
+SSR4,0xFFFFF024,1,Seria status register 4
+RDR4,0xFFFFF025,1,Receive data register 4
+SDCR4,0xFFFFF026,1,Serial direction control register 4
+TSTR2,0xFFFFF400,1,Common timer start register 2
+TSTR1,0xFFFFF401,1,Common timer start register 1
+TSTR3,0xFFFFF402,1,Common timer start register 3
+PSCR1,0xFFFFF404,1,Common prescaler register 1
+PSCR2,0xFFFFF406,1,Common prescaler register 2
+PSCR3,0xFFFFF408,1,Common prescaler register 3
+PSCR4,0xFFFFF40A,1,Common prescaler register 4
+ICR0DH,0xFFFFF420,2,Input capture register 0DH
+ICR0DL,0xFFFFF422,2,Input capture register 0DL
+ITVRR1,0xFFFFF424,1,Timer interval interrupt request register 1
+ITVRR2A,0xFFFFF426,1,Timer interval interrupt request register 2A
+ITVRR2B,0xFFFFF428,1,Timer interval interrupt request register 2B
+TIOR0,0xFFFFF42A,1,Timer I/O control register
+TSR0,0xFFFFF42C,2,Timer status register 0
+TIER0,0xFFFFF42E,2,Timer interrupt enable register 0
+TCNT0H,0xFFFFF430,2,Free-running counter 0H
+TCNT0L,0xFFFFF432,2,Free-running counter 0L
+ICR0AH,0xFFFFF434,2,Input capture register 0AH
+ICR0AL,0xFFFFF436,2,Input capture register 0AL
+ICR0BH,0xFFFFF438,2,Input capture register 0BH
+ICR0BL,0xFFFFF43A,2,Input capture register 0BL
+ICR0CH,0xFFFFF43C,2,Input capture register 0CH
+ICR0CL,0xFFFFF43E,2,Input capture register 0CL
+TCNT1A,0xFFFFF440,2,Free-running counter 1A
+TCNT1B,0xFFFFF442,2,Free-running counter 1B
+GR1A,0xFFFFF444,2,General register 1A
+GR1B,0xFFFFF446,2,General register 1B
+GR1C,0xFFFFF448,2,General register 1C
+GR1D,0xFFFFF44A,2,General register 1D
+GR1E,0xFFFFF44C,2,General register 1E
+GR1F,0xFFFFF44E,2,General register 1F
+GR1G,0xFFFFF450,2,General register 1G
+GR1H,0xFFFFF452,2,General register 1H
+OCR1,0xFFFFF454,2,Output compare register 1
+OSBR1,0xFFFFF456,2,Offset base register 1
+TIOR1B,0xFFFFF458,1,Timer I/O control register 1B
+TIOR1A,0xFFFFF459,1,Timer I/O control register 1A
+TIOR1D,0xFFFFF45A,1,Timer I/O control register 1D
+TIOR1C,0xFFFFF45B,1,Timer I/O control register 1C
+TCR1B,0xFFFFF45C,1,Timer control register 1B
+TCR1A,0xFFFFF45D,1,Timer control register 1A
+TSR1A,0xFFFFF45E,2,Timer status register 1A
+TSR1B,0xFFFFF460,2,Timer status register 1B
+TIER1A,0xFFFFF462,2,Timer interrupt enable register 1A
+TIER1B,0xFFFFF464,2,Timer interrupt enable register 1B
+TRGMDR,0xFFFFF466,1,Trigger mode register
+TSR3,0xFFFFF480,2,Timer status register 3
+TIER3,0xFFFFF482,2,Timer interrupt enable register 3
+TMDR,0xFFFFF484,1,Timer mode register
+TCNT3,0xFFFFF4A0,2,Free-running conuter 3
+GR3A,0xFFFFF4A2,2,General register 3A
+GR3B,0xFFFFF4A4,2,General register 3B
+GR3C,0xFFFFF4A6,2,General register 3C
+GR3D,0xFFFFF4A8,2,General register 3D
+TIOR3B,0xFFFFF4AA,1,Timer I/O control register 3B
+TIOR3A,0xFFFFF4AB,1,Timer I/O control register 3A
+TCR3,0xFFFFF4AC,1,Timer control register 3
+TCNT4,0xFFFFF4C0,2,Free-running counter 4
+GR4A,0xFFFFF4C2,2,General register 4A
+GR4B,0xFFFFF4C4,2,General register 4B
+GR4C,0xFFFFF4C6,2,General register 4C
+GR4D,0xFFFFF4C8,2,General register 4D
+TIOR4B,0xFFFFF4CA,1,Timer I/O control register 4B
+TIOR4A,0xFFFFF4CB,1,Timer I/O control register 4A
+TCR4,0xFFFFF4CC,1,Timer control register 4
+TCNT5,0xFFFFF4E0,2,Free-running counter 5
+GR5A,0xFFFFF4E2,2,General register 5A
+GR5B,0xFFFFF4E4,2,General register 5B
+GR5C,0xFFFFF4E6,2,General register 5C
+GR5D,0xFFFFF4E8,2,General register 5D
+TIOR5B,0xFFFFF4EA,1,Timer I/O control register 5B
+TIOR5A,0xFFFFF4EB,1,Timer I/O control register 5A
+TCR5,0xFFFFF4EC,1,Timer control register 5
+TCNT6A,0xFFFFF500,2,Free-running counter 6A
+TCNT6B,0xFFFFF502,2,Free-running counter 6B
+TCNT6C,0xFFFFF504,2,Free-running counter 6C
+TCNT6D,0xFFFFF506,2,Free-running counter 6D
+CYLR6A,0xFFFFF508,2,Cycle register 6A
+CYLR6B,0xFFFFF50A,2,Cycle register 6B
+CYLR6C,0xFFFFF50C,2,Cycle register 6C
+CYLR6D,0xFFFFF50E,2,Cycle register 6D
+BFR6A,0xFFFFF510,2,Buffer register 6A
+BFR6B,0xFFFFF512,2,Buffer register 6B
+BFR6C,0xFFFFF514,2,Buffer register 6C
+BFR6D,0xFFFFF516,2,Buffer register 6D
+DTR6A,0xFFFFF518,2,Duty register 6A
+DTR6B,0xFFFFF51A,2,Duty register 6B
+DTR6C,0xFFFFF51C,2,Duty register 6C
+DTR6D,0xFFFFF51E,2,Duty register 6D
+TCR6B,0xFFFFF520,1,Timer control register 6A
+TCR6A,0xFFFFF521,1,Timer control register 6B
+TSR6,0xFFFFF522,2,Timer status register 6
+TIER6,0xFFFFF524,2,Timer interrupt enable register 6
+PMDR,0xFFFFF526,1,PWM mode register
+TCNT7A,0xFFFFF580,2,Free-running counter 7A
+TCNT7B,0xFFFFF582,2,Free-running counter 7B
+TCNT7C,0xFFFFF584,2,Free-running counter 7C
+TCNT7D,0xFFFFF586,2,Free-running counter 7D
+CYLR7A,0xFFFFF588,2,Cycle register 7A
+CYLR7B,0xFFFFF58A,2,Cycle register 7B
+CYLR7C,0xFFFFF58C,2,Cycle register 7C
+CYLR7D,0xFFFFF58E,2,Cycle register 7D
+BFR7A,0xFFFFF590,2,Buffer register 7A
+BFR7B,0xFFFFF592,2,Buffer register 7B
+BFR7C,0xFFFFF594,2,Buffer register 7C
+BFR7D,0xFFFFF596,2,Buffer register 7D
+DTR7A,0xFFFFF598,2,Duty register 7A
+DTR7B,0xFFFFF59A,2,Duty register 7B
+DTR7C,0xFFFFF59C,2,Duty register 7C
+DTR7D,0xFFFFF59E,2,Duty register 7D
+TCR7B,0xFFFFF5A0,1,Timer control register 7B
+TCR7A,0xFFFFF5A1,1,Timer control register 7A
+TSR7,0xFFFFF5A2,2,Timer status register 7
+TIER7,0xFFFFF5A4,2,Timer interrupt enable register 7
+TCNT11,0xFFFFF5C0,2,Free-running counter 11
+GR11A,0xFFFFF5C2,2,General register 11A
+GR11B,0xFFFFF5C4,2,General register 11B
+TIOR11,0xFFFFF5C6,1,Timer I/O control register 11
+TCR11,0xFFFFF5C8,1,Timer control register 11
+TSR11,0xFFFFF5CA,2,Timer status register 11
+TIER11,0xFFFFF5CC,2,Timer interrupt enable register 11
+TCNT2A,0xFFFFF600,2,Free-running counter 2A
+TCNT2B,0xFFFFF602,2,Free-running counter 2B
+GR2A,0xFFFFF604,2,General register 2A
+GR2B,0xFFFFF606,2,General register 2B
+GR2C,0xFFFFF608,2,General register 2C
+GR2D,0xFFFFF60A,2,General register 2D
+GR2E,0xFFFFF60C,2,General register 2E
+GR2F,0xFFFFF60E,2,General register 2F
+GR2G,0xFFFFF610,2,General register 2G
+GR2H,0xFFFFF612,2,General register 2H
+OCR2A,0xFFFFF614,2,Output compare register 2A
+OCR2B,0xFFFFF616,2,Output compare register 2B
+OCR2C,0xFFFFF618,2,Output compare register 2C
+OCR2D,0xFFFFF61A,2,Output compare register 2D
+OCR2E,0xFFFFF61C,2,Output compare register 2E
+OCR2F,0xFFFFF61E,2,Output compare register 2F
+OCR2G,0xFFFFF620,2,Output compare register 2G
+OCR2H,0xFFFFF622,2,Output compare register 2H
+OSBR2,0xFFFFF624,2,Offset base register 2
+TIOR2B,0xFFFFF626,1,Timer I/O control register 2B
+TIOR2A,0xFFFFF627,1,Timer I/O control register 2A
+TIOR2D,0xFFFFF628,1,Timer I/O control register 2D
+TIOR2C,0xFFFFF629,1,Timer I/O control register 2C
+TCR2B,0xFFFFF62A,1,Timer control register 2B
+TCR2A,0xFFFFF62B,1,Timer control register 2A
+TSR2A,0xFFFFF62C,2,Timer status register 2A
+TSR2B,0xFFFFF62E,2,Timer status register 2B
+TIER2A,0xFFFFF630,2,Timer interrupt enable register 2A
+TIER2B,0xFFFFF632,2,Timer interrupt enable register 2B
+DCNT8A,0xFFFFF640,2,Down-counter 8A
+DNCT8B,0xFFFFF642,2,Down-counter 8B
+DNCT8C,0xFFFFF644,2,Down-counter 8C
+DCNT8D,0xFFFFF646,2,Down-counter 8D
+DCNT8E,0xFFFFF648,2,Down-counter 8E
+DCNT8F,0xFFFFF64A,2,Down-counter 8F
+DCNT8G,0xFFFFF64C,2,Down-counter 8G
+DCNT8H,0xFFFFF64E,2,Down-counter 8H
+DCNT8I,0xFFFFF650,2,Down-counter 8I
+DCNT8J,0xFFFFF652,2,Down-counter 8J
+DCNT8K,0xFFFFF654,2,Down-counter 8K
+DCNT8L,0xFFFFF656,2,Down-counter 8L
+DCNT8M,0xFFFFF658,2,Down-counter 8M
+DCNT8N,0xFFFFF65A,2,Down-counter 8N
+DCNT8O,0xFFFFF65C,2,Down-counter 8O
+DCNT8P,0xFFFFF65E,2,Down-counter 8P
+RLDR8,0xFFFFF660,2,Reload register 8
+TCNR,0xFFFFF662,2,Timer connection register
+OTR,0xFFFFF664,2,One-shot pulse terminate register
+DSTR,0xFFFFF666,2,Down-count start register
+TCR8,0xFFFFF668,1,Timer control register 8
+TSR8,0xFFFFF66A,2,Timer status register 8
+TIER8,0xFFFFF66C,2,Timer interrupt enable register 8
+RLDENR,0xFFFFF66E,1,Reload enable register
+ECNT9A,0xFFFFF680,1,Event counter 9A
+ECNT9B,0xFFFFF682,1,Event counter 9B
+ECNT9C,0xFFFFF684,1,Event counter 9C
+ECNT9D,0xFFFFF686,1,Event counter 9D
+ECNT9E,0xFFFFF688,1,Event counter 9E
+ECNT9F,0xFFFFF68A,1,Event counter 9F
+GR9A,0xFFFFF68C,1,General register 9A
+GR9B,0xFFFFF68E,1,General register 9B
+GR9C,0xFFFFF690,1,General register 9C
+GR9D,0xFFFFF692,1,General register 9D
+GR9E,0xFFFFF694,1,General register 9E
+GR9F,0xFFFFF696,1,General register 9F
+TCR9A,0xFFFFF698,1,Timer control register 9A
+TCR9B,0xFFFFF69A,1,Timer control register 9B
+TCR9C,0xFFFFF69C,1,Timer control register 9C
+TSR9,0xFFFFF69E,2,Timer status register 9
+TIER9,0xFFFFF6A0,2,Timer interrupt enable register 9
+TCNT10AH,0xFFFFF6C0,2,Free-running counter 10AH
+TCNT10AL,0xFFFFF6C2,2,Free-running conuter 10AL
+TCNT10B,0xFFFFF6C4,2,Event counter 10B
+TCNT10C,0xFFFFF6C6,2,Reload counter 10C
+TCNT10D,0xFFFFF6C8,1,Correction counter 10D
+TCNT10E,0xFFFFF6CA,2,Correction angle counter 10E
+TCNT10F,0xFFFFF6CC,2,Correction angle counter 10F
+TCNT10G,0xFFFFF6CE,2,Free-running counter 10G
+ICR10AH,0xFFFFF6D0,2,Input capture register 10AH
+ICR10AL,0xFFFFF6D2,2,Input capture register 10AL
+OCR10AH,0xFFFFF6D4,2,Output compare register 10AH
+OCR10AL,0xFFFFF6D6,2,Output compare register 10AL
+OCR10B,0xFFFFF6D8,1,Output compare register 10B
+RLD10C,0xFFFFF6DA,2,Reload register 10C
+GR10G,0xFFFFF6DC,2,General register 10G
+TCNT10H,0xFFFFF6DE,1,Noise canceler counter 10H
+NCR10,0xFFFFF6E0,1,Noise canceler register 10
+TIOR10,0xFFFFF6E2,1,Timer I/O counter register 10
+TCR10,0xFFFFF6E4,1,Timer control register 10
+TCCLR10,0xFFFFF6E6,2,Correction counter clear register 10
+TSR10,0xFFFFF6E8,2,Timer status register 10
+TIER10,0xFFFFF6EA,2,Timer interrupt enable register 10
+POPCR,0xFFFFF700,2,Pulse output port control register
+SYSCR,0xFFFFF708,1,System control register
+MSTCR_W,0xFFFFF70A,1,Module standby control register (write)
+MSTCR_R,0xFFFFF70B,1,Module standby control register (read)
+CMSTR,0xFFFFF710,2,Shared compare match timer start register
+CMCSR0,0xFFFFF712,2,Compare match timer control/status register 0
+CMCNT0,0xFFFFF714,2,Compare match timer counter 0
+CMCOR0,0xFFFFF716,2,Compare match timer constant register 0
+CMCSR1,0xFFFFF718,2,Compare match timer control/status register 1
+CMCNT1,0xFFFFF71A,2,Compare match timer counter 1
+CMCOR1,0xFFFFF71C,2,Compare match timer constant register 1
+PAIOR,0xFFFFF720,2,Port A IO register
+PACRH,0xFFFFF722,2,Port A control register H
+PACRL,0xFFFFF724,2,Port A control register L
+PADR,0xFFFFF726,2,Port A data register
+PHIOR,0xFFFFF728,2,Port H IO register
+PHCR,0xFFFFF72A,2,Port H control register
+PHDR,0xFFFFF72C,2,Port H data register
+ADTRGR1,0xFFFFF72E,1,A/D trigger register 1
+PBIOR,0xFFFFF730,1,Port B IO register
+PBCRH,0xFFFFF732,2,Port B control register H
+PBCRL,0xFFFFF734,2,Port B control register L
+PBIR,0xFFFFF736,2,Port B invert register
+PBDR,0xFFFFF738,2,Port B data register
+PCIOR,0xFFFFF73A,2,Port C IO register
+PCCR,0xFFFFF73C,2,Port C control register
+PCDR,0xFFFFF73E,2,Port C data register
+PDIOR,0xFFFFF740,2,Port D IO register
+PDCRH,0xFFFFF742,2,Port D control register H
+PDCRL,0xFFFFF744,2,Port D control register L
+PDDR,0xFFFFF746,2,Port D data register
+PFIOR,0xFFFFF748,2,Port F IO register
+PFCRH,0xFFFFF74A,2,Port F control register H
+PFCRL,0xFFFFF74C,2,Port F control register L
+PFDR,0xFFFFF74E,2,Port F data register
+PEIOR,0xFFFFF750,2,Port E IO register
+PECR,0xFFFFF752,2,Port E control register
+PEDR,0xFFFFF754,2,Port E data register
+PGIOR,0xFFFFF760,2,Port G IO register
+PGCR,0xFFFFF762,2,Port G control register
+PGDR,0xFFFFF764,2,Port G data register
+PJIOR,0xFFFFF766,2,Port J IO register
+PJCRH,0xFFFFF768,2,Port J control register H
+PJCRL,0xFFFFF76A,2,Port J control register L
+PJDR,0xFFFFF76C,2,Port J data register
+ADTRGR0,0xFFFFF76E,1,A/D trigger register 0
+PKIOR,0xFFFFF770,2,Port K IO register
+PKCRH,0xFFFFF772,2,Port K control register H
+PKCRL,0xFFFFF774,2,Port K control register L
+PKIR,0xFFFFF776,2,Port K invert register
+PKDR,0xFFFFF778,2,Port K data register
+ADDR0H,0xFFFFF800,1,A/D data register 0H
+ADDR0L,0xFFFFF801,1,A/D data register 0L
+ADDR1H,0xFFFFF802,1,A/D data register 1H
+ADDR1L,0xFFFFF803,1,A/D data register 1L
+ADDR2H,0xFFFFF804,1,A/D data register 2H
+ADDR2L,0xFFFFF805,1,A/D data register 2L
+ADDR3H,0xFFFFF806,1,A/D data register 3H
+ADDR3L,0xFFFFF807,1,A/D data register 3L
+ADDR4H,0xFFFFF808,1,A/D data register 4H
+ADDR4L,0xFFFFF809,1,A/D data register 4L
+ADDR5H,0xFFFFF80A,1,A/D data register 5H
+ADDR5L,0xFFFFF80B,1,A/D data register 5L
+ADDR6H,0xFFFFF80C,1,A/D data register 6H
+ADDR6L,0xFFFFF80D,1,A/D data register 6L
+ADDR7H,0xFFFFF80E,1,A/D data register 7H
+ADDR7L,0xFFFFF80F,1,A/D data register 7L
+ADDR8H,0xFFFFF810,1,A/D data register 8H
+ADDR8L,0xFFFFF811,1,A/D data register 8L
+ADDR9H,0xFFFFF812,1,A/D data register 9H
+ADDR9L,0xFFFFF813,1,A/D data register 9L
+ADDR10H,0xFFFFF814,1,A/D data register 10H
+ADDR10L,0xFFFFF815,1,A/D data register 10L
+ADDR11H,0xFFFFF816,1,A/D data register 11H
+ADDR11L,0xFFFFF817,1,A/D data register 11L
+ADCSR0,0xFFFFF818,1,A/D control/status register 0
+ADCR0,0xFFFFF819,1,A/D control register 0
+ADDR12H,0xFFFFF820,1,A/D data register 12H
+ADDR12L,0xFFFFF821,1,A/D data register 12L
+ADDR13H,0xFFFFF822,1,A/D data register 13H
+ADDR13L,0xFFFFF823,1,A/D data register 13L
+ADDR14H,0xFFFFF824,1,A/D data register 14H
+ADDR14L,0xFFFFF825,1,A/D data register 14L
+ADDR15H,0xFFFFF826,1,A/D data register 15H
+ADDR15L,0xFFFFF827,1,A/D data register 15L
+ADCSR1,0xFFFFF838,1,A/D control/status register 1
+ADCR1,0xFFFFF839,1,A/D control register 1
+ADCSR2,0xFFFFF858,1,A/D control/status register 2
+ADCR2,0xFFFFF859,1,A/D control register 2
