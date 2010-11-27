@@ -337,6 +337,11 @@ def final_output(model, outfile=sys.stdout, output_ram=False):
             elif not code and isinstance(meta, sh2.CodeField):
                 code = True
                 print >> outfile, output_separator
+            elif code:
+                rts = model.get_location(i-4) 
+                if isinstance(rts, sh2.CodeField) and rts.extra.opcode['cmd'] == 'rts':
+                    if isinstance(meta, sh2.CodeField):
+                        print >> outfile, output_separator
             if meta is None:
                 # Create this as a throwaway byte, to save memory.
                 meta = sh2.ByteField(location=i, model=model, unknown_prefix='unk')
