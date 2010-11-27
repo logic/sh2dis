@@ -301,7 +301,7 @@ def disasm_single(instruction, pc, registers, model):
     return CodeField(location=pc, width=2, extra=extra, model=model)
 
 
-def disassemble(location, reference, model):
+def disassemble(location, reference, model, callback=None):
     """Given a memory model and a location within it, disassemble."""
     work_queue = [ (location, reference), ]
 
@@ -344,6 +344,9 @@ def disassemble(location, reference, model):
                 code.label = orig.label
 
             model.set_location(code)
+
+            if callback is not None:
+                callback(code, registers, model)
 
             if code.extra.opcode['cmd'] in delayed_branchers:
                 branch_countdown = 1
