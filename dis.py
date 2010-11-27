@@ -69,14 +69,16 @@ def setup_vectors(model):
         model.set_location(meta)
 
 
-def disassemble_vectors(model):
+def disassemble_vectors(model, mitsuspec=False):
     """Disassemble the locations referenced by the vector table."""
+    cb = mitsu_callback if mitsuspec else None
     for i in range(0x0, 0x400, 0x4):
         if i == 0x4 or i == 0x12:
             # Skip stack pointer addresses.
             continue
         meta = model.get_location(i)
-        sh2.disassemble(meta.extra, meta.location, model)
+        sh2.disassemble(meta.extra, meta.location, model, callback=cb)
+
 
 def scan_free_space(model):
     """Scan for contiguous blocks of 0xFF, replace with NullField."""
@@ -97,6 +99,96 @@ def scan_free_space(model):
                 ff_seen = 0
                 if meta is not None:
                     countdown = meta.width - 1
+
+
+axes = { }
+def mitsu_callback(meta, registers, model):
+    """Automatically generate tables and their axes, if possible."""
+    if meta.extra.opcode['cmd'] in sh2.register_branchers:
+        r = registers[meta.extra.args['m']]
+
+        # All axis/table lookups store the table location in R4.
+        if r is not None and registers[4] is not None:
+
+            # Axes
+            if r == 0xCC6:
+                tbl_loc = registers[4]
+                tbl = model.get_location(tbl_loc)
+                if not tbl.comment:
+                    # Result address.
+                    tbl = sh2.LongField(location=tbl_loc, model=model, comment='Result address')
+                    model.set_location(tbl)
+
+                    # Address of value to look up.
+                    model.set_location(sh2.LongField(location=tbl_loc+4, model=model, comment='Lookup value address'))
+
+                    # Length of the axis.
+                    tbl_len = sh2.WordField(location=tbl_loc+8, model=model, comment='Axis length')
+                    model.set_location(tbl_len)
+
+                    # Axis data and composite structure.
+                    cdata = segment.CompositeData(items_per_line=tbl_len, model=model)
+                    for i in range(tbl_loc+10, tbl_loc+10+(tbl_len.extra*2), 2):
+                        tbl_data = sh2.WordField(location=i, member_of=cdata, model=model)
+                        cdata.members.append(tbl_data)
+                        model.set_location(tbl_data)
+
+                    meta.references[tbl_loc] = 1
+                    tbl.references[meta.location] = 1
+                    axes[tbl.extra] = tbl.location
+
+            # Tables (byte- and word-width)
+            elif r == 0xC28 or r == 0xE02:
+                tbl_loc = registers[4]
+                tbl = model.get_location(tbl_loc)
+
+                if not tbl.comment:
+                    # Width: sub_C28 is byte-width tables, sub_E02 is word-width.
+                    tbl_width = 1 if r == 0xC28 else 2
+                    tbl_type = sh2.ByteField if tbl_width == 1 else sh2.WordField
+
+                    # Table header: 2D or 3D.
+                    tbl = tbl_type(location=tbl_loc, model=model)
+                    model.set_location(tbl)
+                    tbl.comment = '%dD %s-width table' % (tbl.extra, 'byte' if tbl_width == 1 else 'word')
+
+                    # Adder.
+                    model.set_location(tbl_type(location=tbl_loc+tbl_width, model=model, comment='Adder'))
+
+                    # Y-axis position.
+                    yaxis = sh2.LongField(location=tbl_loc+(2*tbl_width), model=model, comment='Y-Axis')
+                    yaxis_len = 0
+                    if yaxis.extra in axes:
+                        yaxis.comment = 'Y-Axis: 0x%X' % model.get_location(axes[yaxis.extra]).location
+                        yaxis_len = model.get_location(axes[yaxis.extra]+8).extra
+                    model.set_location(yaxis)
+
+                    # X-axis?
+                    tbl_pos = 4 + (tbl_width * 2)
+                    xaxis_len = 1 # Always at least one row. :)
+                    if tbl.extra == 3:
+                        xaxis = sh2.LongField(location=tbl_loc+tbl_pos, model=model, comment='X-Axis')
+                        xaxis_len = 0
+                        if xaxis.extra in axes:
+                            xaxis.comment = 'X-Axis: 0x%X' % model.get_location(axes[xaxis.extra]).location
+                            xaxis_len = model.get_location(axes[xaxis.extra]+8).extra
+                        model.set_location(xaxis)
+                        tbl_pos += 4
+                        model.set_location(tbl_type(location=tbl_loc+tbl_pos, model=model, comment='Row length'))
+                        tbl_pos += tbl_width
+
+                    if yaxis_len > 0:
+                        cdata = segment.CompositeData(items_per_line=yaxis_len, model=model)
+                        for i in range(tbl_loc+tbl_pos, tbl_loc+tbl_pos+(yaxis_len*xaxis_len*tbl_width), tbl_width):
+                            if model.location_isset(i) or (tbl_width == 2 and model.location_isset(i+1)):
+                                # Issue a warning about a poorly-defined table.
+                                # This is a legitimate problem on some ROMs (9694, etc).
+                                print '!!!!! Short table: 0x%X' % tbl_loc
+                                break
+                            tdata = tbl_type(location=i, model=model, member_of=cdata)
+                            model.set_location(tdata)
+                            cdata.members.append(tdata)
+
 
 def mitsu_fixup_mova(meta, model):
     # Mitsu seems to love MOVA for jump tables.
@@ -180,17 +272,14 @@ def mitsu_fixups(model):
     meta = sh2.WordField(location=0x3FFCE, model=model, label='immobilizer')
     model.set_location(meta)
 
-    # Temporary hack to see if tables work.
-    members = []
-    for p in range(0x33bd, 0x34cb):
-        meta = sh2.ByteField(location=p, model=model)
-        model.set_location(meta)
-        members.append(meta)
-    members[0].label = 'HiOctFuel'
-    tbl = segment.CompositeData(members=members, items_per_line=15, model=model)
-    for meta in members:
-        meta.member_of = tbl
-    # End temporary hack.
+    meta = model.get_location(0xCC6)
+    meta.label = 'axis_lookup'
+
+    meta = model.get_location(0xC28)
+    meta.label = 'tbl_lookup_byte'
+
+    meta = model.get_location(0xE02)
+    meta.label = 'tbl_lookup_word'
 
     for start, end in model.get_phys_ranges():
         countdown = 0
@@ -287,7 +376,7 @@ def main():
 
     model = segment.MemoryModel(get_segments(phys))
     setup_vectors(model)
-    disassemble_vectors(model)
+    disassemble_vectors(model, options.mitsu)
     if options.mitsu:
         mitsu_fixups(model)
     scan_free_space(model)
