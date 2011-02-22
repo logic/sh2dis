@@ -1,15 +1,14 @@
 #!/usr/bin/env python
 
 
-import csv, segment, struct
+from __future__ import print_function
+
+
+import csv, segment, struct, string
 from sh2opcodes import opcodes
+from collections import namedtuple
 
 
-# collections.namedtuple() is only available in Python 2.6.
-try:
-    from collections import namedtuple
-except ImportError:
-    from namedtuple import namedtuple
 CodeExtra = namedtuple('CodeExtra', 'text, opcode, args')
 
 
@@ -164,7 +163,7 @@ class NullField(segment.SegmentData):
         return comments
 
 
-class AssemblyError(StandardError):
+class AssemblyError(Exception):
     pass
 
 
@@ -286,7 +285,7 @@ def lookup_instruction(instruction):
         if instruction & instmask == instbits:
             args = parse_args(instruction, opcode)
             return opcode, args
-    raise AssemblyError, 'no matching instruction for %#x' % instruction
+    raise AssemblyError('no matching instruction for %#x' % instruction)
 
 
 def disasm_single(instruction, pc, registers, model):
@@ -357,4 +356,4 @@ def disassemble(location, reference, model, callback=None):
             location += 2
 
 if __name__ == '__main__':
-    print 'no tests yet'
+    print('no tests yet')

@@ -6,6 +6,7 @@ TODO:
 """
 
 
+from __future__ import print_function
 import optparse, os.path, sys
 import segment, sh2, sh7052, sh7055
 
@@ -13,7 +14,7 @@ import segment, sh2, sh7052, sh7055
 version='0.99'
 
 
-class ROMError(StandardError):
+class ROMError(Exception):
     pass
 
 
@@ -36,7 +37,7 @@ def get_segments(phys):
             ('RAM', 0xFFFF6000, 0xFFFFE000, None),
             ('REG', 0xFFFFE400, 0xFFFFF860, None),
         )
-    raise ROMError, 'invalid or unrecognized ROM'
+    raise ROMError('invalid or unrecognized ROM')
 
 
 def setup_vectors(model):
@@ -59,7 +60,7 @@ def setup_vectors(model):
         if meta.label is None and vector.label.startswith('v_'):
             meta.label = vector.label[2:]
 
-    for addr, v in proc.registers.items():
+    for addr, v in list(proc.registers.items()):
         kind = sh2.LongField
         if v['size'] == 1:
             kind = sh2.ByteField
@@ -127,7 +128,7 @@ def mitsu_callback(meta, registers, model):
                     model.set_location(tbl_len)
 
                     # Axis data and composite structure.
-                    cdata = segment.CompositeData(items_per_line=tbl_len, model=model)
+                    cdata = segment.CompositeData(items_per_line=tbl_len.extra, model=model)
                     for i in range(tbl_loc+10, tbl_loc+10+(tbl_len.extra*2), 2):
                         tbl_data = sh2.WordField(location=i, member_of=cdata, model=model)
                         cdata.members.append(tbl_data)
@@ -183,7 +184,7 @@ def mitsu_callback(meta, registers, model):
                             if model.location_isset(i) or (tbl_width == 2 and model.location_isset(i+1)):
                                 # Issue a warning about a poorly-defined table.
                                 # This is a legitimate problem on some ROMs (9694, etc).
-                                print '!!!!! Short table: 0x%X' % tbl_loc
+                                print('!!!!! Short table: 0x%X' % tbl_loc)
                                 break
                             tdata = tbl_type(location=i, model=model, member_of=cdata)
                             model.set_location(tdata)
@@ -333,26 +334,26 @@ def final_output(model, outfile=sys.stdout, output_ram=False):
             meta = model.get_location(i)
             if code and not isinstance(meta, sh2.CodeField):
                 code = False
-                print >> outfile, output_separator
+                print(output_separator, file=outfile)
             elif not code and isinstance(meta, sh2.CodeField):
                 code = True
-                print >> outfile, output_separator
+                print(output_separator, file=outfile)
             elif code:
                 rts = model.get_location(i-4) 
                 if isinstance(rts, sh2.CodeField) and rts.extra.opcode['cmd'] == 'rts':
                     if isinstance(meta, sh2.CodeField):
-                        print >> outfile, output_separator
+                        print(output_separator, file=outfile)
             if meta is None:
                 # Create this as a throwaway byte, to save memory.
                 meta = sh2.ByteField(location=i, model=model, unknown_prefix='unk')
             countdown = meta.width - 1
             if isinstance(meta, sh2.NullField):
-                print >> outfile, output_separator
+                print(output_separator, file=outfile)
             o = str(meta)
             if len(o):
-                print >> outfile, meta
+                print(meta, file=outfile)
             if isinstance(meta, sh2.NullField):
-                print >> outfile, output_separator
+                print(output_separator, file=outfile)
 
 
 def main():
@@ -368,13 +369,13 @@ def main():
     options, args = parser.parse_args()
 
     if len(args) != 1:
-        print >> sys.stderr, 'No ROM file specified!\n'
+        print('No ROM file specified!\n', file=sys.stderr)
         parser.print_help(sys.stderr)
         sys.exit(1)
 
     romname = args[0]
     if not os.path.isfile(romname):
-        print >> sys.stderr, 'No such ROM file `%s\'!\n' % romname
+        print('No such ROM file `%s\'!\n' % romname, file=sys.stderr)
         parser.print_help(sys.stderr)
         sys.exit(1)
     phys = open(romname, mode='rb').read()

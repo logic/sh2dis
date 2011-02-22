@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
 
-class SegmentError(StandardError):
+from __future__ import print_function
+
+
+class SegmentError(Exception):
     pass
 
 
@@ -141,11 +144,11 @@ class Segment(object):
                 if i + meta.width <= rel_end:
                     if meta.comment is not None:
                         comments.append(meta.comment)
-                    for j in meta.references.keys():
+                    for j in list(meta.references.keys()):
                         value.references[j] = 1
                     self.unset_location(meta.location)
                 else:
-                    raise SegmentError, 'conflict with data at %#x' % i
+                    raise SegmentError('conflict with data at %#x' % i)
         if len(comments) > 0:
             if value.comment is not None:
                 comments.insert(0, value.comment)
@@ -186,12 +189,12 @@ class MemoryModel(object):
         for segment in self.segments:
             if location >= segment.start and location < segment.end:
                 return segment
-        raise SegmentError, 'invalid segment address: %#x' % location
+        raise SegmentError('invalid segment address: %#x' % location)
 
     def get_phys(self, location, width=1):
         seg = self.__lookup_segment(location)
         if seg.phys is None:
-            raise SegmentError, '%#x is not a physical location' % location
+            raise SegmentError('%#x is not a physical location' % location)
         return seg.get_phys(location, width)
 
     def get_phys_ranges(self):
@@ -224,4 +227,4 @@ class MemoryModel(object):
 
 
 if __name__ == '__main__':
-    print 'no tests yet'
+    print('no tests yet')
