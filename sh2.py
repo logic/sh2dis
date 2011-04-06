@@ -7,7 +7,10 @@ from __future__ import print_function
 import csv, segment, struct, string
 from sh2opcodes import opcodes
 from collections import namedtuple
-from Queue import Queue
+try:
+    from Queue import Queue
+except ImportError:
+    from queue import Queue
 #from multiprocessing import Queue
 
 
