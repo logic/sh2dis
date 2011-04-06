@@ -4,6 +4,9 @@
 from __future__ import print_function
 
 
+import bisect, textwrap
+
+
 class SegmentError(Exception):
     pass
 
@@ -13,7 +16,7 @@ class SegmentData(object):
     def __init__(self, location, width, model, label=None, comment=None, references=None, unknown_prefix='unk', extra=None, member_of=None):
         object.__init__(self)
         if references is None:
-            references = { }
+            references = [ ]
         self.location = location     # Our absolute memory location.
         self.width = width           # The size of the data type in bytes.
         self.model = model           # The memeory model we're a part of.
@@ -39,21 +42,23 @@ class SegmentData(object):
             label += ':'
 
         comments = self.generate_comments()
-        count = 1
-        for r in sorted(self.references.keys()):
-            if r == self.location:
-                continue
-            l = self.model.get_label(r)
-            if l is None:
-                l = '0x%X' % r
-            if count > 0:
-                comments.append('XREF: %s' % l)
-                count -= 1
-            else:
-                comments.append('XREF: %s ...' % l)
-                break
-        if self.comment is not None:
-            comments.extend(self.comment.split('\n'))
+
+        # Generate cross-reference comments.
+        if len(self.references):
+            count = 0
+            max_xrefs = 6
+            xrefs = ['XREF: ']
+            for r in self.references:
+                l = self.model.get_label(r) or '0x%X' % r
+                xrefs.append(l)
+                count += 1
+                if count == max_xrefs:
+                    if len(self.references) > max_xrefs:
+                        xrefs.append('...')
+                    break
+                if count != len(self.references):
+                    xrefs.append(', ')
+            comments.extend(textwrap.wrap(''.join(xrefs), 29))
 
         val = [ ]
         if len(comments) > 0:
@@ -68,6 +73,14 @@ class SegmentData(object):
             val.append('%08X %-16s %s' % (self.location, label, instruction))
 
         return '\n'.join(val)
+
+    def add_reference(self, reference):
+        """Track references in numerically sorted order."""
+        if reference == self.location:
+            return
+        bl = bisect.bisect_left(self.references, reference)
+        if bl == len(self.references) or self.references[bl] != reference:
+            self.references.insert(bl, reference)
 
     def generate_comments(self):
         return [ ]
@@ -144,8 +157,8 @@ class Segment(object):
                 if i + meta.width <= rel_end:
                     if meta.comment is not None:
                         comments.append(meta.comment)
-                    for j in list(meta.references.keys()):
-                        value.references[j] = 1
+                    for j in meta.references:
+                        value.add_reference(j)
                     self.unset_location(meta.location)
                 else:
                     raise SegmentError('conflict with data at %#x' % i)

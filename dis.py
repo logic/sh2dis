@@ -70,15 +70,18 @@ def setup_vectors(model):
         model.set_location(meta)
 
 
-def disassemble_vectors(model, mitsuspec=False):
+def disassemble_vectors(model, cb=None):
     """Disassemble the locations referenced by the vector table."""
-    cb = mitsu_callback if mitsuspec else None
+    vectors = [ ]
     for i in range(0x0, 0x400, 0x4):
-        if i == 0x4 or i == 0x12:
-            # Skip stack pointer addresses.
-            continue
         meta = model.get_location(i)
-        sh2.disassemble(meta.extra, meta.location, model, callback=cb)
+        try:
+            # Make sure this is a real address (ie. not a stack pointer)
+            model.get_phys(meta.extra)
+        except segment.SegmentError:
+            continue
+        vectors.append((meta.extra, meta.location))
+    sh2.disassemble(vectors, model, cb)
 
 
 def scan_free_space(model):
@@ -105,6 +108,14 @@ def scan_free_space(model):
 axes = { }
 def mitsu_callback(meta, registers, model):
     """Automatically generate tables and their axes, if possible."""
+    # TODO: This has the potential to clobber itself. Should simply do
+    # collection of axis and table locations here, for later processing,
+    # and mark the location with a reference. Then, process all axes in
+    # order. Then process all tables in order. 96940013 has a few tables
+    # where the table (or axis) contents are referred to directly, which
+    # screws us up if ordering is wrong; need to do better than "isset"
+    # to determine if we can clobber existing structures. (ie. don't
+    # worry about isset() on the first element of a table?)
     if meta.extra.opcode['cmd'] in sh2.register_branchers:
         r = registers[meta.extra.args['m']]
 
@@ -134,8 +145,8 @@ def mitsu_callback(meta, registers, model):
                         cdata.members.append(tbl_data)
                         model.set_location(tbl_data)
 
-                    meta.references[tbl_loc] = 1
-                    tbl.references[meta.location] = 1
+                    meta.add_reference(tbl_loc)
+                    tbl.add_reference(meta.location)
                     axes[tbl.extra] = tbl.location
 
             # Tables (byte- and word-width)
@@ -184,7 +195,7 @@ def mitsu_callback(meta, registers, model):
                             if model.location_isset(i) or (tbl_width == 2 and model.location_isset(i+1)):
                                 # Issue a warning about a poorly-defined table.
                                 # This is a legitimate problem on some ROMs (9694, etc).
-                                print('!!!!! Short table: 0x%X' % tbl_loc)
+                                print('!!!!! Short table: 0x%X (at 0x%X)' % (tbl_loc, i))
                                 break
                             tdata = tbl_type(location=i, model=model, member_of=cdata)
                             model.set_location(tdata)
@@ -202,11 +213,11 @@ def mitsu_fixup_mova(meta, model):
             break
 
         jumper = sh2.WordField(location=jumper_addr, model=model)
-        jumper.references[meta.location] = 1
+        jumper.add_reference(meta.location)
         model.set_location(jumper)
 
         jumper_ref = jump_tbl + jumper.extra
-        sh2.disassemble(jumper_ref, jumper_addr, model)
+        sh2.disassemble([(jumper_ref, jumper_addr)], model)
 
         jumper.comment = 'jsr %s' % model.get_label(jumper_ref)
         jump_off += 2
@@ -382,7 +393,7 @@ def main():
 
     model = segment.MemoryModel(get_segments(phys))
     setup_vectors(model)
-    disassemble_vectors(model, options.mitsu)
+    disassemble_vectors(model, mitsu_callback if options.mitsu else None)
     if options.mitsu:
         mitsu_fixups(model)
     scan_free_space(model)

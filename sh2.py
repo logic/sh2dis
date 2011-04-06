@@ -7,6 +7,8 @@ from __future__ import print_function
 import csv, segment, struct, string
 from sh2opcodes import opcodes
 from collections import namedtuple
+from Queue import Queue
+#from multiprocessing import Queue
 
 
 CodeExtra = namedtuple('CodeExtra', 'text, opcode, args')
@@ -65,8 +67,8 @@ class WordField(DataField):
         kwargs['unknown_prefix'] = 'word'
         DataField.__init__(self, *args, **kwargs)
         try:
-            bytes = self.model.get_phys(self.location, 2)
-            self.extra = struct.unpack('>H', bytes)[0]
+            phys = self.model.get_phys(self.location, 2)
+            self.extra = struct.unpack('>H', phys)[0]
         except segment.SegmentError:
             self.extra = None
 
@@ -79,8 +81,8 @@ class LongField(DataField):
         kwargs['unknown_prefix'] = 'long'
         DataField.__init__(self, *args, **kwargs)
         try:
-            bytes = self.model.get_phys(self.location, 4)
-            self.extra = struct.unpack('>L', bytes)[0]
+            phys = self.model.get_phys(self.location, 4)
+            self.extra = struct.unpack('>L', phys)[0]
         except segment.SegmentError:
             self.extra = None
 
@@ -176,7 +178,7 @@ def create_reference(referer, location, model, metatype=ByteField, known_referen
             meta = metatype(location=location, model=model, unknown_prefix='unk')
         model.set_location(meta)
     if referer is not None:
-        meta.references[referer] = 1
+        meta.add_reference(referer)
     return meta
 
 
@@ -268,6 +270,8 @@ def track_registers(opcode, args, location, registers, model):
                         else:
                             meta_type = ByteField
                         meta = create_reference(referer=location, location=target, model=model, metatype=meta_type, known_reference=True)
+                    else:
+                        meta.add_reference(location)
                     registers[n] = meta.extra
                     return
 
@@ -300,30 +304,34 @@ def disasm_single(instruction, pc, registers, model):
     return CodeField(location=pc, width=2, extra=extra, model=model)
 
 
-def disassemble(location, reference, model, callback=None):
-    """Given a memory model and a location within it, disassemble."""
-    work_queue = [ (location, reference), ]
+def disassemble(locations, model, callback=None):
+    """Given a memory model and a set of locations within it, disassemble."""
 
-    while len(work_queue) > 0:
-        location, reference = work_queue.pop()
-        registers = [None,] * 16
-        branching = False
-        branch_countdown = 0
+    work_queue = Queue()
+    for location, reference in locations:
+        work_queue.put((location, reference), False)
+
+    while not work_queue.empty():
+        location, reference = work_queue.get()
 
         # Quick check to make sure we haven't already processed this location.
         meta = model.get_location(location)
         if isinstance(meta, CodeField):
-            meta.references[reference] = 1
+            meta.add_reference(reference)
             continue
+
+        registers = [None,] * 16
+        branching = False
+        branch_countdown = 0
 
         while not branching or branch_countdown >= 0:
             try:
                 orig = model.get_location(location)
-                bytes = model.get_phys(location, 2)
+                phys = model.get_phys(location, 2)
             except segment.SegmentError:
                 break
 
-            instruction = struct.unpack('>H', bytes)[0]
+            instruction = struct.unpack('>H', phys)[0]
             code = disasm_single(instruction, location, registers, model)
 
             # Handle register-based branches.
@@ -331,13 +339,13 @@ def disassemble(location, reference, model, callback=None):
                 r = registers[code.extra.args['m']]
                 if r is not None:
                     code.extra.args['target'] = r
-                    work_queue.append((r, location))
+                    work_queue.put((r, location), False)
 
             elif code.extra.opcode['cmd'] in label_branchers:
-                work_queue.append((code.extra.args['target'], location))
+                work_queue.put((code.extra.args['target'], location), False)
 
             if reference is not None:
-                code.references[reference] = 1
+                code.add_reference(reference)
                 reference = None
             if orig is not None:
                 code.label = orig.label
@@ -354,6 +362,7 @@ def disassemble(location, reference, model, callback=None):
                 branch_countdown -= 1
 
             location += 2
+
 
 if __name__ == '__main__':
     print('no tests yet')
