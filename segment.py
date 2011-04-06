@@ -83,6 +83,8 @@ class SegmentData(object):
             self.references.insert(bl, reference)
 
     def generate_comments(self):
+        if self.comment is not None:
+            return self.comment.split('\n')
         return [ ]
 
     def get_label(self):
