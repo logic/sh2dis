@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8'>
+
+  <title>logic/sh2dis @ GitHub</title>
+
+  <style type="text/css">
+    body {
+      margin-top: 1.0em;
+      background-color: #130ddd;
+      font-family: Helvetica, Arial, FreeSans, san-serif;
+      color: #ffffff;
+    }
+    #container {
+      margin: 0 auto;
+      width: 700px;
+    }
+    h1 { font-size: 3.8em; color: #ecf222; margin-bottom: 3px; }
+    h1 .small { font-size: 0.4em; }
+    h1 a { text-decoration: none }
+    h2 { font-size: 1.5em; color: #ecf222; }
+    h3 { text-align: center; color: #ecf222; }
+    a { color: #ecf222; }
+    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
+    .download { float: right; }
+    pre { background: #000; color: #fff; padding: 15px;}
+    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
+    .footer { text-align:center; padding-top:30px; font-style: italic; }
+  </style>
+</head>
+
+<body>
+  <a href="http://github.com/logic/sh2dis"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+
+  <div id="container">
+
+    <div class="download">
+      <a href="http://github.com/logic/sh2dis/zipball/master">
+        <img border="0" width="90" src="http://github.com/images/modules/download/zip.png"></a>
+      <a href="http://github.com/logic/sh2dis/tarball/master">
+        <img border="0" width="90" src="http://github.com/images/modules/download/tar.png"></a>
+    </div>
+
+    <h1><a href="http://github.com/logic/sh2dis">sh2dis</a>
+      <span class="small">by <a href="http://github.com/logic">logic</a></span></h1>
+
+    <div class="description">
+      An SH2-compatible (Renesas SuperH) disassembler.
+    </div>
+
+    <p>sh2dis is a very rudimentary automated disassembly tool for SH2 processors written in Python. The internal representation and produced output are inspired somewhat by IDA Pro, a general-purpose multi-platform code analysis tool.
+
+It can currently do relatively broad automated disassembly by tracking register assignments loosely and following branches where it can reasonably discern a destination. It doesn't catch everything yet, and likely never will; the end goal is not a full-on SH2 simulator.
+
+
+This software is in the very early stages of development, and likely
+contains bugs. If you find one, please let me know at esm@logic.net.
+
+Thanks for looking!
+
+-Ed</p><h2>Dependencies</h2>
+<p>Python</p>
+<h2>Install</h2>
+<p>Visit https://github.com/logic/sh2dis, and click on the "Download" button to download either a zip or tar.gz of the current state of the repository. Extract this anywhere, and run "dis.py" with your installed python interpreter.
+
+The example command line tool, "dis.py", is capable of distinguishing between SH7052 and SH7055 ROM formats, and will perform an automated disassembly around the vector interupt table, labelling any known vectors and registers. This example application may not work well with applications other than ROMs
+taken from a Mitsubishi Lancer Evolution ECU, as that is the only platform I have direct access to.</p>
+<h2>License</h2>
+<p>sh2dis, an SH2-compatible (Renesas SuperH) disassembler.
+Copyright (C) 2009, Edward S. Marshall
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program, in the file "COPYING3".  If not, see
+<http://www.gnu.org/licenses/>.
+</p>
+<h2>Authors</h2>
+<p>Ed Marshall (esm@logic.net)<br/><br/>      </p>
+<h2>Contact</h2>
+<p>Ed Marshall (esm@logic.net)<br/>      </p>
+
+
+    <h2>Download</h2>
+    <p>
+      You can download this project in either
+      <a href="http://github.com/logic/sh2dis/zipball/master">zip</a> or
+      <a href="http://github.com/logic/sh2dis/tarball/master">tar</a> formats.
+    </p>
+    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
+      by running:
+      <pre>$ git clone git://github.com/logic/sh2dis</pre>
+    </p>
+
+    <div class="footer">
+      get the source code on GitHub : <a href="http://github.com/logic/sh2dis">logic/sh2dis</a>
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-818298-7");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>
