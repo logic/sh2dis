@@ -134,7 +134,7 @@ class Segment(object):
         self.end = end
         self.phys = phys
         self.name = name
-        self.space = [None] * (end - start)
+        self.space = [ [None, []] for _ in range(end-start)]
 
     def get_phys(self, location, width=1):
         if self.phys is None:
@@ -144,9 +144,9 @@ class Segment(object):
 
     def get_location(self, location):
         relative_location = location - self.start
-        meta = self.space[relative_location]
+        meta = self.space[relative_location][0]
         if type(meta) is int:
-            meta = self.space[relative_location + meta]
+            meta = self.space[relative_location + meta][0]
         return meta
 
     def set_location(self, value):
@@ -154,7 +154,7 @@ class Segment(object):
         rel_loc = value.location - self.start
         rel_end = rel_loc + value.width
         for i in range(rel_loc, rel_loc + value.width):
-            meta = self.space[i]
+            meta = self.space[i][0]
             if meta is not None:
                 if i + meta.width <= rel_end:
                     if meta.comment is not None:
@@ -168,16 +168,16 @@ class Segment(object):
             if value.comment is not None:
                 comments.insert(0, value.comment)
             value.comment = '\n'.join(comments)
-        self.space[rel_loc] = value
+        self.space[rel_loc][0] = value
         for i in range(1, value.width):
-            self.space[rel_loc + i] = -i
+            self.space[rel_loc + i][0] = -i
 
     def unset_location(self, location):
         meta = self.get_location(location)
         if meta is not None:
             rel_loc = location - self.start
             for i in range(rel_loc, rel_loc + meta.width):
-                self.space[i] = None
+                self.space[i][0] = None
 
     def get_label(self, location):
         label = None
