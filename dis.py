@@ -54,11 +54,14 @@ def setup_vectors(model):
                 kind = sh2.ByteField
             elif v['size'] == 2:
                 kind = sh2.WordField
-        vector = kind(location=i, model=model, label=label, comment=comment)
+        vector = kind(location=i, model=model, comment=comment)
         model.set_location(vector)
-        meta = model.get_location(vector.extra)
-        if meta.label is None and vector.label.startswith('v_'):
-            meta.label = vector.label[2:]
+        model.set_label(i, label)
+        if label is not None and label.startswith('v_'):
+            model.set_label(vector.extra, label[2:])
+        #meta = model.get_location(vector.extra)
+        #if meta.label is None and vector.label.startswith('v_'):
+        #    meta.label = vector.label[2:]
 
     for addr, v in list(proc.registers.items()):
         kind = sh2.LongField
@@ -66,8 +69,9 @@ def setup_vectors(model):
             kind = sh2.ByteField
         elif v['size'] == 2:
             kind = sh2.WordField
-        meta = kind(location=addr, model=model, label=v['name'], comment=v['comment'])
+        meta = kind(location=addr, model=model, comment=v['comment'])
         model.set_location(meta)
+        model.set_label(addr, v['name'])
 
 
 def disassemble_vectors(model, cb=None):
@@ -126,7 +130,7 @@ def mitsu_callback(meta, registers, model):
             if r == 0xCC6:
                 tbl_loc = registers[4]
                 tbl = model.get_location(tbl_loc)
-                if not tbl.comment:
+                if tbl is None:
                     # Result address.
                     tbl = sh2.LongField(location=tbl_loc, model=model, comment='Result address')
                     model.set_location(tbl)
@@ -145,8 +149,8 @@ def mitsu_callback(meta, registers, model):
                         cdata.members.append(tbl_data)
                         model.set_location(tbl_data)
 
-                    meta.add_reference(tbl_loc)
-                    tbl.add_reference(meta.location)
+                    model.add_reference(meta.location, tbl_loc)
+                    model.add_reference(tbl_loc, meta.location)
                     axes[tbl.extra] = tbl.location
 
             # Tables (byte- and word-width)
@@ -154,7 +158,7 @@ def mitsu_callback(meta, registers, model):
                 tbl_loc = registers[4]
                 tbl = model.get_location(tbl_loc)
 
-                if not tbl.comment:
+                if tbl is None:
                     # Width: sub_C28 is byte-width tables, sub_E02 is word-width.
                     tbl_width = 1 if r == 0xC28 else 2
                     tbl_type = sh2.ByteField if tbl_width == 1 else sh2.WordField
@@ -213,8 +217,8 @@ def mitsu_fixup_mova(meta, model):
             break
 
         jumper = sh2.WordField(location=jumper_addr, model=model)
-        jumper.add_reference(meta.location)
         model.set_location(jumper)
+        model.add_reference(jumper_addr, meta.location)
 
         jumper_ref = jump_tbl + jumper.extra
         sh2.disassemble([(jumper_ref, jumper_addr)], model)
@@ -231,26 +235,21 @@ def mitsu_fixup_mut(meta, model):
         if mut_entry.extra == 0xFFFFFFFF:
             break
         model.set_location(mut_entry)
-        mut_target = model.get_location(mut_entry.extra)
-        mut_target.label = 'MUT_%X' % mut_off
+        model.set_label(mut_entry.extra, 'MUT_%X' % mut_off)
         mut_off += 1
-    mut_entry = model.get_location(mut_loc)
-    mut_entry.label = 'MUT_TABLE'
+    model.set_label(mut_loc, 'MUT_TABLE')
 
 
 def mitsu_fixups(model):
     # Rename a few common vector items.
     meta = model.get_location(0)
-    meta = model.get_location(meta.extra)
-    meta.label = 'init'
+    model.set_label(meta.extra, 'init')
 
     meta = model.get_location(4)
-    meta = model.get_location(meta.extra)
-    meta.label = 'sp'
+    model.set_label(meta.extra, 'sp')
 
     meta = model.get_location(0x10)
-    meta = model.get_location(meta.extra)
-    meta.label = 'reset'
+    model.set_label(meta.extra, 'reset')
 
     meta = sh2.WordField(location=0xF34, model=model)
     model.set_location(meta)
@@ -261,9 +260,9 @@ def mitsu_fixups(model):
     for p in range(0xF40, 0xF5B, 2):
         meta = sh2.WordField(location=p, model=model)
         if p == 0xF44:
-            meta.label = 'ECU_ID1'
+            model.set_label(p, 'ECU_ID1')
         elif p == 0xF54:
-            meta.label = 'ECU_ID2'
+            model.set_label(p, 'ECU_ID2')
         model.set_location(meta)
 
     for p in range(0xF6A, 0xF89, 4):
@@ -273,25 +272,21 @@ def mitsu_fixups(model):
     for p in range(0xF8A, 0xF8A + (16*9), 16):
         meta = sh2.WordField(location=p, model=model)
         if p == 0xFFA:
-            meta.label = 'periphery_IMMOB'
+            model.set_label(p, 'periphery_IMMOB')
         else:
-            meta.label = 'periphery_%X' % p
+            model.set_label(p, 'periphery_%X' % p)
         model.set_location(meta)
         for p1 in range(p + 2, p + 16, 2):
             meta = sh2.WordField(location=p1, model=model)
             model.set_location(meta)
 
-    meta = sh2.WordField(location=0x3FFCE, model=model, label='immobilizer')
+    meta = sh2.WordField(location=0x3FFCE, model=model)
     model.set_location(meta)
+    model.set_label(meta.location, 'immobilizer')
 
-    meta = model.get_location(0xCC6)
-    meta.label = 'axis_lookup'
-
-    meta = model.get_location(0xC28)
-    meta.label = 'tbl_lookup_byte'
-
-    meta = model.get_location(0xE02)
-    meta.label = 'tbl_lookup_word'
+    model.set_label(0xC28, 'tbl_lookup_byte')
+    model.set_label(0xCC6, 'axis_lookup')
+    model.set_label(0xE02, 'tbl_lookup_word')
 
     for start, end in model.get_phys_ranges():
         countdown = 0
@@ -362,7 +357,7 @@ def final_output(model, outfile=sys.stdout, output_ram=False):
                 print(output_separator, file=outfile)
             o = str(meta)
             if len(o):
-                print(meta, file=outfile)
+                print(o, file=outfile)
             if isinstance(meta, sh2.NullField):
                 print(output_separator, file=outfile)
 
