@@ -4,7 +4,8 @@
 from __future__ import print_function
 
 
-import bisect, textwrap
+import bisect
+import textwrap
 
 
 class SegmentError(Exception):
@@ -13,16 +14,18 @@ class SegmentError(Exception):
 
 class SegmentData(object):
     """Metaclass for segment data types."""
-    def __init__(self, location, width, model, label=None, comment=None, references=None, unknown_prefix='unk', extra=None, member_of=None):
+    def __init__(self, location, width, model, label=None, comment=None,
+                 references=None, unknown_prefix='unk', extra=None,
+                 member_of=None):
         object.__init__(self)
         if references is None:
-            references = [ ]
-        self.location = location     # Our absolute memory location.
-        self.width = width           # The size of the data type in bytes.
-        self.model = model           # The memeory model we're a part of.
-        self.label = label           # A string label for this location.
-        self.comment = comment       # A comment for this location.
-        self.references = references # A list of references to this location.
+            references = []
+        self.location = location      # Our absolute memory location.
+        self.width = width            # The size of the data type in bytes.
+        self.model = model            # The memeory model we're a part of.
+        self.label = label            # A string label for this location.
+        self.comment = comment        # A comment for this location.
+        self.references = references  # A list of references to this location.
         self.extra = extra
         self.unknown_prefix = unknown_prefix
         self.member_of = member_of
@@ -60,13 +63,15 @@ class SegmentData(object):
                     xrefs.append(', ')
             comments.extend(textwrap.wrap(''.join(xrefs), 29))
 
-        val = [ ]
+        val = []
         if len(comments) > 0:
             if len(instruction) > 21:
-                val.append('%08X %-16s %s' % (self.location, label, instruction))
+                val.append('%08X %-16s %s' % (self.location, label,
+                                              instruction))
             else:
                 c = comments.pop(0)
-                val.append('%08X %-16s %-21s ! %s' % (self.location, label, instruction, c))
+                val.append('%08X %-16s %-21s ! %s' % (self.location, label,
+                                                      instruction, c))
             for c in comments:
                 val.append('%47s ! %s' % ('', c))
         else:
@@ -85,14 +90,16 @@ class SegmentData(object):
     def generate_comments(self):
         if self.comment is not None:
             return self.comment.split('\n')
-        return [ ]
+        return []
 
     def get_label(self):
         return None
 
+
 class CompositeData(SegmentData):
     """Collection of segment data."""
-    def __init__(self, members=None, items_per_line=1, model=None, comment=None, extra=None):
+    def __init__(self, members=None, items_per_line=1, model=None,
+                 comment=None, extra=None):
         self.members = members if members is not None else []
         self.items_per_line = items_per_line
         self.model = model
@@ -100,7 +107,7 @@ class CompositeData(SegmentData):
         self.extra = extra
 
     def __str__(self):
-        val = [ ]
+        val = []
         label = None
         per_line = 1
         for member in self.members:
@@ -112,7 +119,7 @@ class CompositeData(SegmentData):
                     else:
                         label += ':'
                 else:
-                     label = ''
+                    label = ''
                 val.append('%08X %-16s ' % (member.location, label))
                 val.append(member.get_instruction(no_cmd=False))
             else:
@@ -140,7 +147,7 @@ class Segment(object):
         if self.phys is None:
             return chr(0)
         relative_location = location - self.start
-        return self.phys[relative_location:relative_location+width]
+        return self.phys[relative_location:(relative_location + width)]
 
     def get_location(self, location):
         relative_location = location - self.start
@@ -150,7 +157,7 @@ class Segment(object):
         return meta
 
     def set_location(self, value):
-        comments = [ ]
+        comments = []
         rel_loc = value.location - self.start
         rel_end = rel_loc + value.width
         for i in range(rel_loc, rel_loc + value.width):
@@ -182,23 +189,24 @@ class Segment(object):
     def get_label(self, location):
         label = None
         meta = self.get_location(location)
-        if meta is None and location-self.start > 0:
+        if meta is None and (location - self.start) > 0:
             meta = self.get_location(location - 1)
         if meta is not None:
             label = meta.label
             if len(meta.references) > 0 and label is None:
                 label = '%s_%X' % (meta.unknown_prefix, meta.location)
             if meta.location < location and label is not None:
-                label = '%s+%d' % (label, location-meta.location)
+                label = '%s+%d' % (label, (location - meta.location))
         return label
 
 
 class MemoryModel(object):
     def __init__(self, segments):
         object.__init__(self)
-        self.segments = [ ]
+        self.segments = []
         for name, start, end, phys in segments:
-            self.segments.append(Segment(name=name, start=start, end=end, phys=phys))
+            self.segments.append(Segment(name=name, start=start, end=end,
+                                         phys=phys))
 
     def __lookup_segment(self, location):
         for segment in self.segments:
@@ -213,10 +221,10 @@ class MemoryModel(object):
         return seg.get_phys(location, width)
 
     def get_phys_ranges(self):
-        ranges = [ ]
+        ranges = []
         for segment in self.segments:
             if segment.phys is not None:
-                 ranges.append((segment.start, segment.end))
+                ranges.append((segment.start, segment.end))
         return ranges
 
     def get_segment_name(self, location):
@@ -236,7 +244,8 @@ class MemoryModel(object):
 
     def location_isset(self, location):
         try:
-            return self.__lookup_segment(location).get_location(location) is not None
+            ref = self.__lookup_segment(location).get_location(location)
+            return ref is not None
         except SegmentError:
             return False
 

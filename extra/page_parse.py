@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+
+from __future__ import print_function
+
+
 def fixup_args(arg):
     arg = arg.replace('label', 'LABEL')
     arg = arg.replace('disp', '0x{disp:X}')
@@ -8,8 +12,10 @@ def fixup_args(arg):
     arg = arg.replace('Rn', 'R{n}')
     return arg.lower()
 
-for fn in ('501.txt','502.txt','503.txt','504.txt','505.txt','506.txt','507.txt','508.txt','509.txt'):
-    with open(fn,'r') as f:
+
+for fn in ('501.txt', '502.txt', '503.txt', '504.txt', '505.txt',
+           '506.txt', '507.txt', '508.txt', '509.txt'):
+    with open(fn, 'r') as f:
         for line in f:
             bits, cmd = line.strip().split(' ', 1)
             if ' ' in cmd:
@@ -18,7 +24,7 @@ for fn in ('501.txt','502.txt','503.txt','504.txt','505.txt','506.txt','507.txt'
                 arg = ''
             cmd = cmd.lower()
 
-            args = [ ]
+            args = []
             if ',' in arg:
                 queue = arg.split(',')
                 while len(queue) > 0:
@@ -63,7 +69,6 @@ for fn in ('501.txt','502.txt','503.txt','504.txt','505.txt','506.txt','507.txt'
             if bits[8] == 'n':
                 n |= 0x00f0
                 nshift = 4
-                
 
             m = mshift = 0
             if bits[4] == 'm':
@@ -89,4 +94,7 @@ for fn in ('501.txt','502.txt','503.txt','504.txt','505.txt','506.txt','507.txt'
                     if bits[4] == 'd':
                         disp |= 0x0f00
 
-            print '0x%s,0x%s,0x%04x,%d,0x%04x,%d,0x%04x,%d,0x%04x,"%s","%s","%s","%s"' % (inst, mask, m, mshift, n, nshift, imm, ishift, disp, bits, cmd.lower(), arg1,arg2)
+            print(('0x%s,0x%s,0x%04x,%d,0x%04x,%d,0x%04x,%d,0x%04x,'
+                   '"%s","%s","%s","%s"') % (inst, mask, m, mshift, n, nshift,
+                                             imm, ishift, disp, bits,
+                                             cmd.lower(), arg1, arg2))

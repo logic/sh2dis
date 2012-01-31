@@ -4,27 +4,31 @@
 from __future__ import print_function
 
 
-import csv, segment, struct, string
-from sh2opcodes import opcodes
+import csv
+import segment
+import struct
+import string
+
 from collections import namedtuple
 try:
     from Queue import Queue
 except ImportError:
     from queue import Queue
-#from multiprocessing import Queue
+
+from sh2opcodes import opcodes
 
 
 CodeExtra = namedtuple('CodeExtra', 'text, opcode, args')
 
 
 # Opcodes that use delayed branching; an legal instruction should follow.
-delayed_branchers = ('bra','braf','jmp','rte','rts')
+delayed_branchers = ('bra', 'braf', 'jmp', 'rte', 'rts')
 
 # Opcodes that branch based on the contents of a register.
-register_branchers = ('braf','bsrf','jsr','jmp')
+register_branchers = ('braf', 'bsrf', 'jsr', 'jmp')
 
 # Opcodes that branch based on a directly-referenced label.
-label_branchers = ('bf','bf/s','bra','bsr','bt','bt/s')
+label_branchers = ('bf', 'bf/s', 'bra', 'bsr', 'bt', 'bt/s')
 
 
 class DataField(segment.SegmentData):
@@ -33,7 +37,7 @@ class DataField(segment.SegmentData):
     def get_instruction(self, no_cmd=False):
         """A GAS-compatible string representation for this data type."""
         if no_cmd:
-            val = '0x%%0%dX' % (self.width*2)
+            val = '0x%%0%dX' % (self.width * 2)
         else:
             name = self.__class__.__name__.lower().replace('field', '')
             val = '.%s 0x%%0%dX' % (name, (self.width * 2))
@@ -93,7 +97,8 @@ class LongField(DataField):
         if self.extra is not None:
             try:
                 if self.model.get_location(self.extra) is None:
-                    create_reference(referer=self.location, location=self.extra, model=self.model)
+                    create_reference(referer=self.location,
+                                     location=self.extra, model=self.model)
             except segment.SegmentError:
                 pass
 
@@ -146,8 +151,9 @@ class CodeField(DataField):
                             t2label = '0x%X' % meta.extra
                         comments.append('[%s] = %s' % (label, t2label))
                     elif 'label' not in self.extra.text:
-                        if isinstance(meta, WordField) or isinstance(meta, ByteField):
-                            comments.append('[%s] = 0x%X' % (label, meta.extra))
+                        if isinstance(meta, (WordField, ByteField)):
+                            comments.append('[%s] = 0x%X' % (label,
+                                                             meta.extra))
                         else:
                             comments.append(label)
         return comments
@@ -172,13 +178,12 @@ class AssemblyError(Exception):
     pass
 
 
-def create_reference(referer, location, model, metatype=ByteField, known_reference=False):
+def create_reference(referer, location, model, metatype=ByteField,
+                     known_reference=False):
     meta = model.get_location(location)
     if meta is None:
-        if known_reference:
-            meta = metatype(location=location, model=model)
-        else:
-            meta = metatype(location=location, model=model, unknown_prefix='unk')
+        meta = metatype(location=location, model=model,
+                        unknown_prefix=(None if known_reference else 'unk'))
         model.set_location(meta)
     if referer is not None:
         meta.add_reference(referer)
@@ -186,7 +191,7 @@ def create_reference(referer, location, model, metatype=ByteField, known_referen
 
 
 def parse_args(instruction, opcode):
-    op = { }
+    op = {}
     if opcode['m'][0] != 0:
         op['m'] = (instruction & opcode['m'][0]) >> opcode['m'][1]
     else:
@@ -266,13 +271,17 @@ def track_registers(opcode, args, location, registers, model):
                     target = args['target']
                     meta = model.get_location(target)
                     if meta is None:
-                        if opcode['cmd'].endswith('.l') or opcode['args'][1].startswith('@('):
+                        if (opcode['cmd'].endswith('.l') or
+                            opcode['args'][1].startswith('@(')):
                             meta_type = LongField
                         elif opcode['cmd'][-2:] == '.w':
                             meta_type = WordField
                         else:
                             meta_type = ByteField
-                        meta = create_reference(referer=location, location=target, model=model, metatype=meta_type, known_reference=True)
+                        meta = create_reference(referer=location,
+                                                location=target, model=model,
+                                                metatype=meta_type,
+                                                known_reference=True)
                     else:
                         meta.add_reference(location)
                     registers[n] = meta.extra
@@ -323,7 +332,7 @@ def disassemble(locations, model, callback=None):
             meta.add_reference(reference)
             continue
 
-        registers = [None,] * 16
+        registers = [None, ] * 16
         branching = False
         branch_countdown = 0
 

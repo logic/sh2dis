@@ -122,112 +122,134 @@ vectors = {
     0x00000180: {
         'name': 'v_atu11_imi1A',
         'size': 4,
-        'comment': 'Advanced timer unit channel 1 input capture/compare-match interrupt A',
+        'comment': ('Advanced timer unit channel 1 input '
+                    'capture/compare-match interrupt A'),
     },
     0x00000184: {
         'name': 'v_atu11_imi1B',
         'size': 4,
-        'comment': 'Advanced timer unit channel 1 input capture/compare-match interrupt B',
+        'comment': ('Advanced timer unit channel 1 input '
+                    'capture/compare-match interrupt B'),
     },
     0x00000188: {
         'name': 'v_atu11_imi1C',
         'size': 4,
-        'comment': 'Advanced timer unit channel 1 input capture/compare-match interrupt C',
+        'comment': ('Advanced timer unit channel 1 input '
+                    'capture/compare-match interrupt C'),
     },
     0x0000018C: {
         'name': 'v_atu11_imi1D',
         'size': 4,
-        'comment': 'Advanced timer unit channel 1 input capture/compare-match interrupt D',
+        'comment': ('Advanced timer unit channel 1 input '
+                    'capture/compare-match interrupt D'),
     },
     0x00000190: {
         'name': 'v_atu12_imi1E',
         'size': 4,
-        'comment': 'Advanced timer unit channel 1 input capture/compare-match interrupt E',
+        'comment': ('Advanced timer unit channel 1 input '
+                    'capture/compare-match interrupt E'),
     },
     0x00000194: {
         'name': 'v_atu12_imi1F',
         'size': 4,
-        'comment': 'Advanced timer unit channel 1 input capture/compare-match interrupt F',
+        'comment': ('Advanced timer unit channel 1 input '
+                    'capture/compare-match interrupt F'),
     },
     0x00000198: {
         'name': 'v_atu12_imi1G',
         'size': 4,
-        'comment': 'Advanced timer unit channel 1 input capture/compare-match interrupt G',
+        'comment': ('Advanced timer unit channel 1 input '
+                    'capture/compare-match interrupt G'),
     },
     0x0000019C: {
         'name': 'v_atu12_imi1H',
         'size': 4,
-        'comment': 'Advanced timer unit channel 1 input capture/compare-match interrupt H',
+        'comment': ('Advanced timer unit channel 1 input '
+                    'capture/compare-match interrupt H'),
     },
     0x000001A0: {
         'name': 'v_atu13_ovi1AB',
         'size': 4,
-        'comment': 'Advanced timer unit channel 1 counter overflow interrupt A/B',
+        'comment': ('Advanced timer unit channel 1 counter overflow '
+                    'interrupt A/B'),
     },
     0x000001B0: {
         'name': 'v_atu21_imi2A',
         'size': 4,
-        'comment': 'Advanced timer unit channel 2 input capture/compare-match interrupt A',
+        'comment': ('Advanced timer unit channel 2 input '
+                    'capture/compare-match interrupt A'),
     },
     0x000001B4: {
         'name': 'v_atu21_imi2B',
         'size': 4,
-        'comment': 'Advanced timer unit channel 2 input capture/compare-match interrupt B',
+        'comment': ('Advanced timer unit channel 2 input '
+                    'capture/compare-match interrupt B'),
     },
     0x000001B8: {
         'name': 'v_atu21_imi2C',
         'size': 4,
-        'comment': 'Advanced timer unit channel 2 input capture/compare-match interrupt C',
+        'comment': ('Advanced timer unit channel 2 input '
+                    'capture/compare-match interrupt C'),
     },
     0x000001BC: {
         'name': 'v_atu21_imi2D',
         'size': 4,
-        'comment': 'Advanced timer unit channel 2 input capture/compare-match interrupt D',
+        'comment': ('Advanced timer unit channel 2 input '
+                    'capture/compare-match interrupt D'),
     },
     0x000001C0: {
         'name': 'v_atu22_imi2E',
         'size': 4,
-        'comment': 'Advanced timer unit channel 2 input capture/compare-match interrupt E',
+        'comment': ('Advanced timer unit channel 2 input '
+                    'capture/compare-match interrupt E'),
     },
     0x000001C4: {
         'name': 'v_atu22_imi2F',
         'size': 4,
-        'comment': 'Advanced timer unit channel 2 input capture/compare-match interrupt F',
+        'comment': ('Advanced timer unit channel 2 input '
+                    'capture/compare-match interrupt F'),
     },
     0x000001C8: {
         'name': 'v_atu22_imi2G',
         'size': 4,
-        'comment': 'Advanced timer unit channel 2 input capture/compare-match interrupt G',
+        'comment': ('Advanced timer unit channel 2 input '
+                    'capture/compare-match interrupt G'),
     },
     0x000001CC: {
         'name': 'v_atu22_imi2H',
         'size': 4,
-        'comment': 'Advanced timer unit channel 2 input capture/compare-match interrupt H',
+        'comment': ('Advanced timer unit channel 2 input '
+                    'capture/compare-match interrupt H'),
     },
     0x000001D0: {
         'name': 'v_atu23_ovi2AB',
         'size': 4,
-        'comment': 'Advanced timer unit channel 2 counter overflow interrupt A/B',
+        'comment': ('Advanced timer unit channel 2 counter overflow '
+                    'interrupt A/B'),
     },
     0x000001E0: {
         'name': 'v_atu31_imi3A',
         'size': 4,
-        'comment': 'Advanced timer unit channel 3 input capture/compare-match interrupt A',
+        'comment': ('Advanced timer unit channel 3 input '
+                    'capture/compare-match interrupt A'),
     },
     0x000001E4: {
         'name': 'v_atu31_imi3B',
         'size': 4,
-        'comment': 'Advanced timer unit channel 3 input capture/compare-match interrupt B',
+        'comment': ('Advanced timer unit channel 3 input '
+                    'capture/compare-match interrupt B'),
     },
     0x000001E8: {
         'name': 'v_atu31_imi3C',
         'size': 4,
-        'comment': 'Advanced timer unit channel 3 input capture/compare-match interrupt C',
+        'comment': ('Advanced timer unit channel 3 input '
+                    'capture/compare-match interrupt C'),
     },
     0x000001EC: {
         'name': 'v_atu31_imi3D',
         'size': 4,
-        'comment': 'Advanced timer unit channel 3 input capture/compare-match interrupt D',
+        'comment': ('Advanced timer unit channel 3 input '
+                    'capture/compare-match interrupt D'),
     },
     0x000001F0: {
         'name': 'v_atu32_ovi3',
@@ -237,22 +259,26 @@ vectors = {
     0x00000200: {
         'name': 'v_atu41_imi4A',
         'size': 4,
-        'comment': 'Advanced timer unit channel 4 input capture/compare-match interrupt A',
+        'comment': ('Advanced timer unit channel 4 input '
+                    'capture/compare-match interrupt A'),
     },
     0x00000204: {
         'name': 'v_atu41_imi4B',
         'size': 4,
-        'comment': 'Advanced timer unit channel 4 input capture/compare-match interrupt B',
+        'comment': ('Advanced timer unit channel 4 input '
+                    'capture/compare-match interrupt B'),
     },
     0x00000208: {
         'name': 'v_atu41_imi4C',
         'size': 4,
-        'comment': 'Advanced timer unit channel 4 input capture/compare-match interrupt C',
+        'comment': ('Advanced timer unit channel 4 input '
+                    'capture/compare-match interrupt C'),
     },
     0x0000020C: {
         'name': 'v_atu41_imi4D',
         'size': 4,
-        'comment': 'Advanced timer unit channel 4 input capture/compare-match interrupt D',
+        'comment': ('Advanced timer unit channel 4 input '
+                    'capture/compare-match interrupt D'),
     },
     0x00000210: {
         'name': 'v_atu42_ovi4',
@@ -262,22 +288,26 @@ vectors = {
     0x00000220: {
         'name': 'v_atu51_imi5A',
         'size': 4,
-        'comment': 'Advanced timer unit channel 5 input capture/compare-match interrupt A',
+        'comment': ('Advanced timer unit channel 5 input '
+                    'capture/compare-match interrupt A'),
     },
     0x00000224: {
         'name': 'v_atu51_imi5B',
         'size': 4,
-        'comment': 'Advanced timer unit channel 5 input capture/compare-match interrupt B',
+        'comment': ('Advanced timer unit channel 5 input '
+                    'capture/compare-match interrupt B'),
     },
     0x00000228: {
         'name': 'v_atu51_imi5C',
         'size': 4,
-        'comment': 'Advanced timer unit channel 5 input capture/compare-match interrupt C',
+        'comment': ('Advanced timer unit channel 5 input '
+                    'capture/compare-match interrupt C'),
     },
     0x0000022C: {
         'name': 'v_atu51_imi5D',
         'size': 4,
-        'comment': 'Advanced timer unit channel 5 input capture/compare-match interrupt D',
+        'comment': ('Advanced timer unit channel 5 input '
+                    'capture/compare-match interrupt D'),
     },
     0x00000230: {
         'name': 'v_atu52_ovi5',
@@ -452,12 +482,14 @@ vectors = {
     0x000002E0: {
         'name': 'v_atu11_imi11A',
         'size': 4,
-        'comment': 'Advanced timer unit channel 11 input capture/compare-match interrupt A',
+        'comment': ('Advanced timer unit channel 11 input '
+                    'capture/compare-match interrupt A'),
     },
     0x000002E8: {
         'name': 'v_atu11_imi11B',
         'size': 4,
-        'comment': 'Advanced timer unit channel 11 input capture/compare-match interrupt B',
+        'comment': ('Advanced timer unit channel 11 input '
+                    'capture/compare-match interrupt B'),
     },
     0x000002EC: {
         'name': 'v_atu11_ovi11',
@@ -492,12 +524,14 @@ vectors = {
     0x00000324: {
         'name': 'v_sci0_rxi0',
         'size': 4,
-        'comment': 'Serial communication interface 0 receive-data-full interrupt',
+        'comment': ('Serial communication interface 0 receive-data-full '
+                    'interrupt'),
     },
     0x00000328: {
         'name': 'v_sci0_txi0',
         'size': 4,
-        'comment': 'Serial communication interface 0 transmit-data-empty interrupt',
+        'comment': ('Serial communication interface 0 transmit-data-empty '
+                    'interrupt'),
     },
     0x0000032C: {
         'name': 'v_sci0_tei0',
@@ -512,12 +546,14 @@ vectors = {
     0x00000334: {
         'name': 'v_sci1_rxi1',
         'size': 4,
-        'comment': 'Serial communication interface 1 receive-data-full interrupt',
+        'comment': ('Serial communication interface 1 receive-data-full '
+                    'interrupt'),
     },
     0x00000338: {
         'name': 'v_sci1_txi1',
         'size': 4,
-        'comment': 'Serial communication interface 1 transmit-data-empty interrupt',
+        'comment': ('Serial communication interface 1 transmit-data-empty '
+                    'interrupt'),
     },
     0x0000033C: {
         'name': 'v_sci1_tei1',
@@ -532,12 +568,14 @@ vectors = {
     0x00000344: {
         'name': 'v_sci2_rxi2',
         'size': 4,
-        'comment': 'Serial communication interface 2 receive-data-full interrupt',
+        'comment': ('Serial communication interface 2 receive-data-full '
+                    'interrupt'),
     },
     0x00000348: {
         'name': 'v_sci2_txi2',
         'size': 4,
-        'comment': 'Serial communication interface 2 transmit-data-empty interrupt',
+        'comment': ('Serial communication interface 2 transmit-data-empty '
+                    'interrupt'),
     },
     0x0000034C: {
         'name': 'v_sci2_tei2',
@@ -552,12 +590,14 @@ vectors = {
     0x00000354: {
         'name': 'v_sci3_rxi3',
         'size': 4,
-        'comment': 'Serial communication interface 3 receive-data-full interrupt',
+        'comment': ('Serial communication interface 3 receive-data-full '
+                    'interrupt'),
     },
     0x00000358: {
         'name': 'v_sci3_txi3',
         'size': 4,
-        'comment': 'Serial communication interface 3 transmit-data-empty interrupt',
+        'comment': ('Serial communication interface 3 transmit-data-empty '
+                    'interrupt'),
     },
     0x0000035C: {
         'name': 'v_sci3_tei3',
@@ -572,12 +612,14 @@ vectors = {
     0x00000364: {
         'name': 'v_sci4_rxi4',
         'size': 4,
-        'comment': 'Serial communication interface 4 receive-data-full interrupt',
+        'comment': ('Serial communication interface 4 receive-data-full '
+                    'interrupt'),
     },
     0x00000368: {
         'name': 'v_sci4_txi4',
         'size': 4,
-        'comment': 'Serial communication interface 4 transmit-data-empty interrupt',
+        'comment': ('Serial communication interface 4 transmit-data-empty '
+                    'interrupt'),
     },
     0x0000036C: {
         'name': 'v_sci4_tei4',

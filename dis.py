@@ -7,11 +7,17 @@ TODO:
 
 
 from __future__ import print_function
-import optparse, os.path, sys
-import segment, sh2, sh7052, sh7055
+import optparse
+import os.path
+import sys
+
+import segment
+import sh2
+import sh7052
+import sh7055
 
 
-version='0.99'
+version = '0.99'
 
 
 class ROMError(Exception):
@@ -66,13 +72,14 @@ def setup_vectors(model):
             kind = sh2.ByteField
         elif v['size'] == 2:
             kind = sh2.WordField
-        meta = kind(location=addr, model=model, label=v['name'], comment=v['comment'])
+        meta = kind(location=addr, model=model, label=v['name'],
+                    comment=v['comment'])
         model.set_location(meta)
 
 
 def disassemble_vectors(model, cb=None):
     """Disassemble the locations referenced by the vector table."""
-    vectors = [ ]
+    vectors = []
     for i in range(0x0, 0x400, 0x4):
         meta = model.get_location(i)
         try:
@@ -98,14 +105,17 @@ def scan_free_space(model):
                 ff_seen += 1
             else:
                 if ff_seen > 0x1FF:
-                    null = sh2.NullField(location=i-ff_seen, width=ff_seen, model=model)
+                    null = sh2.NullField(location=(i - ff_seen), width=ff_seen,
+                                         model=model)
                     model.set_location(null)
                 ff_seen = 0
                 if meta is not None:
                     countdown = meta.width - 1
 
 
-axes = { }
+axes = {}
+
+
 def mitsu_callback(meta, registers, model):
     """Automatically generate tables and their axes, if possible."""
     # TODO: This has the potential to clobber itself. Should simply do
@@ -128,20 +138,29 @@ def mitsu_callback(meta, registers, model):
                 tbl = model.get_location(tbl_loc)
                 if not tbl.comment:
                     # Result address.
-                    tbl = sh2.LongField(location=tbl_loc, model=model, comment='Result address')
+                    tbl = sh2.LongField(location=tbl_loc, model=model,
+                                        comment='Result address')
                     model.set_location(tbl)
 
                     # Address of value to look up.
-                    model.set_location(sh2.LongField(location=tbl_loc+4, model=model, comment='Lookup value address'))
+                    tbl_ref = sh2.LongField(location=(tbl_loc + 4),
+                                            model=model,
+                                            comment='Lookup value address')
+                    model.set_location(tbl_ref)
 
                     # Length of the axis.
-                    tbl_len = sh2.WordField(location=tbl_loc+8, model=model, comment='Axis length')
+                    tbl_len = sh2.WordField(location=(tbl_loc + 8),
+                                            model=model, comment='Axis length')
                     model.set_location(tbl_len)
 
                     # Axis data and composite structure.
-                    cdata = segment.CompositeData(items_per_line=tbl_len.extra, model=model)
-                    for i in range(tbl_loc+10, tbl_loc+10+(tbl_len.extra*2), 2):
-                        tbl_data = sh2.WordField(location=i, member_of=cdata, model=model)
+                    cdata = segment.CompositeData(items_per_line=tbl_len.extra,
+                                                  model=model)
+                    tbl_start = tbl_loc + 10
+                    tbl_end = tbl_start + (tbl_len.extra * 2)
+                    for i in range(tbl_start, tbl_end, 2):
+                        tbl_data = sh2.WordField(location=i, member_of=cdata,
+                                                 model=model)
                         cdata.members.append(tbl_data)
                         model.set_location(tbl_data)
 
@@ -155,49 +174,71 @@ def mitsu_callback(meta, registers, model):
                 tbl = model.get_location(tbl_loc)
 
                 if not tbl.comment:
-                    # Width: sub_C28 is byte-width tables, sub_E02 is word-width.
+                    # Width: sub_C28 is byte-width tables,
+                    #        sub_E02 is word-width.
                     tbl_width = 1 if r == 0xC28 else 2
-                    tbl_type = sh2.ByteField if tbl_width == 1 else sh2.WordField
+                    tbl_type = sh2.ByteField if tbl_width == 1 else \
+                               sh2.WordField
 
                     # Table header: 2D or 3D.
                     tbl = tbl_type(location=tbl_loc, model=model)
                     model.set_location(tbl)
-                    tbl.comment = '%dD %s-width table' % (tbl.extra, 'byte' if tbl_width == 1 else 'word')
+                    tbl.comment = '%dD %s-width table' % (tbl.extra,
+                                  'byte' if tbl_width == 1 else 'word')
 
                     # Adder.
-                    model.set_location(tbl_type(location=tbl_loc+tbl_width, model=model, comment='Adder'))
+                    adder = tbl_type(location=(tbl_loc + tbl_width),
+                                     model=model, comment='Adder')
+                    model.set_location(adder)
 
                     # Y-axis position.
-                    yaxis = sh2.LongField(location=tbl_loc+(2*tbl_width), model=model, comment='Y-Axis')
+                    yaxis = sh2.LongField(location=(tbl_loc + (2 * tbl_width)),
+                                          model=model, comment='Y-Axis')
                     yaxis_len = 0
                     if yaxis.extra in axes:
-                        yaxis.comment = 'Y-Axis: 0x%X' % model.get_location(axes[yaxis.extra]).location
-                        yaxis_len = model.get_location(axes[yaxis.extra]+8).extra
+                        yloc = model.get_location(axes[yaxis.extra]).location
+                        yaxis.comment = 'Y-Axis: 0x%X' % yloc
+                        yaxis_len = model.get_location(axes[yaxis.extra] +
+                                                       8).extra
                     model.set_location(yaxis)
 
                     # X-axis?
                     tbl_pos = 4 + (tbl_width * 2)
-                    xaxis_len = 1 # Always at least one row. :)
+                    xaxis_len = 1  # Always at least one row. :)
                     if tbl.extra == 3:
-                        xaxis = sh2.LongField(location=tbl_loc+tbl_pos, model=model, comment='X-Axis')
+                        xaxis = sh2.LongField(location=(tbl_loc + tbl_pos),
+                                              model=model, comment='X-Axis')
                         xaxis_len = 0
                         if xaxis.extra in axes:
-                            xaxis.comment = 'X-Axis: 0x%X' % model.get_location(axes[xaxis.extra]).location
-                            xaxis_len = model.get_location(axes[xaxis.extra]+8).extra
+                            xloc = model.get_location(axes[xaxis.extra])
+                            xloc = xloc.location
+                            xaxis.comment = 'X-Axis: 0x%X' % xloc
+                            xaxis_len = model.get_location(axes[xaxis.extra] +
+                                                           8).extra
                         model.set_location(xaxis)
                         tbl_pos += 4
-                        model.set_location(tbl_type(location=tbl_loc+tbl_pos, model=model, comment='Row length'))
+                        rlen = tbl_type(location=(tbl_loc + tbl_pos),
+                                        model=model, comment='Row length')
+                        model.set_location(rlen)
                         tbl_pos += tbl_width
 
                     if yaxis_len > 0:
-                        cdata = segment.CompositeData(items_per_line=yaxis_len, model=model)
-                        for i in range(tbl_loc+tbl_pos, tbl_loc+tbl_pos+(yaxis_len*xaxis_len*tbl_width), tbl_width):
-                            if model.location_isset(i) or (tbl_width == 2 and model.location_isset(i+1)):
+                        cdata = segment.CompositeData(items_per_line=yaxis_len,
+                                                      model=model)
+                        tbl_start = tbl_loc + tbl_pos
+                        tbl_end = tbl_start + (
+                                    yaxis_len * xaxis_len * tbl_width)
+                        for i in range(tbl_start, tbl_end, tbl_width):
+                            if model.location_isset(i) or (
+                              tbl_width == 2 and model.location_isset(i + 1)):
                                 # Issue a warning about a poorly-defined table.
-                                # This is a legitimate problem on some ROMs (9694, etc).
-                                print('!!!!! Short table: 0x%X (at 0x%X)' % (tbl_loc, i))
+                                # This is a legitimate problem on some ROMs
+                                # (9694, etc).
+                                print('!!!!! Short table: 0x%X (at 0x%X)' % (
+                                      tbl_loc, i))
                                 break
-                            tdata = tbl_type(location=i, model=model, member_of=cdata)
+                            tdata = tbl_type(location=i, model=model,
+                                             member_of=cdata)
                             model.set_location(tdata)
                             cdata.members.append(tdata)
 
@@ -227,7 +268,8 @@ def mitsu_fixup_mut(meta, model):
     mut_loc = model.get_location(meta.extra.args['target']).extra
     mut_off = 0
     while True:
-        mut_entry = sh2.LongField(location=(mut_loc+(mut_off<<2)), model=model)
+        mut_entry = sh2.LongField(location=(mut_loc + (mut_off << 2)),
+                                  model=model)
         if mut_entry.extra == 0xFFFFFFFF:
             break
         model.set_location(mut_entry)
@@ -270,7 +312,7 @@ def mitsu_fixups(model):
         meta = sh2.LongField(location=p, model=model)
         model.set_location(meta)
 
-    for p in range(0xF8A, 0xF8A + (16*9), 16):
+    for p in range(0xF8A, 0xF8A + (16 * 9), 16):
         meta = sh2.WordField(location=p, model=model)
         if p == 0xFFA:
             meta.label = 'periphery_IMMOB'
@@ -308,7 +350,8 @@ def mitsu_fixups(model):
                 elif not mut_found:
                     if not movw_found and meta.extra.opcode['cmd'] == 'mov.w':
                         if meta.extra.args['target'] is not None:
-                            target = model.get_location(meta.extra.args['target'])
+                            target = model.get_location(
+                                       meta.extra.args['target'])
                             if target is not None and target.extra == 0xBF:
                                 movw_found = True
                     elif movw_found and meta.extra.opcode['cmd'] == 'shll2':
@@ -327,14 +370,16 @@ def mitsu_fixups(model):
 
 
 output_separator = '         ! ' + '-' * 60
+
+
 def final_output(model, outfile=sys.stdout, output_ram=False):
     # Output a moderately-useful disassembly.
     countdown = 0
     code = False
-    ranges = [ ]
+    ranges = []
     if output_ram:
         for segment in model.segments:
-             ranges.append((segment.start, segment.end))
+            ranges.append((segment.start, segment.end))
     else:
         ranges = model.get_phys_ranges()
     for start, end in ranges:
@@ -350,13 +395,15 @@ def final_output(model, outfile=sys.stdout, output_ram=False):
                 code = True
                 print(output_separator, file=outfile)
             elif code:
-                rts = model.get_location(i-4) 
-                if isinstance(rts, sh2.CodeField) and rts.extra.opcode['cmd'] == 'rts':
+                rts = model.get_location(i - 4)
+                if isinstance(rts, sh2.CodeField) and \
+                  rts.extra.opcode['cmd'] == 'rts':
                     if isinstance(meta, sh2.CodeField):
                         print(output_separator, file=outfile)
             if meta is None:
                 # Create this as a throwaway byte, to save memory.
-                meta = sh2.ByteField(location=i, model=model, unknown_prefix='unk')
+                meta = sh2.ByteField(location=i, model=model,
+                                     unknown_prefix='unk')
             countdown = meta.width - 1
             if isinstance(meta, sh2.NullField):
                 print(output_separator, file=outfile)
