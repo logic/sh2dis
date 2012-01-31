@@ -14,18 +14,13 @@ class SegmentError(Exception):
 
 class SegmentData(object):
     """Metaclass for segment data types."""
-    def __init__(self, location, width, model, label=None, comment=None,
-                 references=None, unknown_prefix='unk', extra=None,
-                 member_of=None):
+    def __init__(self, location, width, model, comment=None,
+                 unknown_prefix='unk', extra=None, member_of=None):
         object.__init__(self)
-        if references is None:
-            references = []
-        self.location = location      # Our absolute memory location.
-        self.width = width            # The size of the data type in bytes.
-        self.model = model            # The memeory model we're a part of.
-        self.label = label            # A string label for this location.
-        self.comment = comment        # A comment for this location.
-        self.references = references  # A list of references to this location.
+        self.location = location  # Our absolute memory location.
+        self.width = width        # The size of the data type in bytes.
+        self.model = model        # The memeory model we're a part of.
+        self.comment = comment    # A comment for this location.
         self.extra = extra
         self.unknown_prefix = unknown_prefix
         self.member_of = member_of
@@ -44,24 +39,11 @@ class SegmentData(object):
         else:
             label += ':'
 
+        # Ask children if they have any custom comments.
         comments = self.generate_comments()
 
-        # Generate cross-reference comments.
-        if len(self.references):
-            count = 0
-            max_xrefs = 6
-            xrefs = ['XREF: ']
-            for r in self.references:
-                l = self.model.get_label(r) or '0x%X' % r
-                xrefs.append(l)
-                count += 1
-                if count == max_xrefs:
-                    if len(self.references) > max_xrefs:
-                        xrefs.append('...')
-                    break
-                if count != len(self.references):
-                    xrefs.append(', ')
-            comments.extend(textwrap.wrap(''.join(xrefs), 29))
+        # Ask the model if it has any comments for us.
+        comments.extend(self.model.generate_comments(self.location))
 
         val = []
         if len(comments) > 0:
@@ -78,14 +60,6 @@ class SegmentData(object):
             val.append('%08X %-16s %s' % (self.location, label, instruction))
 
         return '\n'.join(val)
-
-    def add_reference(self, reference):
-        """Track references in numerically sorted order."""
-        if reference == self.location:
-            return
-        bl = bisect.bisect_left(self.references, reference)
-        if bl == len(self.references) or self.references[bl] != reference:
-            self.references.insert(bl, reference)
 
     def generate_comments(self):
         if self.comment is not None:
@@ -135,13 +109,20 @@ class CompositeData(SegmentData):
 
 
 class Segment(object):
-    def __init__(self, start, end, phys=None, name=None):
+
+    VALUE = 0
+    XREFS = 1
+    LABEL = 2
+
+    def __init__(self, start, end, phys=None, name=None, model=None):
         object.__init__(self)
         self.start = start
         self.end = end
         self.phys = phys
         self.name = name
-        self.space = [None] * (end - start)
+        self.model = model
+        # Initialize to a list of [value, references, label].
+        self.space = [ [None, [], None] for _ in range(end-start)]
 
     def get_phys(self, location, width=1):
         if self.phys is None:
@@ -151,9 +132,9 @@ class Segment(object):
 
     def get_location(self, location):
         relative_location = location - self.start
-        meta = self.space[relative_location]
+        meta = self.space[relative_location][self.VALUE]
         if type(meta) is int:
-            meta = self.space[relative_location + meta]
+            meta = self.space[relative_location + meta][self.VALUE]
         return meta
 
     def set_location(self, value):
@@ -161,13 +142,13 @@ class Segment(object):
         rel_loc = value.location - self.start
         rel_end = rel_loc + value.width
         for i in range(rel_loc, rel_loc + value.width):
-            meta = self.space[i]
+            meta = self.space[i][self.VALUE]
             if meta is not None:
                 if i + meta.width <= rel_end:
                     if meta.comment is not None:
                         comments.append(meta.comment)
-                    for j in meta.references:
-                        value.add_reference(j)
+                    for j in self.space[meta.location-self.start][self.XREFS]:
+                        self.model.add_reference(value.location, j)
                     self.unset_location(meta.location)
                 else:
                     raise SegmentError('conflict with data at %#x' % i)
@@ -175,29 +156,76 @@ class Segment(object):
             if value.comment is not None:
                 comments.insert(0, value.comment)
             value.comment = '\n'.join(comments)
-        self.space[rel_loc] = value
+        self.space[rel_loc][self.VALUE] = value
         for i in range(1, value.width):
-            self.space[rel_loc + i] = -i
+            self.space[rel_loc + i][self.VALUE] = -i
 
     def unset_location(self, location):
         meta = self.get_location(location)
         if meta is not None:
             rel_loc = location - self.start
             for i in range(rel_loc, rel_loc + meta.width):
-                self.space[i] = None
+                self.space[i][self.VALUE] = None
 
     def get_label(self, location):
-        label = None
         meta = self.get_location(location)
         if meta is None and (location - self.start) > 0:
             meta = self.get_location(location - 1)
-        if meta is not None:
-            label = meta.label
-            if len(meta.references) > 0 and label is None:
-                label = '%s_%X' % (meta.unknown_prefix, meta.location)
-            if meta.location < location and label is not None:
-                label = '%s+%d' % (label, (location - meta.location))
+        if meta is None:
+            new_location = location
+            unknown_prefix = 'unk'
+        else:
+            new_location = meta.location
+            unknown_prefix = meta.unknown_prefix
+        label = self.space[new_location-self.start][self.LABEL]
+        if (len(self.space[new_location - self.start][self.XREFS]) > 0 and
+            label is None:
+            label = '%s_%X' % (unknown_prefix, new_location)
+        if new_location < location and label is not None:
+            label = '%s+%d' % (label, location-new_location)
         return label
+
+    def set_label(self, location, label):
+        self.space[location-self.start][self.LABEL] = label
+
+    def generate_comments(self, location):
+        """ Generate cross-reference comments. """
+        references = self.space[location-self.start][self.XREFS]
+        if len(references):
+            count = 0
+            max_xrefs = 6
+            xrefs = ['XREF: ']
+            for r in references:
+                l = self.model.get_label(r) or '0x%X' % r
+                xrefs.append(l)
+                count += 1
+                if count == max_xrefs:
+                    if len(references) > max_xrefs:
+                        xrefs.append('...')
+                    break
+                if count != len(references):
+                    xrefs.append(', ')
+            return textwrap.wrap(''.join(xrefs), 29)
+        return []
+
+    def add_reference(self, location, reference):
+        """Track references in numerically sorted order."""
+        if reference == location:
+            return
+        references = self.space[location-self.start][self.XREFS]
+        bl = bisect.bisect_left(references, reference)
+        if bl == len(references) or references[bl] != reference:
+            references.insert(bl, reference)
+
+    def get_references(self, location):
+        """Return a list of all references to a given location."""
+        return list(self.space[location-self.start][self.XREFS])
+
+    def remove_reference(self, location, reference):
+        references = self.space[location-self.start][self.XREFS]
+        bl = bisect.bisect_left(references, reference)
+        if bl != len(references) and references[bl] == reference:
+            references.pop(bl)
 
 
 class MemoryModel(object):
@@ -206,7 +234,7 @@ class MemoryModel(object):
         self.segments = []
         for name, start, end, phys in segments:
             self.segments.append(Segment(name=name, start=start, end=end,
-                                         phys=phys))
+                                         phys=phys, model=self))
 
     def __lookup_segment(self, location):
         for segment in self.segments:
@@ -241,6 +269,21 @@ class MemoryModel(object):
 
     def get_label(self, location):
         return self.__lookup_segment(location).get_label(location)
+
+    def set_label(self, location, label):
+        self.__lookup_segment(location).set_label(location, label)
+
+    def generate_comments(self, location):
+        return self.__lookup_segment(location).generate_comments(location)
+
+    def get_references(self, location):
+        return self.__lookup_segment(location).get_references(location)
+
+    def add_reference(self, location, reference):
+        self.__lookup_segment(location).add_reference(location, reference)
+
+    def remove_reference(self, location, reference):
+        self.__lookup_segment(location).remove_reference(location, reference)
 
     def location_isset(self, location):
         try:

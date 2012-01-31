@@ -96,9 +96,7 @@ class LongField(DataField):
         # Make us a reference if we refer to a legitimate address.
         if self.extra is not None:
             try:
-                if self.model.get_location(self.extra) is None:
-                    create_reference(referer=self.location,
-                                     location=self.extra, model=self.model)
+                self.model.add_reference(self.extra, self.location)
             except segment.SegmentError:
                 pass
 
@@ -176,18 +174,6 @@ class NullField(segment.SegmentData):
 
 class AssemblyError(Exception):
     pass
-
-
-def create_reference(referer, location, model, metatype=ByteField,
-                     known_reference=False):
-    meta = model.get_location(location)
-    if meta is None:
-        meta = metatype(location=location, model=model,
-                        unknown_prefix=(None if known_reference else 'unk'))
-        model.set_location(meta)
-    if referer is not None:
-        meta.add_reference(referer)
-    return meta
 
 
 def parse_args(instruction, opcode):
@@ -273,18 +259,17 @@ def track_registers(opcode, args, location, registers, model):
                     if meta is None:
                         if (opcode['cmd'].endswith('.l') or
                             opcode['args'][1].startswith('@(')):
-                            meta_type = LongField
+                            meta = LongField(location=target, model=model)
+                            model.set_location(meta)
                         elif opcode['cmd'][-2:] == '.w':
-                            meta_type = WordField
+                            meta = WordField(location=target, model=model)
+                            model.set_location(meta)
                         else:
-                            meta_type = ByteField
-                        meta = create_reference(referer=location,
-                                                location=target, model=model,
-                                                metatype=meta_type,
-                                                known_reference=True)
-                    else:
-                        meta.add_reference(location)
+                            meta = ByteField(location=target, model=model)
+                            model.set_location(meta)
+                    model.add_reference(target, location)
                     registers[n] = meta.extra
+                    #registers[n] = meta.extra if meta is not None else model.get_phys(target)
                     return
 
         # Any action on a target register that we can't explicitly
@@ -329,7 +314,7 @@ def disassemble(locations, model, callback=None):
         # Quick check to make sure we haven't already processed this location.
         meta = model.get_location(location)
         if isinstance(meta, CodeField):
-            meta.add_reference(reference)
+            model.add_reference(meta.location, reference)
             continue
 
         registers = [None, ] * 16
@@ -345,6 +330,7 @@ def disassemble(locations, model, callback=None):
 
             instruction = struct.unpack('>H', phys)[0]
             code = disasm_single(instruction, location, registers, model)
+            model.set_location(code)
 
             # Handle register-based branches.
             if code.extra.opcode['cmd'] in register_branchers:
@@ -357,12 +343,8 @@ def disassemble(locations, model, callback=None):
                 work_queue.put((code.extra.args['target'], location), False)
 
             if reference is not None:
-                code.add_reference(reference)
+                model.add_reference(code.location, reference)
                 reference = None
-            if orig is not None:
-                code.label = orig.label
-
-            model.set_location(code)
 
             if callback is not None:
                 callback(code, registers, model)
