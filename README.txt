@@ -29,7 +29,7 @@ register assignments loosely and following branches where it can reasonably
 discern a destination. It doesn't catch everything yet, and likely never
 will; the end goal is not a full-on SH2 simulator.
 
-The example command line tool, "dis.py", is capable of distinguishing between
+The example command line tool, "sh2dis", is capable of distinguishing between
 SH7052 and SH7055 ROM formats, and will perform an automated disassembly
 around the vector interupt table, labelling any known vectors and registers.
 This example application may not work well with applications other than ROMs
