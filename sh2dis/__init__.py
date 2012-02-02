@@ -1,8 +1,7 @@
-"""
-TODO:
-- Output any labelled or referenced memory addresses as .equ directives.
-"""
+"""A disassembler for SuperH SH2 ROMs."""
 
+# TODO:
+# - Output any labelled or referenced memory addresses as .equ directives.
 
 from __future__ import print_function
 import sys
@@ -11,6 +10,15 @@ import segment
 import sh2
 import sh7052
 import sh7055
+
+
+__author__ = 'Ed Marshall'
+__email__ = 'esm@logic.net'
+__url__ = 'http://dev.logic.net/chili/projects/sh2dis'
+__version__ = '0.99'
+
+__copyright__ = 'Copyright (C) 2010-2012, Ed Marshall'
+__license__ = 'GPL3'
 
 
 class ROMError(Exception):
@@ -173,8 +181,8 @@ def mitsu_callback(meta, registers, model):
                     # Width: sub_C28 is byte-width tables
                     #        sub_E02 is word-width.
                     tbl_width = 1 if r == 0xC28 else 2
-                    tbl_type = sh2.ByteField if tbl_width == 1 else \
-                               sh2.WordField
+                    tbl_type = (sh2.ByteField if tbl_width == 1 else
+                                sh2.WordField)
 
                     # Table header: 2D or 3D.
                     tbl = tbl_type(location=tbl_loc, model=model)
@@ -383,8 +391,8 @@ def final_output(model, outfile, output_ram):
                 print(output_separator, file=outfile)
             elif code:
                 rts = model.get_location(i - 4)
-                if isinstance(rts, sh2.CodeField) and \
-                  rts.extra.opcode['cmd'] == 'rts':
+                if (isinstance(rts, sh2.CodeField) and
+                  rts.extra.opcode['cmd'] == 'rts'):
                     if isinstance(meta, sh2.CodeField):
                         print(output_separator, file=outfile)
             if meta is None:
