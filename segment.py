@@ -179,7 +179,7 @@ class Segment(object):
             unknown_prefix = meta.unknown_prefix
         label = self.space[new_location-self.start][self.LABEL]
         if (len(self.space[new_location - self.start][self.XREFS]) > 0 and
-            label is None:
+            label is None):
             label = '%s_%X' % (unknown_prefix, new_location)
         if new_location < location and label is not None:
             label = '%s+%d' % (label, location-new_location)
