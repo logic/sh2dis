@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 TODO:
 - Output any labelled or referenced memory addresses as .equ directives.
@@ -7,17 +5,12 @@ TODO:
 
 
 from __future__ import print_function
-import optparse
-import os.path
 import sys
 
 import segment
 import sh2
 import sh7052
 import sh7055
-
-
-version = '0.99'
 
 
 class ROMError(Exception):
@@ -366,7 +359,7 @@ def mitsu_fixups(model):
 output_separator = '         ! ' + '-' * 60
 
 
-def final_output(model, outfile=sys.stdout, output_ram=False):
+def final_output(model, outfile, output_ram):
     # Output a moderately-useful disassembly.
     countdown = 0
     code = False
@@ -408,43 +401,12 @@ def final_output(model, outfile=sys.stdout, output_ram=False):
                 print(output_separator, file=outfile)
 
 
-def main():
-    parser = optparse.OptionParser(
-      usage='Usage: %prog [options] <ROM file>',
-      version=version)
-    parser.add_option('-o', '--output', dest='file', default=None,
-      help='specify a destination file (default is standard output)')
-    parser.add_option('-m', '--mitsu', action='store_true', dest='mitsu',
-      help='perform fixups specific to Mitsubishi ECUs')
-    parser.add_option('-r', '--ram', action='store_true', dest='output_ram',
-      help='include RAM addresses in output')
-    options, args = parser.parse_args()
-
-    if len(args) != 1:
-        print('No ROM file specified!\n', file=sys.stderr)
-        parser.print_help(sys.stderr)
-        sys.exit(1)
-
-    romname = args[0]
-    if not os.path.isfile(romname):
-        print('No such ROM file `%s\'!\n' % romname, file=sys.stderr)
-        parser.print_help(sys.stderr)
-        sys.exit(1)
-    phys = open(romname, mode='rb').read()
-
-    model = segment.MemoryModel(get_segments(phys))
+def cli(args):
+    model = segment.MemoryModel(get_segments(args.rom.read()))
     setup_vectors(model)
-    disassemble_vectors(model, mitsu_callback if options.mitsu else None)
-    if options.mitsu:
+    disassemble_vectors(model, mitsu_callback if args.mitsu else None)
+    if args.mitsu:
         mitsu_fixups(model)
     scan_free_space(model)
 
-    if options.file is None:
-        output = sys.stdout
-    else:
-        output = open(options.file, 'w')
-    final_output(model, output, options.output_ram)
-
-
-if __name__ == '__main__':
-    main()
+    final_output(model, args.output, args.ram)

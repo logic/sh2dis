@@ -1,0 +1,27 @@
+#!/usr/bin/env python
+
+import argparse
+import sys
+
+import sh2dis
+
+
+def main():
+    parser = argparse.ArgumentParser(
+      description='An automated SuperH SH2 disassembler.')
+
+    parser.add_argument('-o', '--output', type=argparse.FileType('w'),
+      help='specify a destination file (default is standard output)')
+    parser.add_argument('-m', '--mitsu', action='store_true',
+      help='perform fixups specific to Mitsubishi ECUs')
+    parser.add_argument('-r', '--ram', action='store_true',
+      help='include RAM addresses in output')
+    parser.add_argument('rom', type=argparse.FileType('r'),
+      default=sys.stdout)
+    args = parser.parse_args()
+
+    sh2dis.cli(args)
+
+
+if __name__ == '__main__':
+    main()
