@@ -312,7 +312,12 @@ def disassemble(locations, model, callback=None):
         location, reference = work_queue.get()
 
         # Quick check to make sure we haven't already processed this location.
-        meta = model.get_location(location)
+        try:
+          meta = model.get_location(location)
+        except segment.SegmentError as segerr:
+          print('Unable to retrieve location 0x%x, giving up on that path' % location)
+          print('Error was: %s' % segerr)
+          continue
         if isinstance(meta, CodeField):
             model.add_reference(meta.location, reference)
             continue
@@ -329,7 +334,12 @@ def disassemble(locations, model, callback=None):
                 break
 
             instruction = struct.unpack('>H', phys)[0]
-            code = disasm_single(instruction, location, registers, model)
+            try:
+              code = disasm_single(instruction, location, registers, model)
+            except AssemblyError as assemerr:
+              print('Unable to disassemble location 0x%x, giving up on that path' % location)
+              print('Error was: %s' % assemerr)
+              break
             model.set_location(code)
 
             # Handle register-based branches.
