@@ -1,34 +1,30 @@
-#!/usr/bin/env python
-
+"""SH2 disassembler"""
 
 from __future__ import print_function
-
-
-import csv
-import segment
-import struct
-import string
-
 from collections import namedtuple
+
 try:
     from Queue import Queue
 except ImportError:
     from queue import Queue
 
-from sh2opcodes import opcodes
+import struct
+
+from . import segment
+from .sh2opcodes import OPCODES
 
 
 CodeExtra = namedtuple('CodeExtra', 'text, opcode, args')
 
 
 # Opcodes that use delayed branching; an legal instruction should follow.
-delayed_branchers = ('bra', 'braf', 'jmp', 'rte', 'rts')
+DELAYED_BRANCHERS = ('bra', 'braf', 'jmp', 'rte', 'rts')
 
 # Opcodes that branch based on the contents of a register.
-register_branchers = ('braf', 'bsrf', 'jsr', 'jmp')
+REGISTER_BRANCHERS = ('braf', 'bsrf', 'jsr', 'jmp')
 
 # Opcodes that branch based on a directly-referenced label.
-label_branchers = ('bf', 'bf/s', 'bra', 'bsr', 'bt', 'bt/s')
+LABEL_BRANCHERS = ('bf', 'bf/s', 'bra', 'bsr', 'bt', 'bt/s')
 
 
 class DataField(segment.SegmentData):
@@ -51,7 +47,7 @@ class ByteField(DataField):
 
     def __init__(self, *args, **kwargs):
         kwargs['width'] = 1
-        if not 'unknown_prefix' in kwargs:
+        if 'unknown_prefix' not in kwargs:
             kwargs['unknown_prefix'] = 'byte'
         DataField.__init__(self, *args, **kwargs)
         try:
@@ -125,10 +121,10 @@ class CodeField(DataField):
 
     def get_instruction(self, no_cmd=False):
         if 'label' in self.extra.text and not no_cmd:
-            t = self.extra.args['target']
-            label = self.model.get_label(t)
+            tgt = self.extra.args['target']
+            label = self.model.get_label(tgt)
             if label is None:
-                label = '0x%X' % t
+                label = '0x%X' % tgt
             return self.extra.text.replace('label', label)
         return self.extra.text
 
@@ -173,35 +169,38 @@ class NullField(segment.SegmentData):
 
 
 class AssemblyError(Exception):
+    """No matching instruction was found"""
     pass
 
 
 def parse_args(instruction, opcode):
-    op = {}
+    """Given an instruction and an opcode, return a dict representing them"""
+    realop = {}
     if opcode['m'][0] != 0:
-        op['m'] = (instruction & opcode['m'][0]) >> opcode['m'][1]
+        realop['m'] = (instruction & opcode['m'][0]) >> opcode['m'][1]
     else:
-        op['m'] = None
+        realop['m'] = None
     if opcode['n'][0] != 0:
-        op['n'] = (instruction & opcode['n'][0]) >> opcode['n'][1]
+        realop['n'] = (instruction & opcode['n'][0]) >> opcode['n'][1]
     else:
-        op['n'] = None
+        realop['n'] = None
     if opcode['imm'][0] != 0:
-        op['imm'] = (instruction & opcode['imm'][0]) >> opcode['imm'][1]
+        realop['imm'] = (instruction & opcode['imm'][0]) >> opcode['imm'][1]
     else:
-        op['imm'] = None
+        realop['imm'] = None
     if opcode['disp'] != 0:
-        op['disp'] = instruction & opcode['disp']
+        realop['disp'] = instruction & opcode['disp']
     else:
-        op['disp'] = None
-    return op
+        realop['disp'] = None
+    return realop
 
 
-def calculate_disp_target(opcode, args, pc):
+def calculate_disp_target(opcode, args, progc):
+    """Calculate the target of an opcode, given it's args and PC"""
     disp = args['disp']
     if disp is not None:
         # 12-bit disp values are signed.
-        #sign = 0x800 if opcode['disp'] & 0xF00 != 0 else 0
+        # sign = 0x800 if opcode['disp'] & 0xF00 != 0 else 0
         sign = 0
         if opcode['disp'] & 0xF00 != 0:
             sign = 0x800
@@ -227,9 +226,9 @@ def calculate_disp_target(opcode, args, pc):
 
         # Long disp values require a PC alignment mask.
         if disp_mult == 4:
-            target += (pc & 0xFFFFFFFC) + 4
+            target += (progc & 0xFFFFFFFC) + 4
         else:
-            target += pc + 4
+            target += progc + 4
 
         args['target'] = target
         args['disp'] *= disp_mult
@@ -239,26 +238,26 @@ def calculate_disp_target(opcode, args, pc):
 
 def track_registers(opcode, args, location, registers, model):
     """Track register assignments."""
-    n = args['n']
-    if n is None:
+    nval = args['n']
+    if nval is None:
         if opcode['args'][1] == 'r0':
-            n = 0
-    if n is not None:
+            nval = 0
+    if nval is not None:
         if opcode['cmd'].startswith('mov'):
-            m = args['m']
-            if m is None:
+            mval = args['m']
+            if mval is None:
                 if opcode['args'][0] == 'r0':
-                    m = 0
-            if m is None:
+                    mval = 0
+            if mval is None:
                 if args['imm'] is not None:
-                    registers[n] = args['imm']
+                    registers[nval] = args['imm']
                     return
                 if args['disp'] is not None:
                     target = args['target']
                     meta = model.get_location(target)
                     if meta is None:
                         if (opcode['cmd'].endswith('.l') or
-                            opcode['args'][1].startswith('@(')):
+                                opcode['args'][1].startswith('@(')):
                             meta = LongField(location=target, model=model)
                             model.set_location(meta)
                         elif opcode['cmd'][-2:] == '.w':
@@ -268,20 +267,20 @@ def track_registers(opcode, args, location, registers, model):
                             meta = ByteField(location=target, model=model)
                             model.set_location(meta)
                     model.add_reference(target, location)
-                    registers[n] = meta.extra
-                    #registers[n] = meta.extra if meta is not None else model.get_phys(target)
+                    registers[nval] = meta.extra
+                    # registers[nval] = meta.extra if meta is not None else model.get_phys(target)
                     return
 
         # Any action on a target register that we can't explicitly
         # calculate invalidates any current value. Register estimation
         # is a best-effort kind of thing.
-        registers[n] = None
+        registers[nval] = None
 
 
 def lookup_instruction(instruction):
     """Perform a basic lookup of the instruction in our registry."""
     # TODO: brute force sucks, we can do much better here.
-    for opcode in opcodes:
+    for opcode in OPCODES:
         instbits, instmask = opcode['opmask']
         if instruction & instmask == instbits:
             args = parse_args(instruction, opcode)
@@ -289,16 +288,16 @@ def lookup_instruction(instruction):
     raise AssemblyError('no matching instruction for %#x' % instruction)
 
 
-def disasm_single(instruction, pc, registers, model):
+def disasm_single(instruction, progc, registers, model):
     """Disassemble a single instruction."""
     opcode, args = lookup_instruction(instruction)
-    calculate_disp_target(opcode, args, pc)
-    track_registers(opcode, args, pc, registers, model)
-    a = opcode['args'][0]
+    calculate_disp_target(opcode, args, progc)
+    track_registers(opcode, args, progc, registers, model)
+    aval = opcode['args'][0]
     if opcode['args'][1] != '':
-        a = a + ', ' + opcode['args'][1]
-    extra = CodeExtra(' '.join((opcode['cmd'], a % args)), opcode, args)
-    return CodeField(location=pc, width=2, extra=extra, model=model)
+        aval = aval + ', ' + opcode['args'][1]
+    extra = CodeExtra(' '.join((opcode['cmd'], aval % args)), opcode, args)
+    return CodeField(location=progc, width=2, extra=extra, model=model)
 
 
 def disassemble(locations, model, callback=None):
@@ -313,11 +312,11 @@ def disassemble(locations, model, callback=None):
 
         # Quick check to make sure we haven't already processed this location.
         try:
-          meta = model.get_location(location)
+            meta = model.get_location(location)
         except segment.SegmentError as segerr:
-          print('Unable to retrieve location 0x%x, giving up on that path' % location)
-          print('Error was: %s' % segerr)
-          continue
+            print('Unable to retrieve location 0x%x, giving up on that path' % location)
+            print('Error was: %s' % segerr)
+            continue
         if isinstance(meta, CodeField):
             model.add_reference(meta.location, reference)
             continue
@@ -328,28 +327,28 @@ def disassemble(locations, model, callback=None):
 
         while not branching or branch_countdown >= 0:
             try:
-                orig = model.get_location(location)
+                model.get_location(location)
                 phys = model.get_phys(location, 2)
             except segment.SegmentError:
                 break
 
             instruction = struct.unpack('>H', phys)[0]
             try:
-              code = disasm_single(instruction, location, registers, model)
+                code = disasm_single(instruction, location, registers, model)
             except AssemblyError as assemerr:
-              print('Unable to disassemble location 0x%x, giving up on that path' % location)
-              print('Error was: %s' % assemerr)
-              break
+                print('Unable to disassemble location 0x%x, giving up on that path' % location)
+                print('Error was: %s' % assemerr)
+                break
             model.set_location(code)
 
             # Handle register-based branches.
-            if code.extra.opcode['cmd'] in register_branchers:
-                r = registers[code.extra.args['m']]
-                if r is not None:
-                    code.extra.args['target'] = r
-                    work_queue.put((r, location), False)
+            if code.extra.opcode['cmd'] in REGISTER_BRANCHERS:
+                reg = registers[code.extra.args['m']]
+                if reg is not None:
+                    code.extra.args['target'] = reg
+                    work_queue.put((reg, location), False)
 
-            elif code.extra.opcode['cmd'] in label_branchers:
+            elif code.extra.opcode['cmd'] in LABEL_BRANCHERS:
                 work_queue.put((code.extra.args['target'], location), False)
 
             if reference is not None:
@@ -359,7 +358,7 @@ def disassemble(locations, model, callback=None):
             if callback is not None:
                 callback(code, registers, model)
 
-            if code.extra.opcode['cmd'] in delayed_branchers:
+            if code.extra.opcode['cmd'] in DELAYED_BRANCHERS:
                 branch_countdown = 1
                 branching = True
             if branching:

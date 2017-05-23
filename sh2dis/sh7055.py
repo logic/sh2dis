@@ -1,4 +1,7 @@
-vectors = {
+# pylint: disable=too-many-lines
+"""SH7055 storage layout"""
+
+VECTORS = {
     0x00000000: {
         'name': 'v_power_on_pc',
         'size': 4,
@@ -708,7 +711,7 @@ vectors = {
     },
 }
 
-registers = {
+REGISTERS = {
     0xFFFFE400: {
         'name': 'HCAN0_MCR',
         'size': 1,

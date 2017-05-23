@@ -1,6 +1,7 @@
-#!/usr/bin/env python
+# pylint: disable=too-many-lines
+"""SH2 Opcodes"""
 
-opcodes = (
+OPCODES = (
     {
         'opmask': (0x7000, 0xF000),
         'm': (0x0000, 0x0),
