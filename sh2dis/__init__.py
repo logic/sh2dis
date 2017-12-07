@@ -2,8 +2,6 @@
 
 from __future__ import print_function
 
-from . import __main__
-
 from . import mitsubishi
 from . import segment
 from . import sh2

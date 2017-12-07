@@ -50,10 +50,9 @@ def setup_vectors(model):
         model.set_location(vector)
         model.set_label(i, label)
         if label is not None and label.startswith('v_'):
-            model.set_label(vector.extra, label[2:])
-        # meta = model.get_location(vector.extra)
-        # if meta.label is None and vector.label.startswith('v_'):
-        #     meta.label = vector.label[2:]
+            targetlabel = model.get_label(vector.extra)
+            if targetlabel is None or targetlabel.startswith('unk_'):
+                model.set_label(vector.extra, label[2:])
 
     for addr, vec in list(model.processor.REGISTERS.items()):
         kind = sh2.LongField
