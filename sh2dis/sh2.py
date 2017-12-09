@@ -293,10 +293,14 @@ def disasm_single(instruction, progc, registers, model):
     opcode, args = lookup_instruction(instruction)
     calculate_disp_target(opcode, args, progc)
     track_registers(opcode, args, progc, registers, model)
-    aval = opcode['args'][0]
-    if opcode['args'][1] != '':
-        aval = aval + ', ' + opcode['args'][1]
-    extra = CodeExtra(' '.join((opcode['cmd'], aval % args)), opcode, args)
+    instr = [opcode['cmd'], ]
+    if opcode['args'][0] != '':
+        aval = opcode['args'][0]
+        if opcode['args'][1] != '':
+            aval = aval + ', ' + opcode['args'][1]
+        aval = aval % args
+        instr += [aval, ]
+    extra = CodeExtra(' '.join(instr), opcode, args)
     return CodeField(location=progc, width=2, extra=extra, model=model)
 
 
