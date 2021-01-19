@@ -16,8 +16,3 @@ __version__ = '1.0'
 
 __copyright__ = 'Copyright (C) 2010-2017, Ed Marshall'
 __license__ = 'GPL3'
-
-
-class ROMError(Exception):
-    """An error related to parsing the supplied ROM data."""
-    pass

@@ -1,5 +1,5 @@
 # pylint: disable=too-many-lines
-"""SH2 Opcodes"""
+"""SH2 Opcodes."""
 
 OPCODES = (
     {

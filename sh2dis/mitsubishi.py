@@ -5,7 +5,7 @@ from . import sh2
 
 
 def fixup_mova(meta, model):
-    """Mitsubishi-specific MOVA-related fixups"""
+    """Mitsubishi-specific MOVA-related fixups."""
     # Mitsu seems to love MOVA for jump tables.
     jump_tbl = meta.extra.args['target']
     jump_off = 0
@@ -139,7 +139,7 @@ def fixup_tables(meta, registers, model, axes):
 
 
 def fixup_mut(meta, model):
-    """Mitsubishi-specific MUT table annotation"""
+    """Mitsubishi-specific MUT table annotation."""
     mut_loc = model.get_location(meta.extra.args['target']).extra
     mut_off = 0
     while True:
@@ -209,7 +209,7 @@ def multiscan(model):
 
 
 def fixups(model):
-    """Mitsubishi-specific fixups"""
+    """Mitsubishi-specific fixups."""
     # Name the init, sp, and reset vectors.
     meta = model.get_location(0)
     model.set_label(meta.extra, 'init')

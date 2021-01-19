@@ -13,6 +13,10 @@ from . import sh7055
 OUTPUT_SEPARATOR = '         ! ' + '-' * 60
 
 
+class ROMError(Exception):
+    """An error related to parsing the supplied ROM data."""
+
+
 def get_segments(phys):
     """Determine if this is an Evo VIII (7052) or IX (7055) ROM."""
     if len(phys) == 0x40000:
@@ -22,7 +26,7 @@ def get_segments(phys):
             ('RAM', 0xFFFF8000, 0xFFFFB000, None),
             ('REG', 0xFFFFE400, 0xFFFFF860, None),
         )
-    elif len(phys) == 0x80000:
+    if len(phys) == 0x80000:
         # SH/7055F
         return sh7055, (
             ('ROM', 0x0, len(phys), phys),
@@ -102,7 +106,7 @@ def scan_free_space(model):
 
 
 def final_output(model, outfile, ranges):
-    """Produce a moderately-useful disassembly output"""
+    """Produce a moderately-useful disassembly output."""
     countdown = 0
     in_code = False
     for start, end in ranges:

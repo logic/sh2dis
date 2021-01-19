@@ -1,5 +1,5 @@
 # pylint: disable=too-many-lines
-"""SH7055 storage layout"""
+"""SH7055 storage layout."""
 
 VECTORS = {
     0x00000000: {

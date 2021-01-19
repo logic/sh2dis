@@ -14,6 +14,7 @@ class SegmentError(Exception):
 
 class SegmentData(object):
     """Metaclass for segment data types."""
+
     def __init__(self, location, width, model, comment=None,
                  unknown_prefix='unk', extra=None, member_of=None):
         object.__init__(self)
@@ -26,7 +27,7 @@ class SegmentData(object):
         self.member_of = member_of
 
     def get_instruction(self, no_cmd=False):  # pylint: disable=no-self-use,unused-argument
-        """Returns the instruction represented by this data reference"""
+        """Return the instruction represented by this data reference."""
         raise SegmentError(
             "concrete implementation did not define get_instruction")
 
@@ -79,6 +80,7 @@ class SegmentData(object):
 
 class CompositeData(SegmentData):
     """Collection of segment data."""
+
     def __init__(self, members=None, items_per_line=1, model=None,
                  comment=None, extra=None):
         self.members = members if members is not None else []
@@ -116,7 +118,7 @@ class CompositeData(SegmentData):
 
 
 class Segment(object):
-    """A memory segment for this architecture"""
+    """A memory segment for this architecture."""
 
     VALUE = 0
     XREFS = 1
@@ -202,7 +204,7 @@ class Segment(object):
         self.space[location - self.start][self.LABEL] = label
 
     def generate_comments(self, location):
-        """ Generate cross-reference comments. """
+        """Generate cross-reference comments."""
         references = self.space[location - self.start][self.XREFS]
         if references:
             count = 0
@@ -255,7 +257,7 @@ class MemoryModel(object):
 
     def __lookup_segment(self, location):
         for segment in self.segments:
-            if location >= segment.start and location < segment.end:
+            if segment.start <= location < segment.end:
                 return segment
         raise SegmentError('invalid segment address: %#x' % location)
 

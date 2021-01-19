@@ -31,7 +31,7 @@ class DataField(segment.SegmentData):
     """Metaclass for SH2 data types."""
 
     def get_instruction(self, no_cmd=False):
-        """A GAS-compatible string representation for this data type."""
+        """Produce a GAS-compatible string representation for this type."""
         if no_cmd:
             val = '0x%%0%dX' % (self.width * 2)
         else:
@@ -174,7 +174,7 @@ class AssemblyError(Exception):
 
 
 def parse_args(instruction, opcode):
-    """Given an instruction and an opcode, return a dict representing them"""
+    """Given an instruction and an opcode, return a dict representing them."""
     realop = {}
     if opcode['m'][0] != 0:
         realop['m'] = (instruction & opcode['m'][0]) >> opcode['m'][1]
@@ -196,7 +196,7 @@ def parse_args(instruction, opcode):
 
 
 def calculate_disp_target(opcode, args, progc):
-    """Calculate the target of an opcode, given it's args and PC"""
+    """Calculate the target of an opcode, given it's args and PC."""
     disp = args['disp']
     if disp is not None:
         # 12-bit disp values are signed.
@@ -306,7 +306,6 @@ def disasm_single(instruction, progc, registers, model):
 
 def disassemble(locations, model, callback=None):
     """Given a memory model and a set of locations within it, disassemble."""
-
     work_queue = Queue()
     for location, reference in locations:
         work_queue.put((location, reference), False)
